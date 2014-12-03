@@ -7,13 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		665CCB441A2D394A00E8BF92 /* MealSelectionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665CCB431A2D394A00E8BF92 /* MealSelectionTableViewController.swift */; };
 		666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */; };
-		666B70001A26CBCD00E8EAAC /* FirstViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B6FFF1A26CBCD00E8EAAC /* FirstViewController.swift */; };
-		666B70021A26CBCD00E8EAAC /* SecondViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70011A26CBCD00E8EAAC /* SecondViewController.swift */; };
 		666B70051A26CBCD00E8EAAC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666B70031A26CBCD00E8EAAC /* Main.storyboard */; };
 		666B70071A26CBCD00E8EAAC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 666B70061A26CBCD00E8EAAC /* Images.xcassets */; };
 		666B700A1A26CBCD00E8EAAC /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 666B70081A26CBCD00E8EAAC /* LaunchScreen.xib */; };
 		666B70161A26CBCD00E8EAAC /* BruinLifeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70151A26CBCD00E8EAAC /* BruinLifeTests.swift */; };
+		666B70221A26CCD100E8EAAC /* DormTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70211A26CCD100E8EAAC /* DormTableViewController.swift */; };
+		666B70241A26CCE000E8EAAC /* QuickTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70231A26CCE000E8EAAC /* QuickTableViewController.swift */; };
+		666B702A1A26CDD400E8EAAC /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70291A26CDD400E8EAAC /* SettingsTableViewController.swift */; };
+		666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */; };
+		666B70301A26D49100E8EAAC /* RestaurantDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B702F1A26D49100E8EAAC /* RestaurantDisplay.swift */; };
+		666B70321A26D4AC00E8EAAC /* FoodsScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */; };
+		666B70341A26D4B600E8EAAC /* FoodDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70331A26D4B600E8EAAC /* FoodDisplay.swift */; };
+		667D44CF1A2EF04C00BC3238 /* CalendarTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667D44CE1A2EF04C00BC3238 /* CalendarTableViewCell.swift */; };
+		669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669F43E71A280A140059F84E /* FoodTableViewController.swift */; };
+		66DEC1A91A2E575900C546FA /* DateSelectionTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1A71A2E575900C546FA /* DateSelectionTableViewController.swift */; };
+		66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,17 +37,27 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		665CCB431A2D394A00E8BF92 /* MealSelectionTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MealSelectionTableViewController.swift; sourceTree = "<group>"; };
 		666B6FF81A26CBCD00E8EAAC /* BruinLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BruinLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666B6FFC1A26CBCD00E8EAAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		666B6FFF1A26CBCD00E8EAAC /* FirstViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirstViewController.swift; sourceTree = "<group>"; };
-		666B70011A26CBCD00E8EAAC /* SecondViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondViewController.swift; sourceTree = "<group>"; };
 		666B70041A26CBCD00E8EAAC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		666B70061A26CBCD00E8EAAC /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		666B70091A26CBCD00E8EAAC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		666B700F1A26CBCD00E8EAAC /* BruinLifeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BruinLifeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		666B70141A26CBCD00E8EAAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		666B70151A26CBCD00E8EAAC /* BruinLifeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BruinLifeTests.swift; sourceTree = "<group>"; };
+		666B70211A26CCD100E8EAAC /* DormTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DormTableViewController.swift; sourceTree = "<group>"; };
+		666B70231A26CCE000E8EAAC /* QuickTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickTableViewController.swift; sourceTree = "<group>"; };
+		666B70291A26CDD400E8EAAC /* SettingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipesTableViewController.swift; sourceTree = "<group>"; };
+		666B702F1A26D49100E8EAAC /* RestaurantDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantDisplay.swift; sourceTree = "<group>"; };
+		666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodsScrollView.swift; sourceTree = "<group>"; };
+		666B70331A26D4B600E8EAAC /* FoodDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDisplay.swift; sourceTree = "<group>"; };
+		667D44CE1A2EF04C00BC3238 /* CalendarTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarTableViewCell.swift; sourceTree = "<group>"; };
+		669F43E71A280A140059F84E /* FoodTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewController.swift; sourceTree = "<group>"; usesTabs = 1; };
+		66DEC1A71A2E575900C546FA /* DateSelectionTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateSelectionTableViewController.swift; sourceTree = "<group>"; };
+		66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +78,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		665CCB3E1A2C4AB300E8BF92 /* Popovers */ = {
+			isa = PBXGroup;
+			children = (
+				66DEC1A71A2E575900C546FA /* DateSelectionTableViewController.swift */,
+				665CCB431A2D394A00E8BF92 /* MealSelectionTableViewController.swift */,
+				66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */,
+				667D44CE1A2EF04C00BC3238 /* CalendarTableViewCell.swift */,
+			);
+			name = Popovers;
+			sourceTree = "<group>";
+		};
 		666B6FEF1A26CBCD00E8EAAC = {
 			isa = PBXGroup;
 			children = (
@@ -79,12 +110,10 @@
 		666B6FFA1A26CBCD00E8EAAC /* BruinLife */ = {
 			isa = PBXGroup;
 			children = (
-				666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */,
-				666B6FFF1A26CBCD00E8EAAC /* FirstViewController.swift */,
-				666B70011A26CBCD00E8EAAC /* SecondViewController.swift */,
-				666B70031A26CBCD00E8EAAC /* Main.storyboard */,
-				666B70061A26CBCD00E8EAAC /* Images.xcassets */,
-				666B70081A26CBCD00E8EAAC /* LaunchScreen.xib */,
+				666B70261A26CD4B00E8EAAC /* Other */,
+				666B70251A26CD0B00E8EAAC /* Required */,
+				665CCB3E1A2C4AB300E8BF92 /* Popovers */,
+				666B70201A26CC4700E8EAAC /* Food View Controllers */,
 				666B6FFB1A26CBCD00E8EAAC /* Supporting Files */,
 			);
 			path = BruinLife;
@@ -113,6 +142,47 @@
 				666B70141A26CBCD00E8EAAC /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		666B70201A26CC4700E8EAAC /* Food View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				669F43E71A280A140059F84E /* FoodTableViewController.swift */,
+				666B70211A26CCD100E8EAAC /* DormTableViewController.swift */,
+				666B70231A26CCE000E8EAAC /* QuickTableViewController.swift */,
+				666B70351A26D4BE00E8EAAC /* Displays */,
+			);
+			name = "Food View Controllers";
+			sourceTree = "<group>";
+		};
+		666B70251A26CD0B00E8EAAC /* Required */ = {
+			isa = PBXGroup;
+			children = (
+				666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */,
+				666B70031A26CBCD00E8EAAC /* Main.storyboard */,
+				666B70061A26CBCD00E8EAAC /* Images.xcassets */,
+				666B70081A26CBCD00E8EAAC /* LaunchScreen.xib */,
+			);
+			name = Required;
+			sourceTree = "<group>";
+		};
+		666B70261A26CD4B00E8EAAC /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				666B70291A26CDD400E8EAAC /* SettingsTableViewController.swift */,
+				666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */,
+			);
+			name = Other;
+			sourceTree = "<group>";
+		};
+		666B70351A26D4BE00E8EAAC /* Displays */ = {
+			isa = PBXGroup;
+			children = (
+				666B702F1A26D49100E8EAAC /* RestaurantDisplay.swift */,
+				666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */,
+				666B70331A26D4B600E8EAAC /* FoodDisplay.swift */,
+			);
+			name = Displays;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,9 +285,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				666B70021A26CBCD00E8EAAC /* SecondViewController.swift in Sources */,
+				666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */,
+				665CCB441A2D394A00E8BF92 /* MealSelectionTableViewController.swift in Sources */,
+				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
+				666B70341A26D4B600E8EAAC /* FoodDisplay.swift in Sources */,
+				666B70221A26CCD100E8EAAC /* DormTableViewController.swift in Sources */,
+				667D44CF1A2EF04C00BC3238 /* CalendarTableViewCell.swift in Sources */,
+				66DEC1A91A2E575900C546FA /* DateSelectionTableViewController.swift in Sources */,
+				666B702A1A26CDD400E8EAAC /* SettingsTableViewController.swift in Sources */,
+				666B70301A26D49100E8EAAC /* RestaurantDisplay.swift in Sources */,
+				666B70241A26CCE000E8EAAC /* QuickTableViewController.swift in Sources */,
+				666B70321A26D4AC00E8EAAC /* FoodsScrollView.swift in Sources */,
+				669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */,
 				666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */,
-				666B70001A26CBCD00E8EAAC /* FirstViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,6 +489,7 @@
 				666B701B1A26CBCD00E8EAAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		666B701C1A26CBCD00E8EAAC /* Build configuration list for PBXNativeTarget "BruinLifeTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +498,7 @@
 				666B701E1A26CBCD00E8EAAC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
