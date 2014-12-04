@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
         <!--Quick Table View Controller-->
         <scene sceneID="8ox-lW-V5B">
             <objects>
-                <tableViewController id="8KL-cY-OHc" customClass="QuickTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="quickTableView" id="8KL-cY-OHc" customClass="QuickTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="axB-IE-tLD">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -31,13 +31,11 @@
                             <outlet property="delegate" destination="8KL-cY-OHc" id="SLN-xj-XV7"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="qN4-5y-4EB">
-                        <barButtonItem key="rightBarButtonItem" title="Item" id="pbg-9f-oxx"/>
-                    </navigationItem>
+                    <navigationItem key="navigationItem" id="qN4-5y-4EB"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ofy-dN-lL6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1570" y="348"/>
+            <point key="canvasLocation" x="2182" y="348"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="cdd-c7-0Sp">
@@ -128,26 +126,29 @@
             <point key="canvasLocation" x="750" y="1738"/>
         </scene>
         <!--Dorm-->
-        <scene sceneID="Mat-CK-O7d">
+        <scene sceneID="RU1-33-D9r">
             <objects>
-                <navigationController id="U6M-Yc-uw2" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Dorm" id="TsB-NY-X4X"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="rWk-ys-uu7">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <connections>
-                        <segue destination="o7u-Gj-l7u" kind="relationship" relationship="rootViewController" id="Uct-Pr-5dY"/>
-                    </connections>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="CIU-hz-A50" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <viewController id="EqH-C2-ubs" customClass="DormContainerViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="eLa-8j-vWo"/>
+                        <viewControllerLayoutGuide type="bottom" id="KVB-R7-1kj"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="CKp-TD-GYx">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Dorm" id="Hrw-9H-SQn"/>
+                    <navigationItem key="navigationItem" id="OKS-rt-J84"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iQF-Ff-CgB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="750" y="-332"/>
+            <point key="canvasLocation" x="1462" y="-332"/>
         </scene>
         <!--Dorm Table View Controller-->
         <scene sceneID="Z8o-pp-AXa">
             <objects>
-                <tableViewController id="o7u-Gj-l7u" customClass="DormTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                <tableViewController storyboardIdentifier="dormTableView" id="o7u-Gj-l7u" customClass="DormTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Pbr-PN-GdE">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -178,7 +179,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CZJ-Zd-9Pj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1570" y="-332"/>
+            <point key="canvasLocation" x="2182" y="-332"/>
         </scene>
         <!--Date Selection Table View Controller-->
         <scene sceneID="7fM-gd-rSN">
@@ -205,7 +206,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sy4-wr-iTn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2313" y="-332"/>
+            <point key="canvasLocation" x="2925" y="-332"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="YwV-4I-fj2">
@@ -232,7 +233,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H8b-oB-ffW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2313" y="348"/>
+            <point key="canvasLocation" x="2925" y="348"/>
         </scene>
         <!--Quick-->
         <scene sceneID="y5x-eO-8jq">
@@ -244,7 +245,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="8KL-cY-OHc" kind="relationship" relationship="rootViewController" id="wEs-q5-vQx"/>
+                        <segue destination="8KL-cY-OHc" kind="relationship" relationship="rootViewController" id="esw-pd-mkL"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="19b-z2-wtS" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -262,7 +263,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
-                        <segue destination="U6M-Yc-uw2" kind="relationship" relationship="viewControllers" id="ujt-mh-wGj"/>
+                        <segue destination="EqH-C2-ubs" kind="relationship" relationship="viewControllers" id="Rzz-fs-pQT"/>
                         <segue destination="5yx-YR-Hpb" kind="relationship" relationship="viewControllers" id="PUQ-HY-KdX"/>
                         <segue destination="Kej-Wf-44n" kind="relationship" relationship="viewControllers" id="9Ui-ms-lCU"/>
                         <segue destination="Doc-2p-uUv" kind="relationship" relationship="viewControllers" id="qvQ-Ti-56q"/>

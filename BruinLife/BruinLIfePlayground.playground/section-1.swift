@@ -85,4 +85,3 @@ func imageWithView(view: UIView) -> UIImage {
 	return image
 }
 
-//	let suffixes = ["th", "st", "nd", "rd"]

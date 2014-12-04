@@ -28,7 +28,7 @@ class MealSelectionTableViewController: UITableViewController {
     }
 	
 	func isDone() {
-		foodVC?.setNewMeal(meal)
+//		foodVC?.setNewMeal(meal)
 		self.dismissViewControllerAnimated(true, completion: nil)
 	}
 	

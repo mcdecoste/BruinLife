@@ -41,7 +41,7 @@ class DateSelectionTableViewController: UITableViewController {
 	}
 	
 	func isDone() {
-		dormVC?.setNewDate(selectedDate!)
+//		dormVC?.setNewDate(selectedDate!)
 		self.dismissViewControllerAnimated(true, completion: { () -> Void in
 			// don't do anything here
 		})

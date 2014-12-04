@@ -27,70 +27,71 @@ enum MealType : String {
 	case Lunch = "Lunch"
 	case Dinner = "Dinner"
 	case Brunch = "Brunch"
+	case LateNight = "Late Night"
 }
 
-class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+class FoodTableViewController: UITableViewController /*, UIPopoverPresentationControllerDelegate */ {
 	let kRestCellID = "FoodCell"
 	var kRestCellHeight = 88
 	let kFoodDisplayID = "DisplayCell"
 	var kFoodDisplayHeight = 220
 	let kFoodDisplayTag = 99
-	
-	var dataArray:Array<RestaurantInfo> = []
-	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
-	
-	var currMeal: MealType = .Lunch // default value
-	
-//	let mealSegue = "mealPopover"
 	let mealVCid = "mealSelectionTableView"
 	
-//	let mealPopSize = CGSize(width: 160, height: 198)
+//	var dataArray:Array<RestaurantInfo> = []
+	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
+	
+//	var currMeal: MealType = .Lunch // default value
+	
+	var information = DayInfo()
+	
+	var pageIndex = 0
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: mealButtonTitle(), style: .Plain, target: self, action: "addMealPopover:")
+//		self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: mealButtonTitle(), style: .Plain, target: self, action: "addMealPopover:")
     }
+	
+	/// Returns the desired title for the page view controller's navbar
+	func preferredTitle() -> String {
+		return ""
+	}
 	
 	// MARK: Meal Selection
 	
-	func mealButtonTitle() -> String {
-		return currMeal.rawValue
-	}
+//	func mealButtonTitle() -> String {
+//		return currMeal.rawValue
+//	}
+//	
+//	func setNewMeal(newMeal: MealType) {
+//		currMeal = newMeal
+//		self.navigationItem.rightBarButtonItem?.title = mealButtonTitle()
+//	}
 	
-	func setNewMeal(newMeal: MealType) {
-		currMeal = newMeal
-		self.navigationItem.rightBarButtonItem?.title = mealButtonTitle()
-	}
-	
-	func addMealPopover(sender: UIBarButtonItem?){
-		var mealVC = storyboard?.instantiateViewControllerWithIdentifier(mealVCid) as MealSelectionTableViewController
-		
-		mealVC.foodVC = self
-		mealVC.meal = currMeal
-		mealVC.setDate(NSDate())
-		mealVC.isDorm = false
-		
-		mealVC.modalPresentationStyle = .Popover
-		mealVC.preferredContentSize = mealVC.preferredContentSize
-		
-		let popoverPresentationViewController = mealVC.popoverPresentationController
-		popoverPresentationViewController?.permittedArrowDirections = .Up
-		popoverPresentationViewController?.delegate = self
-		popoverPresentationViewController?.barButtonItem = sender
-		presentViewController(mealVC, animated: true, completion: nil)
-	}
+//	func addMealPopover(sender: UIBarButtonItem?){
+//		var mealVC = storyboard?.instantiateViewControllerWithIdentifier(mealVCid) as MealSelectionTableViewController
+//		
+//		mealVC.foodVC = self
+//		mealVC.meal = currMeal
+//		mealVC.setDate(NSDate())
+//		mealVC.isDorm = false
+//		
+//		mealVC.modalPresentationStyle = .Popover
+//		mealVC.preferredContentSize = mealVC.preferredContentSize
+//		
+//		let popoverPresentationViewController = mealVC.popoverPresentationController
+//		popoverPresentationViewController?.permittedArrowDirections = .Up
+//		popoverPresentationViewController?.delegate = self
+//		popoverPresentationViewController?.barButtonItem = sender
+//		presentViewController(mealVC, animated: true, completion: nil)
+//	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
 	
-	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
-		return .None
-	}
-	
-//    override func didReceiveMemoryWarning() {
-//        super.didReceiveMemoryWarning()
-//        // Dispose of any resources that can be recreated.
-//    }
+//	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
+//		return .None
+//	}
 	
 	// MARK: Table view data source
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -99,11 +100,22 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
 		// Return the number of sections.
-		return 1
+		return information.restForMeal.count
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return (hasInlineFoodDisplay() ? dataArray.count+1 : dataArray.count)
+		var rowCount = information.restForMeal[section].rests.count
+		if (hasInlineFoodDisplay() && displayIndexPath.section == section) {
+			rowCount++
+		}
+		
+		return rowCount
+		
+//		return (hasInlineFoodDisplay() ? dataArray.count+1 : dataArray.count)
+	}
+	
+	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		return information.restForMeal[section].meal.rawValue
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -121,7 +133,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
-		var itemData = dataArray[modelRow]
+		var itemData = information.restForMeal[indexPath.section].rests[modelRow]
 		
 		if cellID == kRestCellID {
 			cell.textLabel?.text = itemData.name
@@ -214,26 +226,26 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func hasDisplayForIndexPath(indexPath: NSIndexPath) -> Bool {
 		var targetedRow = indexPath.row + 1
 		
-		var checkDisplayCell: UITableViewCell? = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: targetedRow, inSection: 0))
+		var checkDisplayCell: UITableViewCell? = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: targetedRow, inSection: indexPath.section))
 		var checkFoodDisplay = checkDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
 		
 		return checkFoodDisplay != nil // has date picker
 	}
 	
 	func updateFoodDisplay() {
-		return // other stuff isn't ready yet
-		if hasInlineFoodDisplay() {
-			var associatedDisplayCell = tableView.cellForRowAtIndexPath(displayIndexPath)
-			var targetedDisplay = associatedDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
-			
-			if targetedDisplay != nil { // found UIDatePicker
-				var index = displayIndexPath.row - 1
-				var itemData = dataArray[index]
-				
-				// TDOO: put this back in
-				// targetedDisplay?.setData(nil);
-			}
-		}
+//		return // other stuff isn't ready yet
+//		if hasInlineFoodDisplay() {
+//			var associatedDisplayCell = tableView.cellForRowAtIndexPath(displayIndexPath)
+//			var targetedDisplay = associatedDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
+//			
+//			if targetedDisplay != nil { // found UIDatePicker
+//				var index = displayIndexPath.row - 1
+//				var itemData = dataArray[index]
+//				
+//				// TDOO: put this back in
+//				// targetedDisplay?.setData(nil);
+//			}
+//		}
 	}
 	
 	func hasInlineFoodDisplay() -> Bool {
@@ -243,7 +255,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func indexPathHasFoodDisplay(indexPath: NSIndexPath) -> Bool {
 		var bool1 = hasInlineFoodDisplay()
 		var bool2 = indexPath.row == displayIndexPath.row
-		return bool1 && bool2
+		var bool3 = indexPath.section == displayIndexPath.section
+		return bool1 && bool2 && bool3
 	}
 	
 	func displayInlineFoodDisplayForRowAtIndexPath(indexPath: NSIndexPath) {
@@ -253,27 +266,39 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var replaceDisplayWithNew = false
 		var deletingDisplay = hasInlineFoodDisplay()
 		
+		var shouldScroll = false
+		
 		if deletingDisplay {
-			replaceDisplayWithNew = (indexPath.row != displayIndexPath.row - 1)
-			before = displayIndexPath.row < indexPath.row
+			replaceDisplayWithNew = (displayIndexPath.section != indexPath.section) || (indexPath.row != displayIndexPath.row - 1)
+			before = (displayIndexPath.section == indexPath.section) && (displayIndexPath.row < indexPath.row)
 			
-			// remove any existing date picker cell
+			// remove any existing display cell
 			tableView.deleteRowsAtIndexPaths([displayIndexPath], withRowAnimation: .Fade)
 			displayIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 		}
 		
 		if replaceDisplayWithNew || (!deletingDisplay && (displayIndexPath.row - 1 != indexPath.row)) {
-			// hide old picker, display new one
+			// show new display
 			var rowToReveal = before ? indexPath.row : indexPath.row + 1
-			var indexPathToReveal = NSIndexPath(forRow: rowToReveal, inSection: 0)
+			var indexPathToReveal = NSIndexPath(forRow: rowToReveal, inSection: indexPath.section)
 			
 			tableView.insertRowsAtIndexPaths([indexPathToReveal], withRowAnimation: .Fade)
-			displayIndexPath = NSIndexPath(forRow: indexPathToReveal.row, inSection: 0)
+			displayIndexPath = NSIndexPath(forRow: indexPathToReveal.row, inSection: indexPath.section)
 			
 			tableView.deselectRowAtIndexPath(indexPath, animated: true)
+			shouldScroll = true
 		}
 		
 		tableView.endUpdates()
+		
+		if (shouldScroll) {
+			tableView.scrollToRowAtIndexPath(displayIndexPath, atScrollPosition: .Middle, animated: true)
+		}
+//		if (displayIndexPath.row != tableView.numberOfRowsInSection(displayIndexPath.section)) {
+//			tableView.scrollToRowAtIndexPath(displayIndexPath, atScrollPosition: .Middle, animated: true)
+//		} else {
+//			tableView.scrollToRowAtIndexPath(indexPath, atScrollPosition: .Middle, animated: true)
+//		}
 		
 		updateFoodDisplay()
 	}

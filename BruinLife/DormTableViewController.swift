@@ -9,67 +9,74 @@
 import UIKit
 
 class DormTableViewController: FoodTableViewController {
-	var selectedDate = NSDate()
+//	var information = DayInfo()
 	
-	let dateConversionFormat = "EEE. M/d" // "MMM. d" "M/d"
-	let dateVCid = "dateSelectionTableView"
+	var dormCVC: DormContainerViewController?
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		self.navigationItem.title = "Dining Halls"
-		
-		dataArray = [	RestaurantInfo(restName: "De Neve"),
-						RestaurantInfo(restName: "Covel"),
-						RestaurantInfo(restName: "Feast"),
-						RestaurantInfo(restName: "Hedrick"),
-						RestaurantInfo(restName: "Sproul")		]
-		
-		self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: dateButtonTitle(), style: .Plain, target: self, action: "addDatePopover:") // showDatePopover
+		setTitle()
 	}
 	
-	func dateButtonTitle() -> String {
+	override func preferredTitle() -> String {
 		var formatter = NSDateFormatter()
-		formatter.dateFormat = dateConversionFormat
-		return formatter.stringFromDate(selectedDate)
+		
+		let dateFormat = "EEEE, MMMM d"
+		let dayFormat = "d"
+		let suffixes = ["th", "st", "nd", "rd"]
+		
+		formatter.dateFormat = dayFormat
+		var day = formatter.stringFromDate(information.date)
+		var dayIndex = NSString(string: day).integerValue
+		if dayIndex > 3 {
+			dayIndex = 0
+		}
+		
+		formatter.dateFormat = dateFormat
+		var title = formatter.stringFromDate(information.date)
+		
+		return title + suffixes[dayIndex]
 	}
 	
-	func setNewDate(newDate: NSDate) {
-		selectedDate = newDate
-		self.navigationItem.leftBarButtonItem?.title = dateButtonTitle()
+	func setTitle() {
+		var leftButton: UIBarButtonItem? = nil
+		if (pageIndex != 0) {
+			leftButton = UIBarButtonItem(title: "Today", style: .Plain, target: dormCVC, action: "jumpToFirst")
+		}
+		
+		navigationItem.leftBarButtonItem = leftButton
+		navigationItem.rightBarButtonItem = nil
+		
+		navigationItem.title = preferredTitle()
 	}
 	
-	func addDatePopover(sender: UIBarButtonItem?){
-		var dateVC = storyboard?.instantiateViewControllerWithIdentifier(dateVCid) as DateSelectionTableViewController
-		
-		dateVC.dormVC = self
-		dateVC.setDate(selectedDate)
-		
-		dateVC.modalPresentationStyle = .Popover
-		dateVC.preferredContentSize = dateVC.preferredContentSize
-		
-		let popoverPresentationViewController = dateVC.popoverPresentationController
-		popoverPresentationViewController?.permittedArrowDirections = .Up
-		popoverPresentationViewController?.delegate = self
-		popoverPresentationViewController?.barButtonItem = sender
-		presentViewController(dateVC, animated: true, completion: nil)
+	func setInformation(info: DayInfo) {
+		information = info
+		setTitle()
 	}
 	
-	override func addMealPopover(sender: UIBarButtonItem?){
-		var mealVC = storyboard?.instantiateViewControllerWithIdentifier(mealVCid) as MealSelectionTableViewController
-		
-		mealVC.foodVC = self
-		mealVC.meal = currMeal
-		mealVC.setDate(selectedDate)
-		mealVC.isDorm = true
-		
-		mealVC.modalPresentationStyle = .Popover
-		mealVC.preferredContentSize = mealVC.preferredContentSize
-		
-		let popoverPresentationViewController = mealVC.popoverPresentationController
-		popoverPresentationViewController?.permittedArrowDirections = .Up
-		popoverPresentationViewController?.delegate = self
-		popoverPresentationViewController?.barButtonItem = sender
-		presentViewController(mealVC, animated: true, completion: nil)
-	}
+//	override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+//		return (section == 0) ? 64.0 + 22.0 : 22.0
+//	}
+//	
+//	override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//		var height = (section == 0) ? 64.0 + 22.0 : 22.0
+//		var width = self.tableView.frame.size.width
+//		var mainView = UIView(frame: CGRect(x: 0, y: 0, width: 0.0, height: height))
+//		mainView.frame.size.width = width
+//		mainView.backgroundColor = .clearColor()
+//		
+//		var backingView = UIView(frame: CGRect(x: 0.0, y: 64.0, width: width, height: 22.0))
+//		backingView.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
+//		
+//		mainView.addSubview(backingView)
+//		return mainView
+//	}
+	
+//	override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+//		var header = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: (section == 0) ? 64.0 : 0.0))
+//		header.backgroundColor = .clearColor()
+//		return header
+//	}
 }
