@@ -41,9 +41,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		view.addSubview(pageController.view)
 		
 		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
-		
-		
-//		updateTitle()
 	}
 	
 	// UIPageViewControllerDataSource
@@ -72,14 +69,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		return navVC.viewControllers[0] as DormTableViewController
 	}
 	
-//	func presentationCountForPageViewController(pageViewController: UIPageViewController) -> Int {
-//		return pageInfo.count
-//	}
-//	
-//	func presentationIndexForPageViewController(pageViewController: UIPageViewController) -> Int {
-//		return currIndex
-//	}
-	
 	// UIPageViewControllerDelegate
 	
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
@@ -87,8 +76,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 			// update the index
 			currIndex = (dormVCfromNavVC(pageViewController.viewControllers[0] as UINavigationController)).pageIndex
 		}
-		
-//		updateTitle()
 	}
 	
 	func vcForIndex(index: Int) -> UINavigationController { // DormTableViewController
@@ -100,10 +87,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		var navVC = UINavigationController(rootViewController: vc)
 		return navVC
 	}
-	
-//	func updateTitle() {
-//		self.navigationItem.title = dormVCfromNavVC(pageController.viewControllers[0] as UINavigationController).preferredTitle()
-//	}
 	
 	func secsInDay() -> Int {
 		return 24 * 60 * 60
@@ -140,15 +123,4 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func jumpToFirst() {
 		pageController.setViewControllers([vcForIndex(0)], direction: .Reverse, animated: true, completion: nil)
 	}
-	
-	/*
-	// MARK: - Navigation
-	
-	// In a storyboard-based application, you will often want to do a little preparation before navigation
-	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-	// Get the new view controller using segue.destinationViewController.
-	// Pass the selected object to the new view controller.
-	}
-	*/
-	
 }
