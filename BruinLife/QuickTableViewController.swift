@@ -15,14 +15,7 @@ class QuickTableViewController: FoodTableViewController {
 		
 		self.navigationItem.title = "Quick Service"
 		
-//		dataArray = [	RestaurantInfo(restName: "Bruin Cafe"),
-//						RestaurantInfo(restName: "1919"),
-//						RestaurantInfo(restName: "Rendezvous"),
-//						RestaurantInfo(restName: "Late Night")		]
-		
 		information = exampleDay()
-		
-		//		NSNotificationCenter.defaultCenter().addObserver(self, selector: "localeChanged:", name: NSCurrentLocaleDidChangeNotification, object: nil)
 	}
 	
 	// TODO: REPLACE SOON
@@ -46,18 +39,4 @@ class QuickTableViewController: FoodTableViewController {
 		
 		return DayInfo(date: date, restForMeal: [exampleBreakfast, exampleLunch, exampleDinner])
 	}
-	
-	//	override func dealloc() {
-	//		NSNotificationCenter.defaultCenter().removeObserver(self, name: NSCurrentLocaleDidChangeNotification, object: nil)
-	//	}
-	
-//	func localeChanged(notif: NSNotification) {
-//		tableView.reloadData()
-//	}
-	
-//	override func didReceiveMemoryWarning() {
-//		super.didReceiveMemoryWarning()
-//		// Dispose of any resources that can be recreated.
-//	}
-	
 }

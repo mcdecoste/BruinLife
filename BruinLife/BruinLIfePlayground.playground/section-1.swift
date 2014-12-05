@@ -17,6 +17,10 @@ enum MealType : String {
 
 //var formatter = NSDateFormatter()
 formatter.dateFormat = "EEE"
+
+formatter.dateFormat = "h:m a"
+var string = formatter.stringFromDate(NSDate())
+
 //
 var dow = formatter.stringFromDate(NSDate(timeIntervalSinceNow: 5 * 24 * 60 * 60))
 var isWeekend = dow == "Sat" || dow == "Sun"
@@ -85,3 +89,11 @@ func imageWithView(view: UIView) -> UIImage {
 	return image
 }
 
+
+/*
+NSDate *d = [calendar dateBySettingHour:10 minute:0 second:0 ofDate:[NSDate date] options:0];
+ */
+
+//var calendar = NSCalendar.currentCalendar()
+//var calendar = NSCalendar.currentCalendar()
+//var calendar = NSCalendar(calendarIdentifier: NSGregorianCalendar) as NSCalendar?
