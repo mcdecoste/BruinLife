@@ -11,18 +11,12 @@ import UIKit
 class RestaurantTableViewCell: UITableViewCell {
 	var information: RestaurantInfo?
 	var date: NSDate?
-	
-//	var name: NSString = ""
-//	var backgroundImage: UIImage?
+
 	var backgroundImageView: UIImageView?
 	
-	
-//	var openDate: NSDate?
-//	var closeDate: NSDate?
-	
-	var nameLabel: UILabel? // just name of restaurant
-	var openLabel: UILabel? // big text: OPEN or CLOSED
-	var hoursLabel: UILabel? // "until [close time]" "[open] - [close]"
+	var nameLabel = UILabel() // just name of restaurant
+	var openLabel = UILabel() // big text: OPEN or CLOSED
+	var hoursLabel = UILabel() // "until [close time]" "[open] - [close]"
 	
 	let saturationFactor = 0.75
 	
@@ -40,66 +34,104 @@ class RestaurantTableViewCell: UITableViewCell {
 		self.backgroundColor = .blackColor()
 		
 		// add the labels!
-		nameLabel = UILabel(frame: CGRect(x: 0.0, y: frame.height - 48, width: 220, height: 40))
-		nameLabel?.text = information?.name
-		nameLabel?.textAlignment = .Left
-		nameLabel?.textColor = UIColor(white: 1.0, alpha: 0.7)
+		nameLabel.font = UIFont.systemFontOfSize(30) // 22
+		nameLabel.textAlignment = .Left
+		nameLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
 		
-		let openWidth: CGFloat = 80
-		openLabel = UILabel(frame: CGRect(x: (frame.width - openWidth), y: (frame.height * 2.0 / 11.0), width: openWidth, height: (frame.height * 3.0 / 11.0)))
-		openLabel?.font = UIFont.systemFontOfSize(30)
-		openLabel?.textAlignment = .Center
+		openLabel.font = UIFont.systemFontOfSize(20) // 14 ()
+		openLabel.textAlignment = .Right
 		
-		hoursLabel = UILabel(frame: CGRect(x: (frame.width - openWidth), y: (frame.height * 6.0 / 11.0), width: openWidth, height: (frame.height * 3.0 / 11.0)))
-		hoursLabel?.font = UIFont.systemFontOfSize(24)
-		hoursLabel?.textAlignment = .Center
-		hoursLabel?.textColor = UIColor(white: 1.0, alpha: 0.7)
+		hoursLabel.font = UIFont.systemFontOfSize(12) // 9 (11)
+		hoursLabel.textAlignment = .Right
+		hoursLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
 		
-		addSubview(nameLabel!)
-		addSubview(openLabel!)
-		addSubview(hoursLabel!)
+		addSubview(nameLabel)
+		addSubview(openLabel)
+		addSubview(hoursLabel)
     }
 	
-	func isOpen() -> (Bool, Bool, NSDate?, NSDate?) {
-		var cal = NSCalendar.currentCalendar()
-		var openDate = cal.dateBySettingHour((information?.openTime?.hour)!, minute: (information?.openTime?.minute)!, second: 0, ofDate: date!, options: nil)
-		var closeDate = cal.dateBySettingHour((information?.closeTime?.hour)!, minute: (information?.closeTime?.minute)!, second: 0, ofDate: date!, options: nil)
-		var openNow = openDate?.timeIntervalSinceNow >= 0 && closeDate?.timeIntervalSinceNow <= 0
-		var opensLater = openDate?.timeIntervalSinceNow <= 0
-		return (openNow, opensLater, openDate, closeDate)
+	/// Preferred method for setting information and date, as this also changes the display
+	func changeInfo(info: RestaurantInfo, andDate newDate: NSDate) {
+		information = info
+		date = newDate
+		
+		updateDisplay()
 	}
 	
 	func updateDisplay() {
-		var openDate: NSDate?
-		var closeDate: NSDate?
-		var open: Bool = false
-		var willOpen: Bool = false
-		(open, willOpen, openDate, closeDate) = isOpen()
+		// fix the frames
+		updateLabelFrames()
+		
+		
+		var cal = NSCalendar.currentCalendar()
+		var openDate = cal.dateBySettingHour((information?.openTime.hour)!, minute: (information?.openTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		var closeDate = cal.dateBySettingHour((information?.closeTime.hour)!, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		var open = openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0
+		var willOpenToday = true
 		
 		var formatter = NSDateFormatter()
-		formatter.dateFormat = "H:m a"
+		formatter.timeZone = NSTimeZone(name: "Americas/Los_Angeles")
+		formatter.dateFormat = "M/d"
 		
-		openLabel?.textColor = open ? .greenColor() : .redColor()
-		openLabel?.text = open ? "Open" : "Closed"
+		willOpenToday = formatter.stringFromDate(NSDate()) == formatter.stringFromDate(date!)
 		
-		var openText = "until " + formatter.stringFromDate(closeDate!)
-		var closedText = willOpen ? "until " + formatter.stringFromDate(openDate!) : "at " + formatter.stringFromDate(closeDate!)
-		hoursLabel?.text = open ? openText : closedText
+		formatter.dateFormat = "h:mm a"
+		
+		
+		var openTime = formatter.stringFromDate(openDate!)
+		var closeTime = formatter.stringFromDate(closeDate!)
+		
+		var openText = "until \(closeTime)"
+		var closedText = "until \(openTime)"
+		
+		if !open {
+			if willOpenToday {
+				closedText = "as of \(closeTime)"
+			} else {
+				closedText = "\(openTime) — \(closeTime)"
+			}
+		}
+		
+		nameLabel.text = information?.name
+		
+		openLabel.textColor = open ? .greenColor() : .redColor()
+		openLabel.text = open ? "Open" : "Closed"
+		
+		hoursLabel.text = open ? openText : closedText
 	}
 	
-	func lowerSaturation(onImage image: UIImage?) -> UIImage? {
-		var context = CIContext(options: nil)
-		var ciImage = CIImage(CGImage: image?.CGImage)
-		var filter = CIFilter(name: "CIColorControls")
+	func updateLabelFrames() {
+		let leftIndent: CGFloat = 14.0 // was 16, then 13
+		let rightIndent: CGFloat = 16.0
+		let openWidth: CGFloat = 120.0
+		let nameWidth: CGFloat = frame.width - openWidth - leftIndent - rightIndent
+		let openX = frame.width - openWidth - rightIndent
+		let nameY = frame.height * 12.5/22.0
+		let openY = frame.height * 5.0/11.0
+		let hoursY = frame.height * 8.0 / 11.0
 		
-		filter.setValue(ciImage, forKey: kCIInputImageKey)
-		filter.setValue(saturationFactor, forKey: kCIInputImageKey)
+		let nameHeight = frame.height * (4.0 / 11.0)
+		let openHeight = frame.height * (3.0 / 11.0)
+		let hoursHeight = frame.height * (2.0 / 11.0)
 		
-		var result = filter.valueForKey(kCIOutputImageKey) as CIImage
-		var cgImage = context.createCGImage(result, fromRect: result.extent())
-		var image = UIImage(CGImage: cgImage)
-		return image!
+		nameLabel.frame = CGRect(x: leftIndent, y: nameY, width: nameWidth, height: nameHeight)
+		openLabel.frame = CGRect(x: openX, y: openY, width: openWidth, height: openHeight)
+		hoursLabel.frame = CGRect(x: openX, y: hoursY, width: openWidth, height: hoursHeight)
 	}
+	
+//	func lowerSaturation(onImage image: UIImage?) -> UIImage? {
+//		var context = CIContext(options: nil)
+//		var ciImage = CIImage(CGImage: image?.CGImage)
+//		var filter = CIFilter(name: "CIColorControls")
+//		
+//		filter.setValue(ciImage, forKey: kCIInputImageKey)
+//		filter.setValue(saturationFactor, forKey: kCIInputImageKey)
+//		
+//		var result = filter.valueForKey(kCIOutputImageKey) as CIImage
+//		var cgImage = context.createCGImage(result, fromRect: result.extent())
+//		var image = UIImage(CGImage: cgImage)
+//		return image!
+//	}
 	
 	override func setSelected(selected: Bool, animated: Bool) {
 		super.setSelected(selected, animated: animated)

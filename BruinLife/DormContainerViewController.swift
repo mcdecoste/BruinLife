@@ -8,17 +8,6 @@
 
 import UIKit
 
-struct DayInfo {
-	var date = NSDate()
-	var restForMeal: Array<MealInfo> = []
-}
-
-struct MealInfo {
-	var meal: MealType = .Lunch
-	var rests: Array<RestaurantInfo> = []
-}
-
-
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 0.0]) // good default is 32.0
 	var pageInfo: Array<DayInfo> = []

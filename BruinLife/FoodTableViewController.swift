@@ -12,20 +12,47 @@ struct Time {
 	var hour: Int
 	var minute: Int
 	var PM: Bool = true
+	
+	init(hr: Int, min: Int, isPM: Bool) {
+		hour = hr
+		minute = min
+		if isPM { hour += 12 }
+	}
+}
+
+struct DayInfo {
+	var date = NSDate()
+	var restForMeal: Array<MealInfo> = []
+}
+
+struct MealInfo {
+	var meal: MealType = .Lunch
+	var rests: Array<RestaurantInfo> = []
 }
 
 struct RestaurantInfo {
-	var name:String = "Hello"
-	var image: UIImage?
-	var openTime: Time?
-	var closeTime: Time?
+	var name:String = ""
+	var image: UIImage? = nil
+	var openTime: Time = Time(hr: 8, min: 0, isPM: false)
+	var closeTime: Time = Time(hr: 5, min: 0, isPM: true)
+	
+	var foods: Array<FoodInfo> = []
 	
 	init(restName: String) {
 		name = restName
-		image = nil
-		openTime = nil
-		closeTime = nil
+		foods = [FoodInfo(name: "Default", image: nil)]
 	}
+	init(restName: String, foodList: Array<FoodInfo>) {
+		name = restName
+		foods = foodList
+	}
+}
+
+struct FoodInfo {
+	var name: String = ""
+	var image: UIImage?
+	
+	// TODO: add nutritional information
 }
 
 enum MealType : String {
@@ -82,30 +109,31 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		var cellID = kRestCellID
-		var cellHeight = kRestCellHeight
-		var selStyle = UITableViewCellSelectionStyle.Default
-		if indexPathHasFoodDisplay(indexPath) {
-			cellID = kFoodDisplayID
-			cellHeight = kFoodDisplayHeight
-			selStyle = .None
-		}
-		
-		var cell: UITableViewCell = tableView.dequeueReusableCellWithIdentifier(cellID)! as UITableViewCell
-		cell.selectionStyle = selStyle
-		
 		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
 		var itemData = information.restForMeal[indexPath.section].rests[modelRow]
 		
-		if cellID == kRestCellID {
-			cell.textLabel?.text = itemData.name
-		} else {
-			// populate the display
-			cell.textLabel?.text = "I AM FOODS"
+		var cellID = kRestCellID
+		if indexPathHasFoodDisplay(indexPath) {
+			cellID = kFoodDisplayID
 		}
 		
-		return cell
+		if cellID == kRestCellID {
+			var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as RestaurantTableViewCell
+			cell.selectionStyle = .Default
+			cell.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
+			cell.changeInfo(itemData, andDate: information.date)
+			
+			return cell
+		} else {
+			var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as UITableViewCell
+			cell.selectionStyle = .None
+			
+			// populate the display
+			cell.textLabel?.text = "I AM FOODS"
+			
+			return cell
+		}
 	}
 	
 	// MARK: Delegate
