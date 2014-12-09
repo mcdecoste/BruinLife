@@ -8,17 +8,12 @@
 
 import UIKit
 
-class RestaurantTableViewCell: UITableViewCell {
-	var information: RestaurantInfo?
-	var date: NSDate?
-
+class RestaurantTableViewCell: FoodTableViewCell {
 	var backgroundImageView: UIImageView?
 	
 	var nameLabel = UILabel() // just name of restaurant
 	var openLabel = UILabel() // big text: OPEN or CLOSED
 	var hoursLabel = UILabel() // "until [close time]" "[open] - [close]"
-	
-	let saturationFactor = 0.75
 	
 	override func awakeFromNib() {
         super.awakeFromNib()
@@ -50,15 +45,7 @@ class RestaurantTableViewCell: UITableViewCell {
 		addSubview(hoursLabel)
     }
 	
-	/// Preferred method for setting information and date, as this also changes the display
-	func changeInfo(info: RestaurantInfo, andDate newDate: NSDate) {
-		information = info
-		date = newDate
-		
-		updateDisplay()
-	}
-	
-	func updateDisplay() {
+	override func updateDisplay() {
 		// fix the frames
 		updateLabelFrames()
 		
@@ -84,11 +71,13 @@ class RestaurantTableViewCell: UITableViewCell {
 		var openText = "until \(closeTime)"
 		var closedText = "until \(openTime)"
 		
-		if !open {
+		if openDate?.timeIntervalSinceNow >= 0 { // still to open
+			closedText = "\(openTime) — \(closeTime)" // gives more information this way
+		} else { // was open, now is closed
 			if willOpenToday {
 				closedText = "as of \(closeTime)"
 			} else {
-				closedText = "\(openTime) — \(closeTime)"
+				closedText = "\(openTime) — \(closeTime)" // should never happen
 			}
 		}
 		
@@ -120,6 +109,8 @@ class RestaurantTableViewCell: UITableViewCell {
 	}
 	
 //	func lowerSaturation(onImage image: UIImage?) -> UIImage? {
+//		let saturationFactor = 0.75
+//	
 //		var context = CIContext(options: nil)
 //		var ciImage = CIImage(CGImage: image?.CGImage)
 //		var filter = CIFilter(name: "CIColorControls")

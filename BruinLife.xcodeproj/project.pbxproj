@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */; };
 		6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */; };
 		666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */; };
 		666B70051A26CBCD00E8EAAC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666B70031A26CBCD00E8EAAC /* Main.storyboard */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewCell.swift; sourceTree = "<group>"; };
 		6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DormContainerViewController.swift; sourceTree = "<group>"; };
 		666B6FF81A26CBCD00E8EAAC /* BruinLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BruinLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666B6FFC1A26CBCD00E8EAAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -84,6 +86,16 @@
 			name = PageController;
 			sourceTree = "<group>";
 		};
+		6619E7CB1A35300800052B6D /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				666B70261A26CD4B00E8EAAC /* Other */,
+				6613F3DF1A2FD18A0070E47F /* PageController */,
+				666B70201A26CC4700E8EAAC /* Food View Controllers */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
 		665CCB3E1A2C4AB300E8BF92 /* Calendar */ = {
 			isa = PBXGroup;
 			children = (
@@ -113,13 +125,10 @@
 		666B6FFA1A26CBCD00E8EAAC /* BruinLife */ = {
 			isa = PBXGroup;
 			children = (
-				666B70261A26CD4B00E8EAAC /* Other */,
-				666B70251A26CD0B00E8EAAC /* Required */,
-				6613F3DF1A2FD18A0070E47F /* PageController */,
-				665CCB3E1A2C4AB300E8BF92 /* Calendar */,
-				666B70201A26CC4700E8EAAC /* Food View Controllers */,
+				6619E7CB1A35300800052B6D /* Controllers */,
 				66E553E01A31584900BF314E /* Cells */,
-				666B70351A26D4BE00E8EAAC /* Displays */,
+				666B70351A26D4BE00E8EAAC /* Aux Views */,
+				666B70251A26CD0B00E8EAAC /* Required */,
 				666B6FFB1A26CBCD00E8EAAC /* Supporting Files */,
 			);
 			path = BruinLife;
@@ -180,18 +189,20 @@
 			name = Other;
 			sourceTree = "<group>";
 		};
-		666B70351A26D4BE00E8EAAC /* Displays */ = {
+		666B70351A26D4BE00E8EAAC /* Aux Views */ = {
 			isa = PBXGroup;
 			children = (
+				665CCB3E1A2C4AB300E8BF92 /* Calendar */,
 				666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */,
 				666B70331A26D4B600E8EAAC /* FoodDisplay.swift */,
 			);
-			name = Displays;
+			name = "Aux Views";
 			sourceTree = "<group>";
 		};
 		66E553E01A31584900BF314E /* Cells */ = {
 			isa = PBXGroup;
 			children = (
+				660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */,
 				66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */,
 				66E553DC1A31582800BF314E /* MenuTableViewCell.swift */,
 			);
@@ -301,6 +312,7 @@
 				666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */,
 				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
 				66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */,
+				660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */,
 				666B70341A26D4B600E8EAAC /* FoodDisplay.swift in Sources */,
 				666B70221A26CCD100E8EAAC /* DormTableViewController.swift in Sources */,
 				66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */,

@@ -40,7 +40,7 @@ struct RestaurantInfo {
 	
 	init(restName: String) {
 		name = restName
-		foods = [FoodInfo(name: "Default", image: nil)]
+		foods = [FoodInfo(name: "Default0", image: nil), FoodInfo(name: "Default1", image: nil), FoodInfo(name: "Default2", image: nil), FoodInfo(name: "Default3", image: nil), FoodInfo(name: "Default4", image: nil)]
 	}
 	init(restName: String, foodList: Array<FoodInfo>) {
 		name = restName
@@ -72,6 +72,8 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 	let mealVCid = "mealSelectionTableView"
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
+	var displayCell: MenuTableViewCell?
+	
 	var information = DayInfo()
 	var pageIndex = 0
 	
@@ -112,28 +114,27 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
 		var itemData = information.restForMeal[indexPath.section].rests[modelRow]
+		var selectionStyle: UITableViewCellSelectionStyle = .None
 		
 		var cellID = kRestCellID
 		if indexPathHasFoodDisplay(indexPath) {
 			cellID = kFoodDisplayID
+			selectionStyle = .Default
 		}
 		
-		if cellID == kRestCellID {
-			var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as RestaurantTableViewCell
-			cell.selectionStyle = .Default
-			cell.frame = CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
-			cell.changeInfo(itemData, andDate: information.date)
-			
-			return cell
-		} else {
-			var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as UITableViewCell
-			cell.selectionStyle = .None
-			
-			// populate the display
-			cell.textLabel?.text = "I AM FOODS"
-			
-			return cell
+		let cellFrame = CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
+		
+		var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as FoodTableViewCell
+		cell.selectionStyle = selectionStyle
+		cell.frame = cellFrame
+		cell.foodVC = self
+		cell.changeInfo(itemData, andDate: information.date)
+		
+		if cellID == kFoodDisplayID {
+			displayCell = cell as? MenuTableViewCell
 		}
+		
+		return cell
 	}
 	
 	// MARK: Delegate
@@ -159,18 +160,27 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 	}
 	
 	func updateFoodDisplay() {
-//		if hasInlineFoodDisplay() {
-//			var associatedDisplayCell = tableView.cellForRowAtIndexPath(displayIndexPath)
-//			var targetedDisplay = associatedDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
-//			
-//			if targetedDisplay != nil { // found UIDatePicker
-//				var index = displayIndexPath.row - 1
-//				var itemData = dataArray[index]
-//				
-//				// TDOO: put this back in
-//				// targetedDisplay?.setData(nil);
-//			}
-//		}
+		if hasInlineFoodDisplay() {
+			
+//			let cellFrame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView(tableView, heightForRowAtIndexPath: displayIndexPath))
+			
+//			displayCell?.selectionStyle = .None
+//			displayCell?.frame = cellFrame
+//			displayCell?.foodVC = self
+			
+			var scroller = displayCell?.scrollView
+			
+			if scroller != nil { // found the MenuTableViewCell
+				var index = displayIndexPath.row - 1
+				var itemData = information.restForMeal[displayIndexPath.section].rests[index]
+				
+				displayCell?.updateInformation(itemData, controller: self)
+			}
+		}
+	}
+	
+	func showFoodPopover(food: FoodInfo) {
+		println(food.name)
 	}
 	
 	func hasInlineFoodDisplay() -> Bool {
