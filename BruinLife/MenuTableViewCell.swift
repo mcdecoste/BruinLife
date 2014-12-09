@@ -11,6 +11,9 @@ import UIKit
 class MenuTableViewCell: FoodTableViewCell {
 	var scrollView: FoodsScrollView?
 	
+	var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Light))
+	var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: UIBlurEffect(style: .Light)))
+	
 	override func updateDisplay() {
 		scrollView?.setFoods((information?.foods)!, vc: foodVC!, newFrame: frame)
 	}
@@ -20,6 +23,18 @@ class MenuTableViewCell: FoodTableViewCell {
 		foodVC = controller
 		scrollView?.foodVC = foodVC
 		scrollView?.setFoods((information?.foods)!)
+		
+		backgroundImageView?.removeFromSuperview()
+		
+		backgroundImageView = UIImageView(image: info.image)
+		backgroundImageView?.frame = bounds
+		backgroundImageView?.clipsToBounds = true
+		backgroundImageView?.contentMode = .ScaleAspectFill
+		
+		insertSubview(backgroundImageView!, belowSubview: blurView)
+		
+		blurView.frame = bounds
+		vibrancyView.frame = (scrollView?.bounds)!
 	}
 	
     override func awakeFromNib() {
@@ -27,7 +42,10 @@ class MenuTableViewCell: FoodTableViewCell {
         // Initialization code
 		
 		scrollView = FoodsScrollView(frame: CGRectZero)
-		addSubview(scrollView!)
+		addSubview(blurView)
+		blurView.contentView.addSubview(vibrancyView)
+		vibrancyView.contentView.addSubview(scrollView!)
+//		blurView.contentView.addSubview(scrollView!)
     }
 	
     override func setSelected(selected: Bool, animated: Bool) {

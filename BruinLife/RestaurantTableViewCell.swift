@@ -9,7 +9,7 @@
 import UIKit
 
 class RestaurantTableViewCell: FoodTableViewCell {
-	var backgroundImageView: UIImageView?
+	
 	
 	var nameLabel = UILabel() // just name of restaurant
 	var openLabel = UILabel() // big text: OPEN or CLOSED
@@ -26,12 +26,13 @@ class RestaurantTableViewCell: FoodTableViewCell {
 //		backImageView.center = center
 //		self.backgroundView = backImageView
 		
-		self.backgroundColor = .blackColor()
+//		self.backgroundColor = .blackColor()
 		
 		// add the labels!
 		nameLabel.font = UIFont.systemFontOfSize(30) // 22
 		nameLabel.textAlignment = .Left
 		nameLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
+//		nameLabel.textColor = UIColor(white: 0.0, alpha: 0.8)
 		
 		openLabel.font = UIFont.systemFontOfSize(20) // 14 ()
 		openLabel.textAlignment = .Right
@@ -39,6 +40,7 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		hoursLabel.font = UIFont.systemFontOfSize(12) // 9 (11)
 		hoursLabel.textAlignment = .Right
 		hoursLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
+//		hoursLabel.textColor = UIColor(white: 0.0, alpha: 0.8)
 		
 		addSubview(nameLabel)
 		addSubview(openLabel)

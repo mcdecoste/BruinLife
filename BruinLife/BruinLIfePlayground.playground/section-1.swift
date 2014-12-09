@@ -75,10 +75,10 @@ class CalendarView: UIView {
 	}
 }
 
-var cal = CalendarView(frame: CGRect(x: 0, y: 0, width: 48, height: 66))
+var cal = CalendarView(frame: CGRect(x: 0, y: 0, width: 80, height: 66)) // was 48
 cal.monthTitle.text = "Sept."
 cal.dayTitle.text = "30"
-cal
+cal.backgroundColor = .whiteColor()
 
 
 func imageWithView(view: UIView) -> UIImage {
@@ -97,3 +97,29 @@ NSDate *d = [calendar dateBySettingHour:10 minute:0 second:0 ofDate:[NSDate date
 //var calendar = NSCalendar.currentCalendar()
 //var calendar = NSCalendar.currentCalendar()
 //var calendar = NSCalendar(calendarIdentifier: NSGregorianCalendar) as NSCalendar?
+
+
+var imageView = UIImageView(image: imageWithView(cal))
+var effect = UIBlurEffect(style: .Light) // Light, Dark, ExtraLight
+var blurView = UIVisualEffectView(effect: effect)
+var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: effect))
+
+
+//blurView.frame = CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 100))
+
+blurView.contentView.addSubview(vibrancyView)
+//vibrancyView.contentView.addSubview(imageView)
+
+var blurringView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 200))
+
+blurView.frame = blurringView.bounds
+vibrancyView.frame = blurView.bounds
+
+blurringView.addSubview(imageView)
+blurringView.insertSubview(blurView, aboveSubview: imageView)
+
+//blurView.contentView.addSubview(imageView)
+
+
+
+blurView

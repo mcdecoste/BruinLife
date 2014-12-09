@@ -32,7 +32,7 @@ struct MealInfo {
 
 struct RestaurantInfo {
 	var name:String = ""
-	var image: UIImage? = nil
+	var image: UIImage? = UIImage(named: "Feast")
 	var openTime: Time = Time(hr: 8, min: 0, isPM: false)
 	var closeTime: Time = Time(hr: 5, min: 0, isPM: true)
 	
