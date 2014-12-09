@@ -18,13 +18,19 @@ class FoodDisplay: UIButton { // was UIView
 		
 		// establish frame
 		super.init(frame: frame)
-		backgroundColor = .lightGrayColor()
+		backgroundColor = UIColor(white: 0.75, alpha: 0.75)
 		
 		// arrange view
-		var nameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height * 1.0 / 4.0))
+		let numLines = 2
+		var nameLabel = UILabel(frame: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
 		nameLabel.font = .systemFontOfSize(16)
 		nameLabel.textAlignment = .Center
 		nameLabel.text = food.name
+		nameLabel.numberOfLines = 0 // no, not 2
+		nameLabel.lineBreakMode = .ByWordWrapping
+		nameLabel.frame = nameLabel.textRectForBounds(nameLabel.bounds, limitedToNumberOfLines: numLines)
+		
+//		nameLabel.center = center
 		
 		addSubview(nameLabel)
 	}

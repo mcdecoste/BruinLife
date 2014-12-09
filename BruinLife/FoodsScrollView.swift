@@ -40,7 +40,7 @@ class FoodsScrollView: UIScrollView {
 		var index = 0
 		var maxX: CGFloat = 0.0
 		for food in foods {
-			let theFrame = frameForIndex(index, twoRows: true)
+			let theFrame = frameForIndex(index, numRows: 3)
 			var display = FoodDisplay(info: food, ind: index, frame: theFrame)
 			display.tag = index
 			display.addTarget(self, action: "hitFood:", forControlEvents: .TouchUpInside)
@@ -63,18 +63,20 @@ class FoodsScrollView: UIScrollView {
 		foodVC?.showFoodPopover(foodInfo)
 	}
 	
-	func frameForIndex(index: Int, twoRows: Bool) -> CGRect {
+	func frameForIndex(index: Int, numRows: Int) -> CGRect {
 		let xZeroIndent: CGFloat = xIndent // 16.0
 		let yIndent: CGFloat = 8.0 // or 10.0
 		let indexLatSpacing: CGFloat = xZeroIndent
 		let indexVertSpacing: CGFloat = yIndent
-		let displayHeight: CGFloat = (twoRows ? 0.5 : 1.0) * (frame.height - 2.0 * yIndent - (twoRows ? indexVertSpacing : 0.0))
-		let xVal = (xZeroIndent + CGFloat(index / (twoRows ? 2 : 1)) * (indexLatSpacing + displayWidth))
-		let yVal = (twoRows ? (CGFloat(index % 2) * indexVertSpacing) : 0.0) + yIndent + (twoRows ? CGFloat(index % 2) : 0.0) * displayHeight
+		let displayHeight: CGFloat = (1.0 / CGFloat(numRows)) * (frame.height - (2.0 * yIndent) - (CGFloat(numRows - 1) * indexVertSpacing))
+		let xVal = (xZeroIndent + CGFloat(index / numRows) * (indexLatSpacing + displayWidth))
+		
+		let yMult = ((numRows == 0) ? 0.0 : CGFloat(index % numRows))
+		let yVal = (yMult * (indexVertSpacing + displayHeight)) + yIndent
 		
 		return CGRect(x: xVal, y: yVal, width: displayWidth, height: displayHeight)
 	}
-
+	
 	required init(coder aDecoder: NSCoder) {
 	    super.init()
 	}

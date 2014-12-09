@@ -40,7 +40,7 @@ struct RestaurantInfo {
 	
 	init(restName: String) {
 		name = restName
-		foods = [FoodInfo(name: "Default0", image: nil), FoodInfo(name: "Default1", image: nil), FoodInfo(name: "Default2", image: nil), FoodInfo(name: "Default3", image: nil), FoodInfo(name: "Default4", image: nil)]
+		foods = [FoodInfo(name: "Thai Tea", image: nil), FoodInfo(name: "Sushi Bowl", image: nil), FoodInfo(name: "Angel Pasta", image: nil), FoodInfo(name: "Turkey Burger", image: nil), FoodInfo(name: "Carne Asada Fries", image: nil), FoodInfo(name: "Barbeque Chicken Quesadilla", image: nil), FoodInfo(name: "Yogurt", image: nil), FoodInfo(name: "Pepperoni Pizza", image: nil), FoodInfo(name: "Chocolate Shake with Oreo", image: nil)]
 	}
 	init(restName: String, foodList: Array<FoodInfo>) {
 		name = restName
@@ -161,16 +161,8 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 	
 	func updateFoodDisplay() {
 		if hasInlineFoodDisplay() {
-			
-//			let cellFrame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: tableView(tableView, heightForRowAtIndexPath: displayIndexPath))
-			
-//			displayCell?.selectionStyle = .None
-//			displayCell?.frame = cellFrame
-//			displayCell?.foodVC = self
-			
-			var scroller = displayCell?.scrollView
-			
-			if scroller != nil { // found the MenuTableViewCell
+			// why not just ask about displayCell?
+			if displayCell?.scrollView != nil { // found the MenuTableViewCell
 				var index = displayIndexPath.row - 1
 				var itemData = information.restForMeal[displayIndexPath.section].rests[index]
 				
@@ -180,6 +172,7 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 	}
 	
 	func showFoodPopover(food: FoodInfo) {
+		// TODO: put popover logic back in. Create popover with food's information.
 		println(food.name)
 	}
 	
