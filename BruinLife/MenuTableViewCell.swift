@@ -26,7 +26,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: information?.tallImage)
+		backgroundImageView = UIImageView(image: information?.darkImage)
 		backgroundImageView?.frame = bounds
 		backgroundImageView?.clipsToBounds = true
 		backgroundImageView?.contentMode = .ScaleAspectFill

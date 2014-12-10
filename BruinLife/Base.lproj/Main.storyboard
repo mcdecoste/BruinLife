@@ -35,7 +35,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ofy-dN-lL6" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2182" y="348"/>
+            <point key="canvasLocation" x="1570" y="348"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="cdd-c7-0Sp">
@@ -143,7 +143,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iQF-Ff-CgB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1462" y="-332"/>
+            <point key="canvasLocation" x="750" y="-332"/>
         </scene>
         <!--Dorm Table View Controller-->
         <scene sceneID="Z8o-pp-AXa">
@@ -179,7 +179,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CZJ-Zd-9Pj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2182" y="-332"/>
+            <point key="canvasLocation" x="1570" y="-332"/>
         </scene>
         <!--Date Selection Table View Controller-->
         <scene sceneID="7fM-gd-rSN">
@@ -206,7 +206,25 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sy4-wr-iTn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2925" y="-332"/>
+            <point key="canvasLocation" x="2341" y="-332"/>
+        </scene>
+        <!--Food View Controller-->
+        <scene sceneID="gtz-z2-FY8">
+            <objects>
+                <viewController storyboardIdentifier="foodDescriptionViewController" id="q9N-D8-3Ej" customClass="FoodViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="7aG-sc-7uy"/>
+                        <viewControllerLayoutGuide type="bottom" id="CEc-SP-nYY"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="owS-hs-j8i">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="gmY-Kp-77h" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3064" y="-332"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="YwV-4I-fj2">
@@ -233,25 +251,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="H8b-oB-ffW" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2925" y="348"/>
-        </scene>
-        <!--Food View Controller-->
-        <scene sceneID="8bk-Ca-irB">
-            <objects>
-                <viewController storyboardIdentifier="foodDescriptionViewController" id="c0i-Nh-jZg" customClass="FoodViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="0sJ-lH-Jh1"/>
-                        <viewControllerLayoutGuide type="bottom" id="TRI-c1-XLQ"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="2h6-UW-al5">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="VKu-TG-l96" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2925" y="1038"/>
+            <point key="canvasLocation" x="2341" y="348"/>
         </scene>
         <!--Quick-->
         <scene sceneID="y5x-eO-8jq">

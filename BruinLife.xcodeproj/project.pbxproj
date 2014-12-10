@@ -24,6 +24,7 @@
 		6673DAE31A37DF150070FC18 /* NutritionTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673DAE21A37DF150070FC18 /* NutritionTableView.swift */; };
 		66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */; };
 		669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669F43E71A280A140059F84E /* FoodTableViewController.swift */; };
+		66B333FB1A38ABEE00AE01DD /* NutritionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */; };
 		66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */; };
 		66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E553DC1A31582800BF314E /* MenuTableViewCell.swift */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		6673DAE21A37DF150070FC18 /* NutritionTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionTableView.swift; sourceTree = "<group>"; };
 		66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantTableViewCell.swift; sourceTree = "<group>"; };
 		669F43E71A280A140059F84E /* FoodTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewController.swift; sourceTree = "<group>"; usesTabs = 1; };
+		66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionTableViewCell.swift; sourceTree = "<group>"; };
 		66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		66E553DC1A31582800BF314E /* MenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -211,6 +213,7 @@
 				660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */,
 				66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */,
 				66E553DC1A31582800BF314E /* MenuTableViewCell.swift */,
+				66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
 				66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */,
 				660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */,
+				66B333FB1A38ABEE00AE01DD /* NutritionTableViewCell.swift in Sources */,
 				666B70341A26D4B600E8EAAC /* FoodDisplay.swift in Sources */,
 				666B70221A26CCD100E8EAAC /* DormTableViewController.swift in Sources */,
 				66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */,
@@ -458,7 +462,7 @@
 				INFOPLIST_FILE = BruinLife/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "BruinLife/BruinLife-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -472,7 +476,7 @@
 				INFOPLIST_FILE = BruinLife/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "BruinLife/BruinLife-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};

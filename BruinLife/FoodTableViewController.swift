@@ -32,13 +32,11 @@ struct MealInfo {
 
 struct RestaurantInfo {
 	var name:String = ""
-//	var image: UIImage? = UIImage(named: "Feast")
-	var shortImage: UIImage?
-	var tallImage: UIImage?
+	var darkImage: UIImage?
 	var openTime: Time = Time(hr: 8, min: 0, isPM: false)
 	var closeTime: Time = Time(hr: 5, min: 0, isPM: true)
 	
-	var foods: Array<FoodInfo> = [FoodInfo(name: "Thai Tea", image: nil), FoodInfo(name: "Sushi Bowl", image: nil), FoodInfo(name: "Angel Hair Pasta", image: nil), FoodInfo(name: "Turkey Burger", image: nil), FoodInfo(name: "Carne Asada Fries", image: nil), FoodInfo(name: "Barbeque Chicken Quesadilla", image: nil), FoodInfo(name: "Yogurt", image: nil), FoodInfo(name: "Pepperoni Pizza", image: nil), FoodInfo(name: "Chocolate Shake with Oreo", image: nil)]
+	var foods: Array<FoodInfo> = [FoodInfo(name: "Thai Tea"), FoodInfo(name: "Sushi Bowl"), FoodInfo(name: "Angel Hair Pasta"), FoodInfo(name: "Turkey Burger"), FoodInfo(name: "Carne Asada Fries"), FoodInfo(name: "Barbeque Chicken Quesadilla"), FoodInfo(name: "Yogurt"), FoodInfo(name: "Pepperoni Pizza"), FoodInfo(name: "Chocolate Shake with Oreo")]
 	
 	init(restName: String) {
 		name = restName
@@ -46,9 +44,7 @@ struct RestaurantInfo {
 	
 	init(restName: String, photoName: String) {
 		name = restName
-//		image = UIImage(named: photoName)
-//		shortImage = UIImage(named: photoName + " Restaurant")
-		tallImage = UIImage(named: photoName + " Dark")
+		darkImage = UIImage(named: photoName + " Dark")
 	}
 	
 	init(restName: String, foodList: Array<FoodInfo>) {
@@ -62,6 +58,18 @@ struct FoodInfo {
 	var image: UIImage?
 	
 	// TODO: add nutritional information
+	var nuts: Array<NutritionListing> = [NutritionListing(name: "Calories", measure: "100")]
+	
+	init(name theImage: String) {
+		name = theImage
+		image = nil
+		nuts = [NutritionListing(name: "Calories", measure: "100")]
+	}
+}
+
+struct NutritionListing {
+	var name: String = ""
+	var measure: String = ""
 }
 
 enum MealType : String {
@@ -78,7 +86,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	let kFoodDisplayID = "DisplayCell"
 	var kFoodDisplayHeight = 220
 	let kFoodDisplayTag = 99
-//	let mealVCid = "mealSelectionTableView"
 	let foodVCid = "foodDescriptionViewController"
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
@@ -89,7 +96,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		
 		
     }
 	
@@ -183,11 +189,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	
-//	func showFoodPopover(food: FoodInfo) {
-//		// TODO: put popover logic back in. Create popover with food's information.
-//		println(food.name)
-//	}
-	
 	func hasInlineFoodDisplay() -> Bool {
 		return displayIndexPath.section != -1
 	}
@@ -240,7 +241,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	func addFoodPopover(sender: FoodDisplay?){
 		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as FoodViewController
-		foodVC.setFood((sender?.food)!)
 		
 		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
 		foodVC.preferredContentSize = foodVC.preferredContentSize
@@ -252,19 +252,26 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		var anchorFrame = tableView.rectForRowAtIndexPath(displayIndexPath)
 		
-//		ppc?.sourceRect = CGRect(origin: tableView.bounds.origin, size: CGSizeZero)
 		let xVal = (anchorFrame.origin.x) + anchorFrame.size.width / 2.0
 		let yVal = ((anchorFrame.origin.y) + anchorFrame.size.height / 2.0) + 11.0
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
-//		ppc?.sourceRect = CGRect(x: tableView.center.x, y: tableView.center.y, width: 0, height: 0)
 		presentViewController(foodVC, animated: true, completion: nil)
-		
-//		popoverPresentationViewController?.barButtonItem = sender
+		foodVC.setFood((sender?.food)!)
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
 	
 	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
 		return .None
+	}
+	
+	
+	// MARK: ScrollViewDelegate
+	override func scrollViewDidScroll(scrollView: UIScrollView) {
+		var cells = tableView.visibleCells() as Array<FoodTableViewCell>
+		for cell in cells {
+			var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
+			cell.parallaxImageWithScrollPercent(percent)
+		}
 	}
 }

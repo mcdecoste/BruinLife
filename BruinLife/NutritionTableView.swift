@@ -9,7 +9,15 @@
 import UIKit
 
 class NutritionTableView: UITableView {
+	
+	override init(frame: CGRect, style: UITableViewStyle) {
+		super.init(frame: frame, style: style)
+	}
 
+	required init(coder aDecoder: NSCoder) {
+	    super.init(coder: aDecoder)
+	}
+	
     /*
     // Only override drawRect: if you perform custom drawing.
     // An empty implementation adversely affects performance during animation.

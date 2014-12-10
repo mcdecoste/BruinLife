@@ -19,15 +19,6 @@ class RestaurantTableViewCell: FoodTableViewCell {
         super.awakeFromNib()
         // Initialization code
 		
-		
-		// put this back in when you have actual photos to use
-//		var backImageView = UIImageView(image: information?.image, highlightedImage: lowerSaturation(onImage: information?.image))
-//		
-//		backImageView.center = center
-//		self.backgroundView = backImageView
-		
-//		self.backgroundColor = .blackColor()
-		
 		// add the labels!
 		nameLabel.font = UIFont.systemFontOfSize(30) // 22
 		nameLabel.textAlignment = .Left
@@ -111,15 +102,15 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		hoursLabel.frame = CGRect(x: openX, y: hoursY, width: openWidth, height: hoursHeight)
 	}
 	
-	override func setSelected(selected: Bool, animated: Bool) {
-		super.setSelected(selected, animated: animated)
-		
-		// some indication that you're looking at this one. Change the color of the title maybe?
-	}
-	
-	override func setHighlighted(highlighted: Bool, animated: Bool) {
-		super.setHighlighted(highlighted, animated: animated)
-		
-		backgroundImageView?.highlighted = highlighted
-	}
+//	override func setSelected(selected: Bool, animated: Bool) {
+//		super.setSelected(selected, animated: animated)
+//		
+//		// some indication that you're looking at this one. Change the color of the title maybe?
+//	}
+//	
+//	override func setHighlighted(highlighted: Bool, animated: Bool) {
+//		super.setHighlighted(highlighted, animated: animated)
+//		
+//		backgroundImageView?.highlighted = highlighted
+//	}
 }

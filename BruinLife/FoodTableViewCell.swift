@@ -19,6 +19,7 @@ class FoodTableViewCell: UITableViewCell {
         // Initialization code
 		backgroundImageView = UIImageView(frame: CGRectZero)
 		addSubview(backgroundImageView!)
+		clipsToBounds = true
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
@@ -36,14 +37,29 @@ class FoodTableViewCell: UITableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: information?.tallImage)
-		backgroundImageView?.frame = bounds
-		backgroundImageView?.clipsToBounds = true
+		backgroundImageView = UIImageView(image: information?.darkImage)
+		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
-
+		
 		insertSubview(backgroundImageView!, atIndex: imageIndex)
 		
 		updateDisplay()
+	}
+	
+	func parallaxImageWithScrollPercent(perc: CGFloat) {
+		let parallaxCoeff: CGFloat = 0.5
+		
+		var percentage: CGFloat = perc
+		if perc < 0.0 { percentage = 0.0 }
+		if perc > 1.0 { percentage = 1.0 }
+		
+		let displayHeight:CGFloat = 220.0
+		var cellHeight: CGFloat = bounds.height
+		
+		var startPoint: CGFloat = 0.0 // ((1.0 - parallaxCoeff) / 2.0) * (backgroundImageView?.frame.height)! // (1 - parallaxCoeff) *
+		var diff: CGFloat = parallaxCoeff * percentage * (displayHeight - cellHeight)
+		
+		backgroundImageView?.frame.origin.y = startPoint - diff
 	}
 	
 	func updateDisplay() {}
