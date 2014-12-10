@@ -26,7 +26,6 @@ class MenuTableViewCell: FoodTableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-//		information?.tallImage = UIImageEffects.imageByDarkeningImage(information?.tallImage)
 		backgroundImageView = UIImageView(image: information?.tallImage)
 		backgroundImageView?.frame = bounds
 		backgroundImageView?.clipsToBounds = true
@@ -46,7 +45,6 @@ class MenuTableViewCell: FoodTableViewCell {
 		addSubview(blurView)
 		blurView.contentView.addSubview(vibrancyView)
 		vibrancyView.contentView.addSubview(scrollView!)
-//		blurView.contentView.addSubview(scrollView!)
     }
 	
     override func setSelected(selected: Bool, animated: Bool) {
