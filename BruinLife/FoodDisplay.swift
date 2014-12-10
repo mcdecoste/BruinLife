@@ -34,9 +34,6 @@ class FoodDisplay: UIButton { // was UIView
 		
 		nameLabel.center = CGPoint(x: bounds.origin.x + 0.5 * bounds.size.width, y: bounds.origin.y + 0.5 * bounds.size.height)
 		
-//		println("\(food.name): \(nameLabel.frame)")
-//		println("\(nameLabel.center) =?= \(center)")
-		
 		addSubview(nameLabel)
 	}
 	

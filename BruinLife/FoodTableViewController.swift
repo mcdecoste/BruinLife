@@ -32,7 +32,9 @@ struct MealInfo {
 
 struct RestaurantInfo {
 	var name:String = ""
-	var image: UIImage? = UIImage(named: "Feast")
+//	var image: UIImage? = UIImage(named: "Feast")
+	var shortImage: UIImage?
+	var tallImage: UIImage?
 	var openTime: Time = Time(hr: 8, min: 0, isPM: false)
 	var closeTime: Time = Time(hr: 5, min: 0, isPM: true)
 	
@@ -44,7 +46,9 @@ struct RestaurantInfo {
 	
 	init(restName: String, photoName: String) {
 		name = restName
-		image = UIImage(named: photoName)
+//		image = UIImage(named: photoName)
+//		shortImage = UIImage(named: photoName + " Restaurant")
+		tallImage = UIImage(named: photoName + " Dark")
 	}
 	
 	init(restName: String, foodList: Array<FoodInfo>) {
@@ -68,13 +72,14 @@ enum MealType : String {
 	case LateNight = "Late Night"
 }
 
-class FoodTableViewController: UITableViewController /*, UIPopoverPresentationControllerDelegate */ {
+class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
 	let kRestCellID = "FoodCell"
 	var kRestCellHeight = 88
 	let kFoodDisplayID = "DisplayCell"
 	var kFoodDisplayHeight = 220
 	let kFoodDisplayTag = 99
-	let mealVCid = "mealSelectionTableView"
+//	let mealVCid = "mealSelectionTableView"
+	let foodVCid = "foodDescriptionViewController"
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
@@ -84,6 +89,8 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 	
     override func viewDidLoad() {
         super.viewDidLoad()
+		
+		
     }
 	
 	/// Returns the desired title for the page view controller's navbar
@@ -176,10 +183,10 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 		}
 	}
 	
-	func showFoodPopover(food: FoodInfo) {
-		// TODO: put popover logic back in. Create popover with food's information.
-		println(food.name)
-	}
+//	func showFoodPopover(food: FoodInfo) {
+//		// TODO: put popover logic back in. Create popover with food's information.
+//		println(food.name)
+//	}
 	
 	func hasInlineFoodDisplay() -> Bool {
 		return displayIndexPath.section != -1
@@ -229,5 +236,35 @@ class FoodTableViewController: UITableViewController /*, UIPopoverPresentationCo
 		}
 		
 		updateFoodDisplay()
+	}
+	
+	func addFoodPopover(sender: FoodDisplay?){
+		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as FoodViewController
+		foodVC.setFood((sender?.food)!)
+		
+		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
+		foodVC.preferredContentSize = foodVC.preferredContentSize
+		
+		let ppc = foodVC.popoverPresentationController
+		ppc?.permittedArrowDirections = UIPopoverArrowDirection.allZeros
+		ppc?.delegate = self
+		ppc?.sourceView = tableView // or source rect or barbuttonitem
+		
+		var anchorFrame = tableView.rectForRowAtIndexPath(displayIndexPath)
+		
+//		ppc?.sourceRect = CGRect(origin: tableView.bounds.origin, size: CGSizeZero)
+		let xVal = (anchorFrame.origin.x) + anchorFrame.size.width / 2.0
+		let yVal = ((anchorFrame.origin.y) + anchorFrame.size.height / 2.0) + 11.0
+		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
+//		ppc?.sourceRect = CGRect(x: tableView.center.x, y: tableView.center.y, width: 0, height: 0)
+		presentViewController(foodVC, animated: true, completion: nil)
+		
+//		popoverPresentationViewController?.barButtonItem = sender
+	}
+	
+	// MARK: UIPopoverPresentationControllerDelegate
+	
+	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
+		return .None
 	}
 }

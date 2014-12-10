@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */; };
 		6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */; };
-		666892321A370DEE00367240 /* UIImageEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = 666892311A370DEE00367240 /* UIImageEffects.m */; };
 		666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */; };
 		666B70051A26CBCD00E8EAAC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666B70031A26CBCD00E8EAAC /* Main.storyboard */; };
 		666B70071A26CBCD00E8EAAC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 666B70061A26CBCD00E8EAAC /* Images.xcassets */; };
@@ -21,6 +20,8 @@
 		666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */; };
 		666B70321A26D4AC00E8EAAC /* FoodsScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */; };
 		666B70341A26D4B600E8EAAC /* FoodDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70331A26D4B600E8EAAC /* FoodDisplay.swift */; };
+		6673DAE11A37CF8C0070FC18 /* FoodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673DAE01A37CF8C0070FC18 /* FoodViewController.swift */; };
+		6673DAE31A37DF150070FC18 /* NutritionTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673DAE21A37DF150070FC18 /* NutritionTableView.swift */; };
 		66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */; };
 		669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669F43E71A280A140059F84E /* FoodTableViewController.swift */; };
 		66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */; };
@@ -40,9 +41,6 @@
 /* Begin PBXFileReference section */
 		660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewCell.swift; sourceTree = "<group>"; };
 		6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DormContainerViewController.swift; sourceTree = "<group>"; };
-		6668922F1A370DEE00367240 /* BruinLife-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "BruinLife-Bridging-Header.h"; sourceTree = "<group>"; };
-		666892301A370DEE00367240 /* UIImageEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageEffects.h; sourceTree = "<group>"; };
-		666892311A370DEE00367240 /* UIImageEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageEffects.m; sourceTree = "<group>"; };
 		666B6FF81A26CBCD00E8EAAC /* BruinLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BruinLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666B6FFC1A26CBCD00E8EAAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -58,6 +56,8 @@
 		666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwipesTableViewController.swift; sourceTree = "<group>"; };
 		666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodsScrollView.swift; sourceTree = "<group>"; };
 		666B70331A26D4B600E8EAAC /* FoodDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDisplay.swift; sourceTree = "<group>"; };
+		6673DAE01A37CF8C0070FC18 /* FoodViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodViewController.swift; sourceTree = "<group>"; };
+		6673DAE21A37DF150070FC18 /* NutritionTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionTableView.swift; sourceTree = "<group>"; };
 		66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantTableViewCell.swift; sourceTree = "<group>"; };
 		669F43E71A280A140059F84E /* FoodTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewController.swift; sourceTree = "<group>"; usesTabs = 1; };
 		66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
@@ -96,6 +96,7 @@
 				666B70261A26CD4B00E8EAAC /* Other */,
 				6613F3DF1A2FD18A0070E47F /* PageController */,
 				666B70201A26CC4700E8EAAC /* Food View Controllers */,
+				6673DAE01A37CF8C0070FC18 /* FoodViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -141,10 +142,7 @@
 		666B6FFB1A26CBCD00E8EAAC /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				666892301A370DEE00367240 /* UIImageEffects.h */,
-				666892311A370DEE00367240 /* UIImageEffects.m */,
 				666B6FFC1A26CBCD00E8EAAC /* Info.plist */,
-				6668922F1A370DEE00367240 /* BruinLife-Bridging-Header.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -202,6 +200,7 @@
 				665CCB3E1A2C4AB300E8BF92 /* Calendar */,
 				666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */,
 				666B70331A26D4B600E8EAAC /* FoodDisplay.swift */,
+				6673DAE21A37DF150070FC18 /* NutritionTableView.swift */,
 			);
 			name = "Aux Views";
 			sourceTree = "<group>";
@@ -265,6 +264,7 @@
 				TargetAttributes = {
 					666B6FF71A26CBCD00E8EAAC = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = E9WQ3XUKSG;
 					};
 					666B700E1A26CBCD00E8EAAC = {
 						CreatedOnToolsVersion = 6.1;
@@ -317,6 +317,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */,
+				6673DAE11A37CF8C0070FC18 /* FoodViewController.swift in Sources */,
+				6673DAE31A37DF150070FC18 /* NutritionTableView.swift in Sources */,
 				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
 				66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */,
 				660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */,
@@ -326,7 +328,6 @@
 				666B702A1A26CDD400E8EAAC /* SettingsTableViewController.swift in Sources */,
 				6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */,
 				666B70241A26CCE000E8EAAC /* QuickTableViewController.swift in Sources */,
-				666892321A370DEE00367240 /* UIImageEffects.m in Sources */,
 				666B70321A26D4AC00E8EAAC /* FoodsScrollView.swift in Sources */,
 				669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */,
 				666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */,
@@ -453,6 +454,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = BruinLife/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -466,6 +468,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = BruinLife/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";

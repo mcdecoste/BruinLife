@@ -38,8 +38,10 @@ class FoodTableViewCell: UITableViewCell {
 		
 //		var modImage = darkerImage(info.image)
 
-		information?.image = UIImageEffects.imageByDarkeningImage(info.image)
-		backgroundImageView = UIImageView(image: information?.image)
+//		information?.shortImage = UIImageEffects.imageByDarkeningImage(information?.shortImage)
+//		information?.tallImage = UIImageEffects.imageByDarkeningImage(information?.tallImage)
+//		backgroundImageView = UIImageView(image: (bounds.height > CGFloat(100)) ? information?.tallImage : information?.shortImage)
+		backgroundImageView = UIImageView(image: information?.tallImage)
 		backgroundImageView?.frame = bounds
 		backgroundImageView?.clipsToBounds = true
 		backgroundImageView?.contentMode = .ScaleAspectFill

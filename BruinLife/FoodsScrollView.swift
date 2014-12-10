@@ -116,7 +116,8 @@ class FoodsScrollView: UIScrollView {
 		var foodInfo = display.food
 		
 		// make a popover
-		foodVC?.showFoodPopover(foodInfo)
+//		foodVC?.showFoodPopover(foodInfo)
+		foodVC?.addFoodPopover(display)
 	}
 	
 	func frameForIndex(index: Int, numRows: Int) -> CGRect {
