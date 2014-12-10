@@ -31,15 +31,20 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		// add the labels!
 		nameLabel.font = UIFont.systemFontOfSize(30) // 22
 		nameLabel.textAlignment = .Left
-		nameLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
+//		nameLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
+		nameLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
 //		nameLabel.textColor = UIColor(white: 0.0, alpha: 0.8)
+		nameLabel.adjustsFontSizeToFitWidth = true
+		nameLabel.minimumScaleFactor = 0.8
+		nameLabel.baselineAdjustment = .AlignBaselines
 		
 		openLabel.font = UIFont.systemFontOfSize(20) // 14 ()
 		openLabel.textAlignment = .Right
 		
 		hoursLabel.font = UIFont.systemFontOfSize(12) // 9 (11)
 		hoursLabel.textAlignment = .Right
-		hoursLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
+//		hoursLabel.textColor = UIColor(white: 1.0, alpha: 0.7)
+		hoursLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
 //		hoursLabel.textColor = UIColor(white: 0.0, alpha: 0.8)
 		
 		addSubview(nameLabel)
@@ -109,22 +114,6 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		openLabel.frame = CGRect(x: openX, y: openY, width: openWidth, height: openHeight)
 		hoursLabel.frame = CGRect(x: openX, y: hoursY, width: openWidth, height: hoursHeight)
 	}
-	
-//	func lowerSaturation(onImage image: UIImage?) -> UIImage? {
-//		let saturationFactor = 0.75
-//	
-//		var context = CIContext(options: nil)
-//		var ciImage = CIImage(CGImage: image?.CGImage)
-//		var filter = CIFilter(name: "CIColorControls")
-//		
-//		filter.setValue(ciImage, forKey: kCIInputImageKey)
-//		filter.setValue(saturationFactor, forKey: kCIInputImageKey)
-//		
-//		var result = filter.valueForKey(kCIOutputImageKey) as CIImage
-//		var cgImage = context.createCGImage(result, fromRect: result.extent())
-//		var image = UIImage(CGImage: cgImage)
-//		return image!
-//	}
 	
 	override func setSelected(selected: Bool, animated: Bool) {
 		super.setSelected(selected, animated: animated)

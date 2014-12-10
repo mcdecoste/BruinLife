@@ -95,11 +95,11 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func exampleDayForDate(date: NSDate) -> DayInfo {
-		var example = [RestaurantInfo(restName: "De Neve"),
-			RestaurantInfo(restName: "Covel"),
-			RestaurantInfo(restName: "Feast"),
-			RestaurantInfo(restName: "Hedrick"),
-			RestaurantInfo(restName: "Sproul")]
+		var example = [RestaurantInfo(restName: "De Neve", photoName: "De Neve"),
+			RestaurantInfo(restName: "Covel", photoName: "Covel"),
+			RestaurantInfo(restName: "Feast", photoName: "Feast"),
+			RestaurantInfo(restName: "Hedrick", photoName: "Hedrick"),
+			RestaurantInfo(restName: "Bruin Plate", photoName: "Bruin Plate")]
 		
 		var exampleBreakfast = MealInfo(meal: .Breakfast, rests: example)
 //		var exampleBrunch = MealInfo(rests: [])

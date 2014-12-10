@@ -21,16 +21,17 @@ class QuickTableViewController: FoodTableViewController {
 	// TODO: REPLACE SOON
 	func exampleDay() -> DayInfo {
 		var date = NSDate()
-		var breakfast = [RestaurantInfo(restName: "Bruin Cafe"),
-			RestaurantInfo(restName: "1919"),
-			RestaurantInfo(restName: "Rendezvous")]
-		var lunch = [RestaurantInfo(restName: "Bruin Cafe"),
-			RestaurantInfo(restName: "1919"),
-			RestaurantInfo(restName: "Rendezvous")]
-		var dinner = [RestaurantInfo(restName: "Bruin Cafe"),
-			RestaurantInfo(restName: "1919"),
-			RestaurantInfo(restName: "Rendezvous"),
-			RestaurantInfo(restName: "Late Night")]
+		var breakfast = [RestaurantInfo(restName: "Bruin Cafe", photoName: "Bruin Cafe"),
+			RestaurantInfo(restName: "Cafe 1919", photoName: "Cafe 1919"),
+			RestaurantInfo(restName: "Rendezvous", photoName: "Rendezvous")]
+		var lunch = [RestaurantInfo(restName: "Bruin Cafe", photoName: "Bruin Cafe"),
+			RestaurantInfo(restName: "Cafe 1919", photoName: "Cafe 1919"),
+			RestaurantInfo(restName: "Rendezvous", photoName: "Rendezvous")]
+		var dinner = [RestaurantInfo(restName: "Bruin Cafe", photoName: "Bruin Cafe"),
+			RestaurantInfo(restName: "Cafe 1919", photoName: "Cafe 1919"),
+			RestaurantInfo(restName: "Rendezvous", photoName: "Rendezvous"),
+			RestaurantInfo(restName: "Late Night", photoName: "De Neve"),
+			RestaurantInfo(restName: "Night Hedrick", photoName: "Hedrick")]
 		
 		var exampleBreakfast = MealInfo(meal: .Breakfast, rests: breakfast)
 //		var exampleBrunch = MealInfo(rests: [])

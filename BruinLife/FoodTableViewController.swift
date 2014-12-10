@@ -36,12 +36,17 @@ struct RestaurantInfo {
 	var openTime: Time = Time(hr: 8, min: 0, isPM: false)
 	var closeTime: Time = Time(hr: 5, min: 0, isPM: true)
 	
-	var foods: Array<FoodInfo> = []
+	var foods: Array<FoodInfo> = [FoodInfo(name: "Thai Tea", image: nil), FoodInfo(name: "Sushi Bowl", image: nil), FoodInfo(name: "Angel Hair Pasta", image: nil), FoodInfo(name: "Turkey Burger", image: nil), FoodInfo(name: "Carne Asada Fries", image: nil), FoodInfo(name: "Barbeque Chicken Quesadilla", image: nil), FoodInfo(name: "Yogurt", image: nil), FoodInfo(name: "Pepperoni Pizza", image: nil), FoodInfo(name: "Chocolate Shake with Oreo", image: nil)]
 	
 	init(restName: String) {
 		name = restName
-		foods = [FoodInfo(name: "Thai Tea", image: nil), FoodInfo(name: "Sushi Bowl", image: nil), FoodInfo(name: "Angel Pasta", image: nil), FoodInfo(name: "Turkey Burger", image: nil), FoodInfo(name: "Carne Asada Fries", image: nil), FoodInfo(name: "Barbeque Chicken Quesadilla", image: nil), FoodInfo(name: "Yogurt", image: nil), FoodInfo(name: "Pepperoni Pizza", image: nil), FoodInfo(name: "Chocolate Shake with Oreo", image: nil)]
 	}
+	
+	init(restName: String, photoName: String) {
+		name = restName
+		image = UIImage(named: photoName)
+	}
+	
 	init(restName: String, foodList: Array<FoodInfo>) {
 		name = restName
 		foods = foodList
