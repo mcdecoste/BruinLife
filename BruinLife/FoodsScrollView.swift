@@ -10,15 +10,12 @@ import UIKit
 
 class FoodsScrollView: UIScrollView {
 	var displays: Array<FoodDisplay> = []
+	var foodVC: FoodTableViewController?
+	var lines: Array<UIView> = []
 	
 	let xIndent: CGFloat = 16.0
 	let displayWidth: CGFloat = 160.0
-	
 	let numRows: Int = 2
-	
-	var foodVC: FoodTableViewController?
-	
-	var lines: Array<UIView> = []
 	
 	override init(frame: CGRect) {
 		foodVC = nil
@@ -28,17 +25,16 @@ class FoodsScrollView: UIScrollView {
 	func setFoods(foods: Array<FoodInfo>, vc: FoodTableViewController, newFrame: CGRect) {
 		foodVC = vc
 		frame = newFrame
-		
 		setFoods(foods)
 	}
 	
 	func setFoods(foods: Array<FoodInfo>) {
 		setContentOffset(CGPointZero, animated: false)
 		
+		// clear out old foods
 		for display in displays {
 			display.removeFromSuperview()
 		}
-		
 		for line in lines {
 			line.removeFromSuperview()
 		}
@@ -49,11 +45,6 @@ class FoodsScrollView: UIScrollView {
 		var index = 0
 		var maxX: CGFloat = 0.0
 		
-//		var effect = UIBlurEffect(style: .Light) // Dark, ExtraLight
-//		var blurView = UIVisualEffectView(effect: effect)
-//		blurView.frame = bounds
-//		addSubview(blurView)
-		
 		for food in foods {
 			let theFrame = frameForIndex(index, numRows: numRows)
 			var display = FoodDisplay(info: food, ind: index, frame: theFrame)
@@ -61,27 +52,11 @@ class FoodsScrollView: UIScrollView {
 			display.addTarget(self, action: "hitFood:", forControlEvents: .TouchUpInside)
 			displays.append(display)
 			
-//			let effect = UIBlurEffect(style: .Light) // Dark, ExtraLight
-//			var blurView = UIVisualEffectView(effect: effect)
-//			blurView.frame = display.frame
-////
-//			var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: effect))
-			
-//			addSubview(display)
-			
-//			blurView.contentView.addSubview(vibrancyView)
-//			blurView.contentView.addSubview(display)
-//			vibrancyView.contentView.addSubview(display)
-			
-//			addSubview(blurView)
-			
-			
 			addSubview(display)
 			
 			if index >= numRows {
 				let yInset:CGFloat = 20.0
 				var width:CGFloat = 1.0 / UIScreen.mainScreen().scale
-//				var xVal:CGFloat = (center.x * CGFloat(index / numRows)) - 1.0 // TODO: consider making this height / 2.0
 				var xVal:CGFloat = display.frame.origin.x - xIndent / 2.0
 				var yVal:CGFloat = yInset + (CGFloat(index % numRows) * bounds.height / CGFloat(numRows))
 				var verticalLine = UIView(frame: CGRect(x: xVal, y: yVal, width: width, height: (frame.height / CGFloat(numRows)) - 2.0 * yInset))
@@ -90,21 +65,18 @@ class FoodsScrollView: UIScrollView {
 				addSubview(lines.last!)
 			}
 			
-			
 			index++
 			maxX = theFrame.maxX + xIndent
 		}
 		
 		for lineNum in 1...(numRows - 1) {
 			var height:CGFloat = 1.0 / UIScreen.mainScreen().scale
-//			var yVal:CGFloat = center.y - 1.0 // TODO: consider making this height / 2.0
 			var yVal:CGFloat = CGFloat(lineNum) * frame.height / CGFloat(numRows)
 			var horizontalLine = UIView(frame: CGRect(x: xIndent, y: yVal, width: contentSize.width - 2.0 * xIndent, height: height))
 			horizontalLine.backgroundColor = .blackColor()
 			addSubview(horizontalLine)
 			lines.append(horizontalLine)
 		}
-		
 		
 		contentSize = CGSize(width: maxX, height: frame.height)
 		if contentSize.width > frame.width {
@@ -116,7 +88,6 @@ class FoodsScrollView: UIScrollView {
 		var foodInfo = display.food
 		
 		// make a popover
-//		foodVC?.showFoodPopover(foodInfo)
 		foodVC?.addFoodPopover(display)
 	}
 	

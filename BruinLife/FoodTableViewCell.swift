@@ -48,8 +48,15 @@ class FoodTableViewCell: UITableViewCell {
 	
 	func openCloseDates() -> (openDate: NSDate?, closeDate: NSDate?) {
 		var cal = NSCalendar.currentCalendar()
+		
+		var closeHour = (information?.closeTime.hour)! % 24
+		
 		var openDate = cal.dateBySettingHour((information?.openTime.hour)!, minute: (information?.openTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
-		var closeDate = cal.dateBySettingHour((information?.closeTime.hour)!, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		var closeDate = cal.dateBySettingHour(closeHour, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		
+		var incrementDay = (information?.closeTime.hour >= 24)
+		closeDate = closeDate!.dateByAddingTimeInterval(incrementDay ? 48*60*60 : 0)
+		
 		return (openDate, closeDate)
 	}
 	
@@ -70,7 +77,7 @@ class FoodTableViewCell: UITableViewCell {
 		let displayHeight:CGFloat = 220.0
 		var cellHeight: CGFloat = bounds.height
 		
-		var startPoint: CGFloat = 0.0 // ((1.0 - parallaxCoeff) / 2.0) * (backgroundImageView?.frame.height)! // (1 - parallaxCoeff) *
+		var startPoint: CGFloat = 0.0
 		var diff: CGFloat = parallaxCoeff * percentage * (displayHeight - cellHeight)
 		
 		backgroundImageView?.frame.origin.y = startPoint - diff

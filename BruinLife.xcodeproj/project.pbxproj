@@ -21,7 +21,6 @@
 		666B70321A26D4AC00E8EAAC /* FoodsScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */; };
 		666B70341A26D4B600E8EAAC /* FoodDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B70331A26D4B600E8EAAC /* FoodDisplay.swift */; };
 		6673DAE11A37CF8C0070FC18 /* FoodViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673DAE01A37CF8C0070FC18 /* FoodViewController.swift */; };
-		6673DAE31A37DF150070FC18 /* NutritionTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6673DAE21A37DF150070FC18 /* NutritionTableView.swift */; };
 		66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */; };
 		669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669F43E71A280A140059F84E /* FoodTableViewController.swift */; };
 		66B333FB1A38ABEE00AE01DD /* NutritionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */; };
@@ -58,7 +57,6 @@
 		666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodsScrollView.swift; sourceTree = "<group>"; };
 		666B70331A26D4B600E8EAAC /* FoodDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodDisplay.swift; sourceTree = "<group>"; };
 		6673DAE01A37CF8C0070FC18 /* FoodViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodViewController.swift; sourceTree = "<group>"; };
-		6673DAE21A37DF150070FC18 /* NutritionTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionTableView.swift; sourceTree = "<group>"; };
 		66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantTableViewCell.swift; sourceTree = "<group>"; };
 		669F43E71A280A140059F84E /* FoodTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewController.swift; sourceTree = "<group>"; usesTabs = 1; };
 		66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionTableViewCell.swift; sourceTree = "<group>"; };
@@ -202,7 +200,6 @@
 				665CCB3E1A2C4AB300E8BF92 /* Calendar */,
 				666B70311A26D4AC00E8EAAC /* FoodsScrollView.swift */,
 				666B70331A26D4B600E8EAAC /* FoodDisplay.swift */,
-				6673DAE21A37DF150070FC18 /* NutritionTableView.swift */,
 			);
 			name = "Aux Views";
 			sourceTree = "<group>";
@@ -321,7 +318,6 @@
 			files = (
 				666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */,
 				6673DAE11A37CF8C0070FC18 /* FoodViewController.swift in Sources */,
-				6673DAE31A37DF150070FC18 /* NutritionTableView.swift in Sources */,
 				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
 				66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */,
 				660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */,

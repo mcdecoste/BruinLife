@@ -18,6 +18,16 @@ struct Time {
 		self.minute = minute
 		self.pm = pm
 	}
+	
+	init(hour: Int, minute: Int, pm: Bool, nextDay: Bool) {
+		self.hour = pm ? hour + 12 : hour
+		self.minute = minute
+		self.pm = pm
+		
+		if (nextDay) {
+			self.hour += 24
+		}
+	}
 }
 
 struct DayInfo {
@@ -87,25 +97,52 @@ struct RestaurantInfo {
 
 struct FoodInfo {
 	var name: String = ""
-//	var image: UIImage?
 	
 	// TODO: add nutritional information
-	var nutrients: Array<NutritionListing> = [NutritionListing(name: "Calories", measure: "100")]
+	var nutrients: Array<NutritionListing> = [NutritionListing(type: .Cal, measure: "100")]
 	
 	init(name: String) {
 		self.name = name
 	}
-	
-//	init(name theImage: String) {
-//		name = theImage
-//		image = nil
-//		nuts = [NutritionListing(name: "Calories", measure: "100")]
-//	}
+}
+
+enum Nutrient: String {
+	case Cal = "Calories"
+	case FatCal = "Calories From Fat"
+	case TotFat = "Total Fat"
+	case SatFat = "Saturated Fat"
+	case TransFat = "Trans Fat"
+	case Chol = "Cholesterol"
+	case Sodium = "Sodium"
+	case TotCarb = "Total Carbohydrate"
+	case DietFiber = "Dietary Fiber"
+	case Sugar = "Sugars"
+	case Protein = "Protein"
+	case VitA = "Vitamin A"
+	case VitC = "Vitamin C"
+	case Calcium = "Calcium"
+	case Iron = "Iron"
 }
 
 struct NutritionListing {
-	var name: String = ""
+	var type: Nutrient = .Cal
+	var unit: String
 	var measure: String = ""
+	
+	init(type: Nutrient, measure: String) {
+		self.type = type
+		self.measure = measure
+		switch (type) {
+		case .Cal, .FatCal:
+			self.unit = ""
+		case .TotFat, .SatFat, .TransFat, .TotCarb, .DietFiber, .Sugar, .Protein:
+			self.unit = "g"
+		case .Chol, .Sodium:
+			self.unit = "mg"
+		case .VitA, .VitC, .Calcium, .Iron:
+			self.unit = "%"
+		}
+	}
 }
 
 enum MealType : String {
@@ -132,37 +169,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		
-//		navigationController?.hidesBarsOnSwipe = true
-		
-//		navigationController?.barHideOnSwipeGestureRecognizer.enabled = true
-//		navigationController?.barHideOnSwipeGestureRecognizer.addTarget(self, action: "swipeGesture:")
     }
-	
-//	override func prefersStatusBarHidden() -> Bool {
-//		return (navigationController?.navigationBarHidden)!
-//	}
-	
-//	override func viewWillAppear(animated: Bool) {
-//		super.viewWillAppear(animated)
-//		tableView.reloadData()
-//	}
-	
-//	func swipeGesture(sender: UIPanGestureRecognizer) {
-//		UIView.animateWithDuration(Double(UINavigationControllerHideShowBarDuration), animations: { () -> Void in
-//			self.setNeedsStatusBarAppearanceUpdate()
-//		})
-//		UIView.animateWithDuration(Double(UINavigationControllerHideShowBarDuration), animations: { () -> Void in
-//			self.navigationController?.toolbarHidden = true
-//			self.setNeedsStatusBarAppearanceUpdate()
-//		})
-//		self.navigationController?.setToolbarHidden(true, animated: true)
-//		
-//		
-//		UIView.animateWithDuration(UINavigationControllerHideShowBarDuration, animations: { () -> Void in
-//			
-//		})
-//	}
 	
 	/// Returns the desired title for the page view controller's navbar
 	func preferredTitle() -> String {

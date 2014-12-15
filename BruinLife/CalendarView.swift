@@ -24,7 +24,6 @@ class CalendarView: UIView {
 		var dayHeight = frame.height * dayRatio
 		dayTitle = UILabel(frame: CGRect(x: frame.minX, y: frame.maxY - dayHeight, width: frame.width, height: dayHeight))
 		dayTitle.textAlignment = .Center
-//		dayTitle.font = UIFont.systemFontOfSize(UIFont.systemFontSize() + 12)
 		dayTitle.font = UIFont(name: "HelveticaNeue-Thin", size: UIFont.systemFontSize() + 12)
 		
 		super.init(frame: frame)

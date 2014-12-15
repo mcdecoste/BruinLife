@@ -55,28 +55,4 @@ class DormTableViewController: FoodTableViewController {
 		information = info
 		setTitle()
 	}
-	
-//	override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-//		return (section == 0) ? 64.0 + 22.0 : 22.0
-//	}
-//	
-//	override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//		var height = (section == 0) ? 64.0 + 22.0 : 22.0
-//		var width = self.tableView.frame.size.width
-//		var mainView = UIView(frame: CGRect(x: 0, y: 0, width: 0.0, height: height))
-//		mainView.frame.size.width = width
-//		mainView.backgroundColor = .clearColor()
-//		
-//		var backingView = UIView(frame: CGRect(x: 0.0, y: 64.0, width: width, height: 22.0))
-//		backingView.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
-//		
-//		mainView.addSubview(backingView)
-//		return mainView
-//	}
-	
-//	override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-//		var header = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: (section == 0) ? 64.0 : 0.0))
-//		header.backgroundColor = .clearColor()
-//		return header
-//	}
 }

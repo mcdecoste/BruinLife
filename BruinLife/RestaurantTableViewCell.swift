@@ -101,16 +101,4 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		openLabel.frame = CGRect(x: openX, y: openY, width: openWidth, height: openHeight)
 		hoursLabel.frame = CGRect(x: openX, y: hoursY, width: openWidth, height: hoursHeight)
 	}
-	
-//	override func setSelected(selected: Bool, animated: Bool) {
-//		super.setSelected(selected, animated: animated)
-//		
-//		// some indication that you're looking at this one. Change the color of the title maybe?
-//	}
-//	
-//	override func setHighlighted(highlighted: Bool, animated: Bool) {
-//		super.setHighlighted(highlighted, animated: animated)
-//		
-//		backgroundImageView?.highlighted = highlighted
-//	}
 }

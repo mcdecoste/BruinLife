@@ -8,43 +8,6 @@
 
 import UIKit
 
-
-
-enum NutritionElement: String {
-//	case Servings = "Servings"
-	// ounces
-	case ServingSize = "Serving Size"
-	
-	// cal, percent
-	case Calories = "Calories"
-	case CaloriesFromFat = "From Fat"
-	
-	// grams, percent
-	case TotalFat = "Total Fat"
-		case SaturatedFat = "Saturated Fat"
-		case TransFat = "Trans Fat"
-	
-	// milligrams, percent
-	case Cholesterol = "Cholesterol"
-	case Sodium = "Sodium"
-	
-	// grams, percent
-	case TotalCarbs = "Total Carbohydrate"
-		case DietaryFiber = "Dietary Fiber"
-		case Sugars = "Sugars"
-	case Protein = "Protein"
-	
-	// percent
-	case VitaminA = "Vitamin A"
-//	case VitaminB6 = "Vitamin B6"
-//	case VitaminB12 = "Vitamin B12"
-	case VitaminC = "Vitamin C"
-	
-	// percent
-	case Calcium = "Calcium"
-	case Iron = "Iron"
-}
-
 struct NutriTableDisplay {
 	var name: String
 	var indentLevel: Int
@@ -55,15 +18,14 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var food: FoodInfo?
 	
 	var foodName = UILabel()
-//	@IBOutlet weak var nutriTable: NutritionTableView!
-	var nutriTable: NutritionTableView?
+	var nutriTable: UITableView?
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
 		view.frame.size = preferredContentSize()
-		nutriTable = NutritionTableView(frame: view.frame, style: .Plain)
+		nutriTable = UITableView(frame: view.frame, style: .Plain)
 		
 		view.addSubview(foodName)
 		view.addSubview(nutriTable!)
@@ -125,23 +87,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		var nl: NutritionListing = (food?.nutrients[indexPath.row])!
 		
 		cell?.selectionStyle = .None
-		cell?.textLabel?.text = nl.name
-//		cell?.detailTextLabel?.text = nl.measure
-//		cell.detailTextLabel?.text = nl.measure
-		
-		cell?.detailLabel.text = nl.measure
-		
-//		var detailLabel = UILabel()
-//		detailLabel.text = nl.measure
-//		detailLabel.textAlignment = .Right
-//		detailLabel.font = .systemFontOfSize(12)
-//		detailLabel.textColor = .lightTextColor()
-////		detailLabel.textColor = .blackColor()
-//		detailLabel.sizeToFit()
-//		detailLabel.center.y = (cell?.center.y)!
-//		detailLabel.frame.origin.x = (cell?.frame.width)! - detailLabel.frame.width - 16.0
-//		
-//		cell?.addSubview(detailLabel)
+		cell?.textLabel?.text = nl.type.rawValue
+		var displayText = nl.measure + nl.unit
+//		cell?.detailTextLabel?.text = displayText
+		cell?.detailLabel.text = displayText
 		
 		return cell!
 	}
@@ -149,15 +98,4 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 	}
-	
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }

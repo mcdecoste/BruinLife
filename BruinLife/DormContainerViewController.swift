@@ -32,23 +32,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
 	}
 	
-	/*
-	override func prefersStatusBarHidden() -> Bool {
-	var navVC = pageController.viewControllers.first as UINavigationController?
-	if navVC == nil {
-	return false
-	}
-	return (navVC?.navigationBarHidden)!
-	/*
-	var dtvc = dormVCfromNavVC(pageController.viewControllers.first as UINavigationController) as DormTableViewController?
-	if dtvc == nil {
-	return false
-	}
-	return (dtvc?.prefersStatusBarHidden())!
-	*/
-	}
-	 */
-	
 	// UIPageViewControllerDataSource
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
@@ -94,6 +77,11 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		return navVC
 	}
 	
+	override func didReceiveMemoryWarning() {
+		super.didReceiveMemoryWarning()
+		// Dispose of any resources that can be recreated.
+	}
+	
 	func secsInDay() -> Int {
 		return 24 * 60 * 60
 	}
@@ -112,14 +100,14 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func exampleDayForDate(date: NSDate) -> DayInfo {
-		var bOpen = Time(hour: 8, minute: 0, pm: false)
-		var bClose = Time(hour: 10, minute: 0, pm: false)
+		let bOpen = Time(hour: 7, minute: 0, pm: false)
+		let bClose = Time(hour: 11, minute: 0, pm: false)
 		
-		var lOpen = Time(hour: 1, minute: 0, pm: false) // 11
-		var lClose = Time(hour: 2, minute: 0, pm: true)
+		let lOpen = Time(hour: 11, minute: 0, pm: false) // 11
+		let lClose = Time(hour: 2, minute: 0, pm: true)
 		
-		var dOpen = Time(hour: 5, minute: 0, pm: true)
-		var dClose = Time(hour: 8, minute: 0, pm: true)
+		let dOpen = Time(hour: 5, minute: 0, pm: true)
+		let dClose = Time(hour: 8, minute: 0, pm: true)
 		
 		// RestaurantInfo(name: "Hedrick", hall: .Hedrick, openTime: bOpen, closeTime: bClose),
 		var breakfast = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: bOpen, closeTime: bClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: bOpen, closeTime: bClose)]
