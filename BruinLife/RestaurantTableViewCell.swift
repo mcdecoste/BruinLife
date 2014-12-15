@@ -44,9 +44,9 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		updateLabelFrames()
 		
 		
-		var cal = NSCalendar.currentCalendar()
-		var openDate = cal.dateBySettingHour((information?.openTime.hour)!, minute: (information?.openTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
-		var closeDate = cal.dateBySettingHour((information?.closeTime.hour)!, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		var openDate: NSDate?
+		var closeDate: NSDate?
+		(openDate, closeDate) = openCloseDates()
 		var open = openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0
 		var willOpenToday = true
 		

@@ -11,12 +11,12 @@ import UIKit
 struct Time {
 	var hour: Int
 	var minute: Int
-	var PM: Bool = true
+	var pm: Bool = true
 	
-	init(hr: Int, min: Int, isPM: Bool) {
-		hour = hr
-		minute = min
-		if isPM { hour += 12 }
+	init(hour: Int, minute: Int, pm: Bool) {
+		self.hour = pm ? hour + 12 : hour
+		self.minute = minute
+		self.pm = pm
 	}
 }
 
@@ -30,41 +30,77 @@ struct MealInfo {
 	var rests: Array<RestaurantInfo> = []
 }
 
+enum Halls: String {
+	case DeNeve = "De Neve"
+	case Covel = "Covel"
+	case Hedrick = "Hedrick"
+	case Feast = "Feast"
+	case BruinPlate = "Bruin Plate"
+	case Cafe1919 = "Cafe 1919"
+	case Rendezvous = "Rendezvous"
+	case BruinCafe = "Bruin Cafe"
+}
+
+struct HallInfo {
+	var hall: Halls = .DeNeve
+	var openImage: UIImage?
+	var closedImage: UIImage?
+	
+	init(hall: Halls) {
+		self.hall = hall
+		openImage = UIImage(named: hall.rawValue + " Dark")
+		closedImage = UIImage(named: hall.rawValue + " BW")
+	}
+}
+
 struct RestaurantInfo {
-	var name:String = ""
-	var darkImage: UIImage?
-	var openTime: Time = Time(hr: 8, min: 0, isPM: false)
-	var closeTime: Time = Time(hr: 5, min: 0, isPM: true)
+	var name: String = ""
+	var hall: HallInfo = HallInfo(hall: .DeNeve)
+	
+	var openTime: Time = Time(hour: 8, minute: 0, pm: false)
+	var closeTime: Time = Time(hour: 5, minute: 0, pm: true)
 	
 	var foods: Array<FoodInfo> = [FoodInfo(name: "Thai Tea"), FoodInfo(name: "Sushi Bowl"), FoodInfo(name: "Angel Hair Pasta"), FoodInfo(name: "Turkey Burger"), FoodInfo(name: "Carne Asada Fries"), FoodInfo(name: "Barbeque Chicken Quesadilla"), FoodInfo(name: "Yogurt"), FoodInfo(name: "Pepperoni Pizza"), FoodInfo(name: "Chocolate Shake with Oreo")]
 	
-	init(restName: String) {
-		name = restName
+	init(name: String, hall: Halls) {
+		self.name = name
+		self.hall = HallInfo(hall: hall)
 	}
 	
-	init(restName: String, photoName: String) {
-		name = restName
-		darkImage = UIImage(named: photoName + " Dark")
+	init(name: String, hall: Halls, openTime: Time, closeTime: Time) {
+		self.name = name
+		self.hall = HallInfo(hall: hall)
+		self.openTime = openTime
+		self.closeTime = closeTime
 	}
 	
-	init(restName: String, foodList: Array<FoodInfo>) {
-		name = restName
-		foods = foodList
+	init(name: String, hall: Halls, foods: Array<FoodInfo>) {
+		self.name = name
+		self.hall = HallInfo(hall: hall)
+		self.foods = foods
+	}
+	
+	func image(open: Bool) -> UIImage? {
+		return open ? hall.openImage : hall.closedImage
 	}
 }
 
 struct FoodInfo {
 	var name: String = ""
-	var image: UIImage?
+//	var image: UIImage?
 	
 	// TODO: add nutritional information
-	var nuts: Array<NutritionListing> = [NutritionListing(name: "Calories", measure: "100")]
+	var nutrients: Array<NutritionListing> = [NutritionListing(name: "Calories", measure: "100")]
 	
-	init(name theImage: String) {
-		name = theImage
-		image = nil
-		nuts = [NutritionListing(name: "Calories", measure: "100")]
+	init(name: String) {
+		self.name = name
 	}
+	
+//	init(name theImage: String) {
+//		name = theImage
+//		image = nil
+//		nuts = [NutritionListing(name: "Calories", measure: "100")]
+//	}
 }
 
 struct NutritionListing {
@@ -97,7 +133,36 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
     override func viewDidLoad() {
         super.viewDidLoad()
 		
+//		navigationController?.hidesBarsOnSwipe = true
+		
+//		navigationController?.barHideOnSwipeGestureRecognizer.enabled = true
+//		navigationController?.barHideOnSwipeGestureRecognizer.addTarget(self, action: "swipeGesture:")
     }
+	
+//	override func prefersStatusBarHidden() -> Bool {
+//		return (navigationController?.navigationBarHidden)!
+//	}
+	
+//	override func viewWillAppear(animated: Bool) {
+//		super.viewWillAppear(animated)
+//		tableView.reloadData()
+//	}
+	
+//	func swipeGesture(sender: UIPanGestureRecognizer) {
+//		UIView.animateWithDuration(Double(UINavigationControllerHideShowBarDuration), animations: { () -> Void in
+//			self.setNeedsStatusBarAppearanceUpdate()
+//		})
+//		UIView.animateWithDuration(Double(UINavigationControllerHideShowBarDuration), animations: { () -> Void in
+//			self.navigationController?.toolbarHidden = true
+//			self.setNeedsStatusBarAppearanceUpdate()
+//		})
+//		self.navigationController?.setToolbarHidden(true, animated: true)
+//		
+//		
+//		UIView.animateWithDuration(UINavigationControllerHideShowBarDuration, animations: { () -> Void in
+//			
+//		})
+//	}
 	
 	/// Returns the desired title for the page view controller's navbar
 	func preferredTitle() -> String {

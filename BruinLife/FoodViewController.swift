@@ -8,6 +8,49 @@
 
 import UIKit
 
+
+
+enum NutritionElement: String {
+//	case Servings = "Servings"
+	// ounces
+	case ServingSize = "Serving Size"
+	
+	// cal, percent
+	case Calories = "Calories"
+	case CaloriesFromFat = "From Fat"
+	
+	// grams, percent
+	case TotalFat = "Total Fat"
+		case SaturatedFat = "Saturated Fat"
+		case TransFat = "Trans Fat"
+	
+	// milligrams, percent
+	case Cholesterol = "Cholesterol"
+	case Sodium = "Sodium"
+	
+	// grams, percent
+	case TotalCarbs = "Total Carbohydrate"
+		case DietaryFiber = "Dietary Fiber"
+		case Sugars = "Sugars"
+	case Protein = "Protein"
+	
+	// percent
+	case VitaminA = "Vitamin A"
+//	case VitaminB6 = "Vitamin B6"
+//	case VitaminB12 = "Vitamin B12"
+	case VitaminC = "Vitamin C"
+	
+	// percent
+	case Calcium = "Calcium"
+	case Iron = "Iron"
+}
+
+struct NutriTableDisplay {
+	var name: String
+	var indentLevel: Int
+	var measures: Array<String>
+}
+
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 	var food: FoodInfo?
 	
@@ -69,7 +112,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return (food?.nuts.count)!
+		return (food?.nutrients.count)!
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -79,7 +122,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell = NutritionTableViewCell(style: .Default, reuseIdentifier: reuse)
 		}
 		
-		var nl: NutritionListing = (food?.nuts[indexPath.row])!
+		var nl: NutritionListing = (food?.nutrients[indexPath.row])!
 		
 		cell?.selectionStyle = .None
 		cell?.textLabel?.text = nl.name

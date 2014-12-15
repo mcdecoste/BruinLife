@@ -37,13 +37,27 @@ class FoodTableViewCell: UITableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: information?.darkImage)
+		backgroundImageView = UIImageView(image: information?.image(open()))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		
 		insertSubview(backgroundImageView!, atIndex: imageIndex)
 		
 		updateDisplay()
+	}
+	
+	func openCloseDates() -> (openDate: NSDate?, closeDate: NSDate?) {
+		var cal = NSCalendar.currentCalendar()
+		var openDate = cal.dateBySettingHour((information?.openTime.hour)!, minute: (information?.openTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		var closeDate = cal.dateBySettingHour((information?.closeTime.hour)!, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		return (openDate, closeDate)
+	}
+	
+	func open() -> Bool {
+		var openDate: NSDate?
+		var closeDate: NSDate?
+		(openDate, closeDate) = openCloseDates()
+		return openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0
 	}
 	
 	func parallaxImageWithScrollPercent(perc: CGFloat) {

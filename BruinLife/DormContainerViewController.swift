@@ -32,6 +32,23 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
 	}
 	
+	/*
+	override func prefersStatusBarHidden() -> Bool {
+	var navVC = pageController.viewControllers.first as UINavigationController?
+	if navVC == nil {
+	return false
+	}
+	return (navVC?.navigationBarHidden)!
+	/*
+	var dtvc = dormVCfromNavVC(pageController.viewControllers.first as UINavigationController) as DormTableViewController?
+	if dtvc == nil {
+	return false
+	}
+	return (dtvc?.prefersStatusBarHidden())!
+	*/
+	}
+	 */
+	
 	// UIPageViewControllerDataSource
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
@@ -95,16 +112,23 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func exampleDayForDate(date: NSDate) -> DayInfo {
-		var example = [RestaurantInfo(restName: "De Neve", photoName: "De Neve"),
-			RestaurantInfo(restName: "Covel", photoName: "Covel"),
-			RestaurantInfo(restName: "Feast", photoName: "Feast"),
-			RestaurantInfo(restName: "Hedrick", photoName: "Hedrick"),
-			RestaurantInfo(restName: "Bruin Plate", photoName: "Bruin Plate")]
+		var bOpen = Time(hour: 8, minute: 0, pm: false)
+		var bClose = Time(hour: 10, minute: 0, pm: false)
 		
-		var exampleBreakfast = MealInfo(meal: .Breakfast, rests: example)
-//		var exampleBrunch = MealInfo(rests: [])
-		var exampleLunch = MealInfo(meal: .Lunch, rests: example)
-		var exampleDinner = MealInfo(meal: .Dinner, rests: example)
+		var lOpen = Time(hour: 1, minute: 0, pm: false) // 11
+		var lClose = Time(hour: 2, minute: 0, pm: true)
+		
+		var dOpen = Time(hour: 5, minute: 0, pm: true)
+		var dClose = Time(hour: 8, minute: 0, pm: true)
+		
+		// RestaurantInfo(name: "Hedrick", hall: .Hedrick, openTime: bOpen, closeTime: bClose),
+		var breakfast = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: bOpen, closeTime: bClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: bOpen, closeTime: bClose)]
+		var lunch = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: lOpen, closeTime: lClose)]
+		var dinner = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: dOpen, closeTime: dClose)]
+		
+		var exampleBreakfast = MealInfo(meal: .Breakfast, rests: breakfast)
+		var exampleLunch = MealInfo(meal: .Lunch, rests: lunch)
+		var exampleDinner = MealInfo(meal: .Dinner, rests: dinner)
 		
 		return DayInfo(date: date, restForMeal: [exampleBreakfast, exampleLunch, exampleDinner])
 	}
