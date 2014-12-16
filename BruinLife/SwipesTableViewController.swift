@@ -130,7 +130,7 @@ class SwipesTableViewController: UITableViewController {
     }
 	
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
-		var index = Int(scrollView.contentOffset.x / scrollView.frame.size.width)
+		var index = Int((scrollView.contentOffset.x / scrollView.frame.size.width) + 0.5) // the + 0.5 is to round evenly
 		
 		var reload = true
 		

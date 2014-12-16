@@ -67,7 +67,7 @@ class ScrollSelectionView: UIView {
 			label.removeFromSuperview()
 		}
 		
-		scrollView.frame = CGRect(origin: CGPointZero, size: CGSize(width: bounds.width * 0.7, height: bounds.height))
+		scrollView.frame = CGRect(origin: CGPointZero, size: CGSize(width: 160.0 + bounds.width * 0.2, height: bounds.height))
 		scrollView.center = center
 		scrollView.contentSize = CGSize(width: scrollView.bounds.width * CGFloat(entries.count), height: bounds.height)
 		scrollView.contentOffset = CGPointZero
