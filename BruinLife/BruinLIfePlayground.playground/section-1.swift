@@ -99,27 +99,32 @@ NSDate *d = [calendar dateBySettingHour:10 minute:0 second:0 ofDate:[NSDate date
 //var calendar = NSCalendar(calendarIdentifier: NSGregorianCalendar) as NSCalendar?
 
 
-var imageView = UIImageView(image: imageWithView(cal))
-var effect = UIBlurEffect(style: .Light) // Light, Dark, ExtraLight
-var blurView = UIVisualEffectView(effect: effect)
-var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: effect))
+//var imageView = UIImageView(image: imageWithView(cal))
+//var effect = UIBlurEffect(style: .Light) // Light, Dark, ExtraLight
+//var blurView = UIVisualEffectView(effect: effect)
+//var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: effect))
 
 
 //blurView.frame = CGRect(origin: CGPointZero, size: CGSize(width: 100, height: 100))
 
-blurView.contentView.addSubview(vibrancyView)
+//blurView.contentView.addSubview(vibrancyView)
 //vibrancyView.contentView.addSubview(imageView)
 
-var blurringView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 200))
-
-blurView.frame = blurringView.bounds
-vibrancyView.frame = blurView.bounds
-
-blurringView.addSubview(imageView)
-blurringView.insertSubview(blurView, aboveSubview: imageView)
+//var blurringView = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 200))
+//
+//blurView.frame = blurringView.bounds
+//vibrancyView.frame = blurView.bounds
+//
+//blurringView.addSubview(imageView)
+//blurringView.insertSubview(blurView, aboveSubview: imageView)
 
 //blurView.contentView.addSubview(imageView)
+//blurView
 
-
-
-blurView
+var currentDate = NSDate(timeIntervalSinceNow: 12*60*60)
+formatter.dateFormat = "H:m a"
+var timeString = formatter.stringFromDate(currentDate)
+var weekOfYear = NSCalendar.currentCalendar().component(.CalendarUnitWeekOfYear, fromDate: currentDate)
+var dayOfWeekCalUnit = NSCalendar.currentCalendar().component(NSCalendarUnit.CalendarUnitWeekday, fromDate: currentDate)
+var hour = NSCalendar.currentCalendar().component(.CalendarUnitHour, fromDate: currentDate)
+var minute = NSCalendar.currentCalendar().component(.CalendarUnitMinute, fromDate: currentDate)

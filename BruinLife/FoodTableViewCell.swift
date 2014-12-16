@@ -46,25 +46,46 @@ class FoodTableViewCell: UITableViewCell {
 		updateDisplay()
 	}
 	
-	func openCloseDates() -> (openDate: NSDate?, closeDate: NSDate?) {
+	func openCloseDates() -> (openDate: NSDate?, closeDate: NSDate?, earlyCloseDate: NSDate?) {
 		var cal = NSCalendar.currentCalendar()
 		
 		var closeHour = (information?.closeTime.hour)! % 24
 		
 		var openDate = cal.dateBySettingHour((information?.openTime.hour)!, minute: (information?.openTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
 		var closeDate = cal.dateBySettingHour(closeHour, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
+		var earlyCloseDate: NSDate? = nil
 		
 		var incrementDay = (information?.closeTime.hour >= 24)
-		closeDate = closeDate!.dateByAddingTimeInterval(incrementDay ? 48*60*60 : 0)
+		if incrementDay {
+			earlyCloseDate = closeDate!.dateByAddingTimeInterval(timeInDay)
+		}
 		
-		return (openDate, closeDate)
+		closeDate = closeDate!.dateByAddingTimeInterval(incrementDay ? 2*timeInDay : 0)
+		
+		return (openDate, closeDate, earlyCloseDate)
 	}
 	
 	func open() -> Bool {
 		var openDate: NSDate?
 		var closeDate: NSDate?
-		(openDate, closeDate) = openCloseDates()
-		return openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0
+		var earlyCloseDate: NSDate?
+		var open = true
+		
+		(open, openDate, closeDate, earlyCloseDate) = openReturnDates()
+		
+		return open
+	}
+	
+	func openReturnDates() -> (open: Bool, openDate: NSDate?, closeDate: NSDate?, earlyCloseDate: NSDate?) {
+		var openDate: NSDate?
+		var closeDate: NSDate?
+		var earlyCloseDate: NSDate?
+		(openDate, closeDate, earlyCloseDate) = openCloseDates()
+		
+		var beforeEarlyCloseDate = earlyCloseDate != nil && earlyCloseDate?.timeIntervalSinceNow >= 0
+		var open = beforeEarlyCloseDate || ( openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0 )
+		
+		return (open, openDate, closeDate, earlyCloseDate)
 	}
 	
 	func parallaxImageWithScrollPercent(perc: CGFloat) {

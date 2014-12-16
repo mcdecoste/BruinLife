@@ -9,8 +9,6 @@
 import UIKit
 
 class RestaurantTableViewCell: FoodTableViewCell {
-	
-	
 	var nameLabel = UILabel() // just name of restaurant
 	var openLabel = UILabel() // big text: OPEN or CLOSED
 	var hoursLabel = UILabel() // "until [close time]" "[open] - [close]"
@@ -46,18 +44,16 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		
 		var openDate: NSDate?
 		var closeDate: NSDate?
-		(openDate, closeDate) = openCloseDates()
-		var open = openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0
-		var willOpenToday = true
+		var earlyCloseDate: NSDate?
+		var open = true
+		(open, openDate, closeDate, earlyCloseDate) = openReturnDates()
 		
 		var formatter = NSDateFormatter()
 		formatter.timeZone = NSTimeZone(name: "Americas/Los_Angeles")
 		formatter.dateFormat = "M/d"
 		
-		willOpenToday = formatter.stringFromDate(NSDate()) == formatter.stringFromDate(date!)
-		
+		var willOpenToday = formatter.stringFromDate(NSDate()) == formatter.stringFromDate(date!)
 		formatter.dateFormat = "h:mm a"
-		
 		
 		var openTime = formatter.stringFromDate(openDate!)
 		var closeTime = formatter.stringFromDate(closeDate!)

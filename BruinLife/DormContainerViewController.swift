@@ -82,12 +82,8 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		// Dispose of any resources that can be recreated.
 	}
 	
-	func secsInDay() -> Int {
-		return 24 * 60 * 60
-	}
-	
 	func nextWeek() -> Array<DayInfo> {
-		var secondsInDay = secsInDay()
+		var secondsInDay = Int(timeInDay)
 		
 		var week: Array<DayInfo> = []
 		for index in 0...6 {
@@ -109,7 +105,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		let dOpen = Time(hour: 5, minute: 0, pm: true)
 		let dClose = Time(hour: 8, minute: 0, pm: true)
 		
-		// RestaurantInfo(name: "Hedrick", hall: .Hedrick, openTime: bOpen, closeTime: bClose),
 		var breakfast = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: bOpen, closeTime: bClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: bOpen, closeTime: bClose)]
 		var lunch = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: lOpen, closeTime: lClose)]
 		var dinner = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: dOpen, closeTime: dClose)]

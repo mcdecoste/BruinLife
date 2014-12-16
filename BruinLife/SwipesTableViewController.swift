@@ -9,89 +9,150 @@
 import UIKit
 
 class SwipesTableViewController: UITableViewController {
-
-    override func viewDidLoad() {
+	let scrollID = "swipeCell"
+	let displayID = "displayCell"
+	
+	let planTag = 10
+	let weekTag = 20
+	let dowTag = 30
+	
+	var model = SwipeModel()
+	
+	var planView: ScrollSelectionView?
+	var weekView: ScrollSelectionView?
+	var dayView: ScrollSelectionView?
+	
+	override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+		
+		self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Now", style: .Plain, target: self, action: "revertToToday")
+		self.navigationItem.title = "Swipe Counter"
     }
-
-    override func didReceiveMemoryWarning() {
+	
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		revertToToday()
+		
+		for (index, plan) in enumerate(model.plans) {
+			if plan == model.mealPlan.plan {
+				planView?.scrollToPage(index)
+				break
+			}
+		}
+	}
+	
+	override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
 
     // MARK: - Table view data source
-
+	
+	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+		return indexPath.section == 0 ? 66.0 : 88.0
+	}
+	
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 0
+		return 3
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return 0
+		
+		// row 0: pick plan
+		// row 1: pick week
+		// row 2: pick day of week
+		
+		// row 0: display # of swipes
+		
+		return section == 0 ? 3 : 1
     }
-
-    /*
+	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as UITableViewCell
-
-        // Configure the cell...
-
-        return cell
+		if indexPath.section == 0 {
+			let cell = tableView.dequeueReusableCellWithIdentifier(scrollID, forIndexPath: indexPath) as ScrollSelectionTableViewCell
+			
+			cell.selectionStyle = .None
+			
+			// Configure the cell...
+			var strArray: Array<String> = []
+			
+			switch indexPath.row {
+			case 0:
+				planView = cell.clipView
+				planView?.scrollView.tag = planTag
+				for (index, plan) in enumerate(model.plans) {
+					strArray.append(plan.rawValue)
+				}
+			case 1:
+				weekView = cell.clipView
+				weekView?.scrollView.tag = weekTag
+				for (index, week) in enumerate(model.weeks) {
+					strArray.append(week.rawValue)
+				}
+			default:
+				dayView = cell.clipView
+				dayView?.scrollView.tag = dowTag
+				for (index, dow) in enumerate(model.daysOfWeek) {
+					strArray.append(dow.rawValue)
+				}
+			}
+			cell.clipView.scrollView.delegate = self
+			cell.setEntries(strArray)
+			cell.layoutSubviews()
+			
+			return cell
+		} else {
+			let cell = tableView.dequeueReusableCellWithIdentifier(displayID, forIndexPath: indexPath) as UITableViewCell
+			
+			cell.selectionStyle = .None
+			
+			// Configure the cell...
+			var swipes = 0
+			if indexPath.section == 1 {
+				swipes = model.swipesForSelectedDayAndTime()
+			} else {
+				swipes = model.swipesForSelectedDay()
+			}
+			
+			cell.textLabel?.font = .systemFontOfSize(20)
+			
+			if indexPath.section == 1 {
+				cell.textLabel?.text = "You should have \(swipes) swipe" + (swipes == 1 ? "" : "s") + " left."
+			} else {
+				cell.textLabel?.text = "After today you'll have \(swipes)."
+			}
+			
+			return cell
+		}
     }
-    */
-
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the specified item to be editable.
-        return true
-    }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if editingStyle == .Delete {
-            // Delete the row from the data source
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
-        } else if editingStyle == .Insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(tableView: UITableView, moveRowAtIndexPath fromIndexPath: NSIndexPath, toIndexPath: NSIndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
-    }
-    */
-
+	
+	override func scrollViewDidScroll(scrollView: UIScrollView) {
+		var index = Int(scrollView.contentOffset.x / scrollView.frame.size.width)
+		
+		var reload = true
+		
+		switch scrollView.tag {
+		case planTag:
+			model.mealPlan.setPlan(model.plans[index])
+		case weekTag:
+			model.selectedWeek = index
+		case dowTag:
+			model.selectedDay = index
+		default:
+			reload = false
+		}
+		
+		if reload {
+			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1), NSIndexPath(forRow: 0, inSection: 2)], withRowAnimation: .None)
+		}
+	}
+	
+	func revertToToday() {
+		model.resetToCurrent()
+		weekView?.scrollToPage(model.selectedWeek)
+		dayView?.scrollToPage(model.selectedDay)
+	}
 }
