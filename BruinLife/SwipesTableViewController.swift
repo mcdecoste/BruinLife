@@ -55,20 +55,25 @@ class SwipesTableViewController: UITableViewController {
 	
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // Return the number of sections.
-		return 3
+		return 2
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // Return the number of rows in the section.
 		
-		// row 0: pick plan
-		// row 1: pick week
-		// row 2: pick day of week
-		
+		// row 0: pick plan		row 1: pick week	row 2: pick day of week
 		// row 0: display # of swipes
-		
 		return section == 0 ? 3 : 1
     }
+	
+	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		switch section {
+		case 0:
+			return nil
+		default:
+			return "Will likely differ from your actual swipe count."
+		}
+	}
 	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if indexPath.section == 0 {
@@ -146,7 +151,7 @@ class SwipesTableViewController: UITableViewController {
 		}
 		
 		if reload {
-			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1), NSIndexPath(forRow: 0, inSection: 2)], withRowAnimation: .None)
+			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None) // , NSIndexPath(forRow: 0, inSection: 2)
 		}
 	}
 	

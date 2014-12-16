@@ -15,20 +15,17 @@ class ScrollSelectionView: UIView {
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
-		
 		scrollView.frame = frame
 		scrollViewSetup()
 	}
 	
 	override init() {
 		super.init()
-		
 		scrollViewSetup()
 	}
 
 	required init(coder aDecoder: NSCoder) {
 	    super.init(coder: aDecoder)
-		
 		scrollViewSetup()
 	}
 	
@@ -67,7 +64,7 @@ class ScrollSelectionView: UIView {
 			label.removeFromSuperview()
 		}
 		
-		scrollView.frame = CGRect(origin: CGPointZero, size: CGSize(width: 160.0 + bounds.width * 0.2, height: bounds.height))
+		scrollView.frame = CGRect(origin: CGPointZero, size: CGSize(width: 136.0 + bounds.width * 0.2, height: bounds.height))
 		scrollView.center = center
 		scrollView.contentSize = CGSize(width: scrollView.bounds.width * CGFloat(entries.count), height: bounds.height)
 		scrollView.contentOffset = CGPointZero

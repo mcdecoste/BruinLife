@@ -26,10 +26,4 @@ class ScrollSelectionTableViewCell: UITableViewCell {
 		clipView.frame = bounds
 		clipView.layoutSubviews()
 	}
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
 }
