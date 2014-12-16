@@ -22,9 +22,22 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var information = DayInfo()
 	var pageIndex = 0
 	
-    override func viewDidLoad() {
-        super.viewDidLoad()
-    }
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		var currMeal = currentMeal()
+		var sectionToShow = 0
+		
+		for (index, mealInfo) in enumerate(information.restForMeal) {
+			if mealInfo.meal.rawValue == currMeal.rawValue {
+				sectionToShow = index
+			}
+			if mealInfo.meal == .Brunch && (currMeal == .Breakfast || currMeal == .Lunch) {
+				sectionToShow = index
+			}
+		}
+		tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+	}
 	
 	/// Returns the desired title for the page view controller's navbar
 	func preferredTitle() -> String {

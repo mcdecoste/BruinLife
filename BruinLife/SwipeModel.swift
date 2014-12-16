@@ -112,17 +112,6 @@ class SwipeModel: NSObject {
 		resetToCurrent()
 	}
 	
-	/// Returns the most likely Meal given the time
-	func currentMeal() -> MealType {
-		var hour = NSCalendar.currentCalendar().component(.CalendarUnitHour, fromDate: NSDate())
-		
-		if hour <= 9 { return .Breakfast }
-		if hour <= 10 { return .Brunch } // no real distinction
-		if hour <= 4 { return .Lunch }
-		if hour <= 8 { return .Dinner }
-		return .LateNight
-	}
-	
 	/// Returns the current week and quarter (since they're related)
 	func currentWeekAndQuarter() -> (Int, QuarterType?) {
 		var cal = NSCalendar.currentCalendar()
@@ -166,5 +155,13 @@ class SwipeModel: NSObject {
 		(selectedWeek, currentQuarter) = currentWeekAndQuarter()
 		selectedDay = currentDayOfWeek()
 		selectedMeal = currentMeal()
+	}
+	
+	func sameAsCurrent() -> Bool {
+		var (currWeek, currQuar) = currentWeekAndQuarter()
+		var currDay = currentDayOfWeek()
+		var currMeal = currentMeal()
+		
+		return selectedWeek == currWeek && selectedDay == currDay && selectedMeal == currMeal
 	}
 }

@@ -153,6 +153,8 @@ class SwipesTableViewController: UITableViewController {
 		if reload {
 			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None) // , NSIndexPath(forRow: 0, inSection: 2)
 		}
+		
+		self.navigationItem.leftBarButtonItem?.enabled = !model.sameAsCurrent()
 	}
 	
 	func revertToToday() {

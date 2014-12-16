@@ -30,7 +30,7 @@ class ScrollSelectionView: UIView {
 	}
 	
 	func scrollViewSetup() {
-		backgroundColor = .clearColor()
+		scrollView.backgroundColor = .clearColor()
 		
 		scrollView.pagingEnabled = true
 		scrollView.showsHorizontalScrollIndicator = false
