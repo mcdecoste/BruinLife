@@ -16,6 +16,8 @@ enum DaysOfWeekNames: String {
 	case Fri = "Friday"
 	case Sat = "Saturday"
 	case Sun = "Sunday"
+	
+	static let allValues = [Mon, Tues, Wed, Thur, Fri, Sat, Sun]
 }
 
 enum WeekNames: String {
@@ -30,12 +32,17 @@ enum WeekNames: String {
 	case Nine = "Week Nine"
 	case Ten = "Week Ten"
 	case Final = "Finals Week"
+	
+	static let allValues = [One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Final]
 }
 
 enum QuarterType: String {
 	case Fall = "Fall"
 	case Winter = "Winter"
 	case Spring = "Spring"
+	
+	static let allValues = [Fall, Winter, Spring]
+	static let startValues = [(1, Winter), (14, Spring), (41, Fall)]
 }
 
 enum MealPlanType: String {
@@ -44,63 +51,50 @@ enum MealPlanType: String {
 	case G19 = "Gold 19"
 	case G14 = "Gold 14"
 	case C11 = "Cub 11"
-}
-
-class MealPlan {
-	let ws19: Array<Int> = [19, 16, 13, 10, 7, 4, 2, 0]
-	let ws14: Array<Int> = [14, 12, 10, 8, 6, 4, 2, 0]
-	let ws11: Array<Int> = [11, 9, 8, 6, 5, 3, 1, 0]
 	
-	var plan: MealPlanType = .BP19
-	var weeklySwipes: Array<Int> = [19, 16, 13, 10, 7, 4, 2, 0]
-	var rollover = true
+	static let allValues = [C11, G14, G19, BP14, BP19]
 	
-	/// This is the only way you should ever change the plan
-	func setPlan(plan: MealPlanType) {
-		self.plan = plan
-		
-		rollover = (self.plan == .BP19 || self.plan == .BP14)
-		
-		switch self.plan {
+	func hasRollover() -> Bool {
+		return self == .BP19 || self == .BP14
+	}
+	
+	func weeklySwipes() -> Array<Int> {
+		switch self {
 		case .BP19, .G19:
-			weeklySwipes = ws19
+			return [19, 16, 13, 10, 7, 4, 2, 0]
 		case .BP14, .G14:
-			weeklySwipes = ws14
+			return [14, 12, 10, 8, 6, 4, 2, 0]
 		default:
-			weeklySwipes = ws11
+			return [11, 9, 8, 6, 5, 3, 1, 0]
 		}
 	}
 	
-	/// Returns the number of swipes you should have left after swiping for a meal
-	func swipesLeft(week: Int, day: Int, meal: MealType) -> Int {
-		var swipesPerMeal = [MealType.Breakfast : 0]
-		
-		switch weeklySwipes[day] - weeklySwipes[day + 1] {
+	func mealSwipeDict(swipes: Int) -> Dictionary<MealType, Int> {
+		switch swipes {
 		case 3:
-			swipesPerMeal = [.LateNight : 0, .Dinner : 0, .Lunch : 1, .Brunch : 2, .Breakfast : 2]
+			return [.LateNight : 0, .Dinner : 0, .Lunch : 1, .Brunch : 2, .Breakfast : 2]
 		case 2:
-			swipesPerMeal = [.LateNight : 0, .Dinner : 0, .Lunch : 1, .Brunch : 1, .Breakfast : 1]
-		default: // 0 or 1
-			swipesPerMeal = [.LateNight : 0, .Dinner : 0, .Lunch : 0, .Brunch : 0, .Breakfast : 0]
+			return [.LateNight : 0, .Dinner : 0, .Lunch : 1, .Brunch : 1, .Breakfast : 1]
+		default:
+			return [.LateNight : 0, .Dinner : 0, .Lunch : 0, .Brunch : 0, .Breakfast : 0]
 		}
-		
-		var swipes = weeklySwipes[day + 1]
-		
-		if plan == .BP19 || plan == .BP14 {
-			swipes += (10 - week) * weeklySwipes[0]
-		}
-		
-		return swipesPerMeal[meal]! + swipes
+	}
+	
+	func swipesLeft(week: Int, day: Int, meal: MealType) -> Int {
+		let weeklySwipes = self.weeklySwipes()
+		let weekRemainder = weeklySwipes[day + 1]
+		let rolloverSwipes = self.hasRollover() ? (10 - week) * self.weeklySwipes()[0] : 0
+		return mealSwipeDict(weeklySwipes[day] - weeklySwipes[day + 1])[meal]! + weekRemainder + rolloverSwipes
 	}
 }
 
 class SwipeModel: NSObject {
-	let startWeeks: Array <(Int, QuarterType)> = [(1, .Winter), (14, .Spring), (41, .Fall)]
-	let plans: Array<MealPlanType> = [.C11, .G14, .G19, .BP14, .BP19]
-	let weeks: Array<WeekNames> = [.One, .Two, .Three, .Four, .Five, .Six, .Seven, .Eight, .Nine, .Ten, .Final]
-	let daysOfWeek: Array<DaysOfWeekNames> = [.Mon, .Tues, .Wed, .Thur, .Fri, .Sat, .Sun]
+	let startWeeks = QuarterType.startValues
+	let plans = MealPlanType.allValues
+	let weeks = WeekNames.allValues
+	let daysOfWeek = DaysOfWeekNames.allValues
 	
-	var mealPlan = MealPlan()
+	var mealPlan: MealPlanType = .BP19
 	var selectedWeek = 0
 	var selectedDay = 0
 	var selectedMeal = MealType.Lunch
@@ -108,7 +102,6 @@ class SwipeModel: NSObject {
 	
 	override init() {
 		super.init()
-		mealPlan.setPlan(.BP19)
 		resetToCurrent()
 	}
 	

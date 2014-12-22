@@ -35,7 +35,7 @@ class SwipesTableViewController: UITableViewController {
 		revertToToday()
 		
 		for (index, plan) in enumerate(model.plans) {
-			if plan == model.mealPlan.plan {
+			if plan == model.mealPlan {
 				planView?.scrollToPage(index)
 				break
 			}
@@ -141,7 +141,7 @@ class SwipesTableViewController: UITableViewController {
 		
 		switch scrollView.tag {
 		case planTag:
-			model.mealPlan.setPlan(model.plans[index])
+			model.mealPlan = model.plans[index]
 		case weekTag:
 			model.selectedWeek = index
 		case dowTag:

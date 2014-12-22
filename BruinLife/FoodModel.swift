@@ -49,23 +49,15 @@ enum Halls: String {
 	case Cafe1919 = "Cafe 1919"
 	case Rendezvous = "Rendezvous"
 	case BruinCafe = "Bruin Cafe"
-}
-
-struct HallInfo {
-	var hall: Halls = .DeNeve
-	var openImage: UIImage?
-	var closedImage: UIImage?
 	
-	init(hall: Halls) {
-		self.hall = hall
-		openImage = UIImage(named: hall.rawValue + " Dark")
-		closedImage = UIImage(named: hall.rawValue + " BW")
+	func image(open: Bool) -> UIImage? {
+		return UIImage(named: (self.rawValue + (open ? " Dark" : " BW")))
 	}
 }
 
 struct RestaurantInfo {
 	var name: String = ""
-	var hall: HallInfo = HallInfo(hall: .DeNeve)
+	var hall: Halls = .DeNeve
 	
 	var openTime: Time = Time(hour: 8, minute: 0, pm: false)
 	var closeTime: Time = Time(hour: 5, minute: 0, pm: true)
@@ -74,24 +66,24 @@ struct RestaurantInfo {
 	
 	init(name: String, hall: Halls) {
 		self.name = name
-		self.hall = HallInfo(hall: hall)
+		self.hall = hall
 	}
 	
 	init(name: String, hall: Halls, openTime: Time, closeTime: Time) {
 		self.name = name
-		self.hall = HallInfo(hall: hall)
+		self.hall = hall
 		self.openTime = openTime
 		self.closeTime = closeTime
 	}
 	
 	init(name: String, hall: Halls, foods: Array<FoodInfo>) {
 		self.name = name
-		self.hall = HallInfo(hall: hall)
+		self.hall = hall
 		self.foods = foods
 	}
 	
 	func image(open: Bool) -> UIImage? {
-		return open ? hall.openImage : hall.closedImage
+		return hall.image(open)
 	}
 }
 
@@ -122,6 +114,19 @@ enum Nutrient: String {
 	case VitC = "Vitamin C"
 	case Calcium = "Calcium"
 	case Iron = "Iron"
+	
+	func unit() -> String {
+		switch self {
+		case .Cal, .FatCal:
+			return ""
+		case .TotFat, .SatFat, .TransFat, .TotCarb, .DietFiber, .Sugar, .Protein:
+			return "g"
+		case .Chol, .Sodium:
+			return "mg"
+		case .VitA, .VitC, .Calcium, .Iron:
+			return "%"
+		}
+	}
 }
 
 struct NutritionListing {
@@ -132,16 +137,7 @@ struct NutritionListing {
 	init(type: Nutrient, measure: String) {
 		self.type = type
 		self.measure = measure
-		switch type {
-		case .Cal, .FatCal:
-			self.unit = ""
-		case .TotFat, .SatFat, .TransFat, .TotCarb, .DietFiber, .Sugar, .Protein:
-			self.unit = "g"
-		case .Chol, .Sodium:
-			self.unit = "mg"
-		case .VitA, .VitC, .Calcium, .Iron:
-			self.unit = "%"
-		}
+		self.unit = type.unit()
 	}
 }
 
