@@ -29,19 +29,12 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var sectionToShow = 0
 		
 		for (index, mealInfo) in enumerate(information.restForMeal) {
-			if mealInfo.meal.rawValue == currMeal.rawValue {
+			if mealInfo.meal.equalTo(currMeal) {
 				sectionToShow = index
-			}
-			if mealInfo.meal == .Brunch && (currMeal == .Breakfast || currMeal == .Lunch) {
-				sectionToShow = index
+				break // not necessary?
 			}
 		}
 		tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
-	}
-	
-	/// Returns the desired title for the page view controller's navbar
-	func preferredTitle() -> String {
-		return ""
 	}
 	
 	// MARK: Table view data source
@@ -50,8 +43,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		// Return the number of sections.
-		return information.restForMeal.count
+		return information.restForMeal.count // Return the number of sections.
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -96,7 +88,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	// MARK: Delegate
-	
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		var cell = (tableView.cellForRowAtIndexPath(indexPath))!
 		if cell.reuseIdentifier == kRestCellID {
@@ -107,7 +98,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	// MARK: Utilities
-	
 	func hasDisplayForIndexPath(indexPath: NSIndexPath) -> Bool {
 		var targetedRow = indexPath.row + 1
 		
@@ -200,7 +190,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
-	
 	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
 		return .None
 	}

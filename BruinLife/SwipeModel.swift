@@ -106,7 +106,7 @@ class SwipeModel: NSObject {
 	}
 	
 	/// Returns the current week and quarter (since they're related)
-	func currentWeekAndQuarter() -> (Int, QuarterType?) {
+	func currentWeekAndQuarter() -> (week: Int, quarter: QuarterType?) {
 		var cal = NSCalendar.currentCalendar()
 		var weekOfYear = cal.component(.CalendarUnitWeekOfYear, fromDate: NSDate())
 		
@@ -140,6 +140,7 @@ class SwipeModel: NSObject {
 	func swipesForSelectedDay() -> Int {
 		return mealPlan.swipesLeft(selectedWeek, day: selectedDay, meal: .Dinner)
 	}
+	
 	func swipesForSelectedDayAndTime() -> Int {
 		return mealPlan.swipesLeft(selectedWeek, day: selectedDay, meal: selectedMeal)
 	}
@@ -151,10 +152,9 @@ class SwipeModel: NSObject {
 	}
 	
 	func sameAsCurrent() -> Bool {
-		var (currWeek, currQuar) = currentWeekAndQuarter()
-		var currDay = currentDayOfWeek()
-		var currMeal = currentMeal()
-		
-		return selectedWeek == currWeek && selectedDay == currDay && selectedMeal == currMeal
+		var sameWeek = selectedWeek == currentWeekAndQuarter().week
+		var sameDay = selectedDay == currentDayOfWeek()
+		var sameMeal = selectedMeal == currentMeal()
+		return sameWeek && sameDay && sameMeal
 	}
 }

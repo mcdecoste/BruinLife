@@ -145,4 +145,16 @@ enum MealType : String {
 	case Dinner = "Dinner"
 	case Brunch = "Brunch"
 	case LateNight = "Late Night"
+	
+	func equalTo(otherMeal: MealType) -> Bool {
+		if (self == .Breakfast || self == .Lunch) && otherMeal == .Brunch {
+			return true
+		}
+		
+		if (otherMeal == .Breakfast || self == .Lunch) && self == .Brunch {
+			return true
+		}
+		
+		return self.rawValue == otherMeal.rawValue
+	}
 }

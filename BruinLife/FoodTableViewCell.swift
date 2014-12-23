@@ -21,12 +21,6 @@ class FoodTableViewCell: UITableViewCell {
 		addSubview(backgroundImageView!)
 		clipsToBounds = true
     }
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
 	
 	/// Preferred method for setting information and date, as this also changes the display
 	func changeInfo(info: RestaurantInfo, andDate newDate: NSDate) {

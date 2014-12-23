@@ -9,8 +9,6 @@
 import UIKit
 
 class DormTableViewController: FoodTableViewController {
-//	var information = DayInfo()
-	
 	var dormCVC: DormContainerViewController?
 	
 	override func viewDidLoad() {
@@ -19,7 +17,8 @@ class DormTableViewController: FoodTableViewController {
 		setTitle()
 	}
 	
-	override func preferredTitle() -> String {
+	/// Returns the desired title for the page view controller's navbar
+	func preferredTitle() -> String {
 		var formatter = NSDateFormatter()
 		
 		let dateFormat = "EEEE, MMMM d"
