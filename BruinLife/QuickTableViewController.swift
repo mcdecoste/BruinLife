@@ -22,17 +22,17 @@ class QuickTableViewController: FoodTableViewController {
 	func exampleDay() -> DayInfo {
 		var date = NSDate()
 		
-		let bOpen = Time(hour: 7, minute: 0, pm: false)
-		let bClose = Time(hour: 11, minute: 0, pm: false)
+		let bOpen = Time(hour: 7, minute: 0)
+		let bClose = Time(hour: 11, minute: 0)
 		
-		let lOpen = Time(hour: 11, minute: 0, pm: false) // 11
-		let lClose = Time(hour: 2, minute: 0, pm: true)
+		let lOpen = Time(hour: 11, minute: 0) // 11
+		let lClose = Time(hour: 14, minute: 0)
 		
-		let dOpen = Time(hour: 5, minute: 0, pm: true)
-		let dClose = Time(hour: 8, minute: 0, pm: true)
+		let dOpen = Time(hour: 17, minute: 0)
+		let dClose = Time(hour: 20, minute: 0)
 		
-		let nOpen = Time(hour: 9, minute: 0, pm: true)
-		let nClose = Time(hour: 2, minute: 0, pm: false, nextDay: true) // 2 AM, the next morning
+		let nOpen = Time(hour: 21, minute: 0)
+		let nClose = Time(hour: 26, minute: 0) // 2 AM, the next morning
 		
 		var breakfast = [RestaurantInfo(name: "Bruin Cafe", hall: .BruinCafe, openTime: bOpen, closeTime: bClose), RestaurantInfo(name: "Rendezvous", hall: .Rendezvous, openTime: bOpen, closeTime: bClose)]
 		var lunch = [RestaurantInfo(name: "Bruin Cafe", hall: .BruinCafe, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Cafe 1919", hall: .Cafe1919, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Rendezvous", hall: .Rendezvous, openTime: lOpen, closeTime: lClose)]

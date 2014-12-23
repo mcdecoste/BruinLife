@@ -20,7 +20,3 @@ func currentMeal() -> MealType {
 	if hour <= 8 { return .Dinner }
 	return .LateNight
 }
-
-//class Helpers: NSObject {
-//   
-//}

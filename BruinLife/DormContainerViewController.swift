@@ -96,14 +96,14 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func exampleDayForDate(date: NSDate) -> DayInfo {
-		let bOpen = Time(hour: 7, minute: 0, pm: false)
-		let bClose = Time(hour: 11, minute: 0, pm: false)
+		let bOpen = Time(hour: 7, minute: 0)
+		let bClose = Time(hour: 11, minute: 0)
 		
-		let lOpen = Time(hour: 11, minute: 0, pm: false) // 11
-		let lClose = Time(hour: 2, minute: 0, pm: true)
+		let lOpen = Time(hour: 11, minute: 0) // 11
+		let lClose = Time(hour: 14, minute: 0)
 		
-		let dOpen = Time(hour: 5, minute: 0, pm: true)
-		let dClose = Time(hour: 8, minute: 0, pm: true)
+		let dOpen = Time(hour: 17, minute: 0)
+		let dClose = Time(hour: 20, minute: 0)
 		
 		var breakfast = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: bOpen, closeTime: bClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: bOpen, closeTime: bClose)]
 		var lunch = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: lOpen, closeTime: lClose)]

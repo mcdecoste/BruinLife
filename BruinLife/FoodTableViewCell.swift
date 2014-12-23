@@ -46,46 +46,15 @@ class FoodTableViewCell: UITableViewCell {
 		updateDisplay()
 	}
 	
-	func openCloseDates() -> (openDate: NSDate?, closeDate: NSDate?, earlyCloseDate: NSDate?) {
-		var cal = NSCalendar.currentCalendar()
-		
-		var closeHour = (information?.closeTime.hour)! % 24
-		
-		var openDate = cal.dateBySettingHour((information?.openTime.hour)!, minute: (information?.openTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
-		var closeDate = cal.dateBySettingHour(closeHour, minute: (information?.closeTime.minute)!, second: 0, ofDate: date!, options: NSCalendarOptions())
-		var earlyCloseDate: NSDate? = nil
-		
-		var incrementDay = (information?.closeTime.hour >= 24)
-		if incrementDay {
-			earlyCloseDate = closeDate!.dateByAddingTimeInterval(timeInDay)
-		}
-		
-		closeDate = closeDate!.dateByAddingTimeInterval(incrementDay ? 2*timeInDay : 0)
-		
-		return (openDate, closeDate, earlyCloseDate)
+	func dateInfo() -> (open: Bool, openDate: NSDate?, closeDate: NSDate?) {
+		var openDate = information?.openTime.timeDateForDate(date)
+		var closeDate = information?.closeTime.timeDateForDate(date)
+		var open = (openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0)
+		return (open, openDate, closeDate)
 	}
 	
 	func open() -> Bool {
-		var openDate: NSDate?
-		var closeDate: NSDate?
-		var earlyCloseDate: NSDate?
-		var open = true
-		
-		(open, openDate, closeDate, earlyCloseDate) = openReturnDates()
-		
-		return open
-	}
-	
-	func openReturnDates() -> (open: Bool, openDate: NSDate?, closeDate: NSDate?, earlyCloseDate: NSDate?) {
-		var openDate: NSDate?
-		var closeDate: NSDate?
-		var earlyCloseDate: NSDate?
-		(openDate, closeDate, earlyCloseDate) = openCloseDates()
-		
-		var beforeEarlyCloseDate = earlyCloseDate != nil && earlyCloseDate?.timeIntervalSinceNow >= 0
-		var open = beforeEarlyCloseDate || ( openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0 )
-		
-		return (open, openDate, closeDate, earlyCloseDate)
+		return dateInfo().open
 	}
 	
 	func parallaxImageWithScrollPercent(perc: CGFloat) {

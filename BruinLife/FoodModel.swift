@@ -11,33 +11,21 @@ import UIKit
 struct Time {
 	var hour: Int
 	var minute: Int
-	var pm: Bool = true
 	
-	init(hour: Int, minute: Int, pm: Bool) {
-		self.hour = pm ? hour + 12 : hour
+	/// give hour in 24 hour notation (can be more than 24 hours if past midnight)
+	init(hour: Int, minute: Int) {
+		self.hour = hour
 		self.minute = minute
-		self.pm = pm
 	}
 	
-	init(hour: Int, minute: Int, pm: Bool, nextDay: Bool) {
-		self.hour = pm ? hour + 12 : hour
-		self.minute = minute
-		self.pm = pm
+	func timeDateForDate(dayDate: NSDate?) -> NSDate? {
+		// set dayDate back to midnight
+		var midnight = NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())
 		
-		if (nextDay) {
-			self.hour += 24
-		}
+		// add in the necessary time
+		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
+		return midnight?.dateByAddingTimeInterval(interval)
 	}
-}
-
-struct DayInfo {
-	var date = NSDate()
-	var restForMeal: Array<MealInfo> = []
-}
-
-struct MealInfo {
-	var meal: MealType = .Lunch
-	var rests: Array<RestaurantInfo> = []
 }
 
 enum Halls: String {
@@ -55,12 +43,22 @@ enum Halls: String {
 	}
 }
 
+struct DayInfo {
+	var date = NSDate()
+	var restForMeal: Array<MealInfo> = []
+}
+
+struct MealInfo {
+	var meal: MealType = .Lunch
+	var rests: Array<RestaurantInfo> = []
+}
+
 struct RestaurantInfo {
 	var name: String = ""
 	var hall: Halls = .DeNeve
 	
-	var openTime: Time = Time(hour: 8, minute: 0, pm: false)
-	var closeTime: Time = Time(hour: 5, minute: 0, pm: true)
+	var openTime: Time = Time(hour: 8, minute: 0)
+	var closeTime: Time = Time(hour: 17, minute: 0)
 	
 	var foods: Array<FoodInfo> = [FoodInfo(name: "Thai Tea"), FoodInfo(name: "Sushi Bowl"), FoodInfo(name: "Angel Hair Pasta"), FoodInfo(name: "Turkey Burger"), FoodInfo(name: "Carne Asada Fries"), FoodInfo(name: "Barbeque Chicken Quesadilla"), FoodInfo(name: "Yogurt"), FoodInfo(name: "Pepperoni Pizza"), FoodInfo(name: "Chocolate Shake with Oreo")]
 	
@@ -148,7 +146,3 @@ enum MealType : String {
 	case Brunch = "Brunch"
 	case LateNight = "Late Night"
 }
-
-//class FoodModel: NSObject {
-//   
-//}

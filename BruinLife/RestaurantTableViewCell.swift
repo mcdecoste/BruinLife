@@ -44,15 +44,14 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		
 		var openDate: NSDate?
 		var closeDate: NSDate?
-		var earlyCloseDate: NSDate?
 		var open = true
-		(open, openDate, closeDate, earlyCloseDate) = openReturnDates()
+		(open, openDate, closeDate) = dateInfo()
 		
 		var formatter = NSDateFormatter()
 		formatter.timeZone = NSTimeZone(name: "Americas/Los_Angeles")
 		formatter.dateFormat = "M/d"
 		
-		var willOpenToday = formatter.stringFromDate(NSDate()) == formatter.stringFromDate(date!)
+		var openToday = formatter.stringFromDate(NSDate()) == formatter.stringFromDate(date!)
 		formatter.dateFormat = "h:mm a"
 		
 		var openTime = formatter.stringFromDate(openDate!)
@@ -64,7 +63,7 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		if openDate?.timeIntervalSinceNow >= 0 { // still to open
 			closedText = "\(openTime) — \(closeTime)" // gives more information this way
 		} else { // was open, now is closed
-			if willOpenToday {
+			if openToday {
 				closedText = "as of \(closeTime)"
 			} else {
 				closedText = "\(openTime) — \(closeTime)" // should never happen
