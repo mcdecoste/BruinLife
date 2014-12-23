@@ -18,6 +18,7 @@ enum DaysOfWeekNames: String {
 	case Sun = "Sunday"
 	
 	static let allValues = [Mon, Tues, Wed, Thur, Fri, Sat, Sun]
+	static let allRawValues = [Mon.rawValue, Tues.rawValue, Wed.rawValue, Thur.rawValue, Fri.rawValue, Sat.rawValue, Sun.rawValue]
 }
 
 enum WeekNames: String {
@@ -34,6 +35,7 @@ enum WeekNames: String {
 	case Final = "Finals Week"
 	
 	static let allValues = [One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Final]
+//	static let allRawValues = [One.rawValue, Two.rawValue, Three.rawValue, Four.rawValue, Five.rawValue, Six.rawValue, Seven.rawValue, Eight.rawValue, Nine.rawValue, Ten.rawValue, Final.rawValue]
 }
 
 enum QuarterType: String {
@@ -42,6 +44,7 @@ enum QuarterType: String {
 	case Spring = "Spring"
 	
 	static let allValues = [Fall, Winter, Spring]
+//	static let allRawValues = [Fall.rawValue, Winter.rawValue, Spring.rawValue]
 	static let startValues = [(1, Winter), (14, Spring), (41, Fall)]
 }
 
@@ -53,6 +56,7 @@ enum MealPlanType: String {
 	case C11 = "Cub 11"
 	
 	static let allValues = [C11, G14, G19, BP14, BP19]
+//	static let allRawValues = [C11.rawValue, G14.rawValue, G19.rawValue, BP14.rawValue, BP19.rawValue]
 	
 	func hasRollover() -> Bool {
 		return self == .BP19 || self == .BP14

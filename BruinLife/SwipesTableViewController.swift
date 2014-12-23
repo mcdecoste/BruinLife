@@ -48,22 +48,18 @@ class SwipesTableViewController: UITableViewController {
     }
 
     // MARK: - Table view data source
-	
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 		return indexPath.section == 0 ? 66.0 : 88.0
 	}
 	
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        // Return the number of sections.
-		return 2
+        return 2 // Return the number of sections.
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Return the number of rows in the section.
-		
 		// row 0: pick plan		row 1: pick week	row 2: pick day of week
 		// row 0: display # of swipes
-		return section == 0 ? 3 : 1
+		return section == 0 ? 3 : 1 // Return the number of rows in the section.
     }
 	
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
@@ -78,7 +74,6 @@ class SwipesTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if indexPath.section == 0 {
 			let cell = tableView.dequeueReusableCellWithIdentifier(scrollID, forIndexPath: indexPath) as ScrollSelectionTableViewCell
-			
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
@@ -115,43 +110,48 @@ class SwipesTableViewController: UITableViewController {
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
-			var swipes = 0
-			if indexPath.section == 1 {
-				swipes = model.swipesForSelectedDayAndTime()
-			} else {
-				swipes = model.swipesForSelectedDay()
-			}
-			
+			var swipes = model.swipesForSelectedDayAndTime()
 			cell.textLabel?.font = .systemFontOfSize(20)
-			
-			if indexPath.section == 1 {
-				cell.textLabel?.text = "You should have \(swipes) swipe" + (swipes == 1 ? "" : "s") + " left."
-			} else {
-				cell.textLabel?.text = "After today you'll have \(swipes)."
-			}
+//			cell.textLabel?.text = "You should have \(swipes) swipe" + (swipes == 1 ? "" : "s") + " left."
+			cell.textLabel?.attributedText = attributedDisplay(swipes)
 			
 			return cell
 		}
     }
 	
+	func attributedDisplay(swipes: Int) -> NSAttributedString {
+		var titlePart1 = "You should have "
+		var titlePart2 = "\(swipes)"
+		var titlePart3 = " swipe" + (swipes == 1 ? "" : "s") + " left."
+		var attrString = NSMutableAttributedString(string: titlePart1 + titlePart2 + titlePart3)
+		var range = NSMakeRange(NSString(string: titlePart1).length, NSString(string: titlePart2).length)
+		attrString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(28), range: range)
+		attrString.addAttribute(NSBaselineOffsetAttributeName, value: -3.0, range: range)
+		return NSAttributedString(attributedString: attrString)
+	}
+	
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
 		var index = Int((scrollView.contentOffset.x / scrollView.frame.size.width) + 0.5) // the + 0.5 is to round evenly
+		if index < 0 { index = 0 }
 		
 		var reload = true
 		
 		switch scrollView.tag {
 		case planTag:
+			if index >= model.plans.count { index = model.plans.count - 1 }
 			model.mealPlan = model.plans[index]
 		case weekTag:
+			if index >= model.weeks.count { index = model.weeks.count - 1 }
 			model.selectedWeek = index
 		case dowTag:
+			if index >= model.daysOfWeek.count { index = model.daysOfWeek.count - 1 }
 			model.selectedDay = index
 		default:
 			reload = false
 		}
 		
 		if reload {
-			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None) // , NSIndexPath(forRow: 0, inSection: 2)
+			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None)
 		}
 		
 		self.navigationItem.leftBarButtonItem?.enabled = !model.sameAsCurrent()
