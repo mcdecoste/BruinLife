@@ -33,19 +33,10 @@ class SwipesTableViewController: UITableViewController {
 		super.viewDidAppear(animated)
 		
 		revertToToday()
-		
 		for (index, plan) in enumerate(model.plans) {
-			if plan == model.mealPlan {
-				planView?.scrollToPage(index)
-				break
-			}
+			if plan == model.mealPlan { planView?.scrollToPage(index) }
 		}
 	}
-	
-	override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
 
     // MARK: - Table view data source
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -63,12 +54,7 @@ class SwipesTableViewController: UITableViewController {
     }
 	
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		switch section {
-		case 0:
-			return nil
-		default:
-			return "Will likely differ from your actual swipe count."
-		}
+		return section == 1 ? "Will likely differ from your actual swipe count." : nil
 	}
 	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -83,21 +69,15 @@ class SwipesTableViewController: UITableViewController {
 			case 0:
 				planView = cell.clipView
 				planView?.scrollView.tag = planTag
-				for (index, plan) in enumerate(model.plans) {
-					strArray.append(plan.rawValue)
-				}
+				for (index, plan) in enumerate(model.plans) { strArray.append(plan.rawValue) }
 			case 1:
 				weekView = cell.clipView
 				weekView?.scrollView.tag = weekTag
-				for (index, week) in enumerate(model.weeks) {
-					strArray.append(week.rawValue)
-				}
+				for (index, week) in enumerate(model.weeks) { strArray.append(week.rawValue) }
 			default:
 				dayView = cell.clipView
 				dayView?.scrollView.tag = dowTag
-				for (index, dow) in enumerate(model.daysOfWeek) {
-					strArray.append(dow.rawValue)
-				}
+				for (index, dow) in enumerate(model.daysOfWeek) { strArray.append(dow.rawValue) }
 			}
 			cell.clipView.scrollView.delegate = self
 			cell.setEntries(strArray)
@@ -106,14 +86,17 @@ class SwipesTableViewController: UITableViewController {
 			return cell
 		} else {
 			let cell = tableView.dequeueReusableCellWithIdentifier(displayID, forIndexPath: indexPath) as UITableViewCell
-			
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
 			var swipes = model.swipesForSelectedDayAndTime()
 			cell.textLabel?.font = .systemFontOfSize(20)
-//			cell.textLabel?.text = "You should have \(swipes) swipe" + (swipes == 1 ? "" : "s") + " left."
-			cell.textLabel?.attributedText = attributedDisplay(swipes)
+			
+			if cell.bounds.width <= 320 { // 4" screen or smaller
+				cell.textLabel?.text = "You should have \(swipes) swipe" + (swipes == 1 ? "" : "s") + " left."
+			} else {
+				cell.textLabel?.attributedText = attributedDisplay(swipes)
+			}
 			
 			return cell
 		}

@@ -41,10 +41,16 @@ class FoodTableViewCell: UITableViewCell {
 	}
 	
 	func dateInfo() -> (open: Bool, openDate: NSDate?, closeDate: NSDate?) {
-		var openDate = information?.openTime.timeDateForDate(date)
-		var closeDate = information?.closeTime.timeDateForDate(date)
-		var open = (openDate?.timeIntervalSinceNow <= 0 && closeDate?.timeIntervalSinceNow >= 0)
-		return (open, openDate, closeDate)
+		var openDate1 = information?.openTime.timeDateForDate(date)
+		var closeDate1 = information?.closeTime.timeDateForDate(date)
+		
+		var openDate2 = information?.openTime.timeDateForDate(date?.dateByAddingTimeInterval(-timeInDay))
+		var closeDate2 = information?.closeTime.timeDateForDate(date?.dateByAddingTimeInterval(-timeInDay))
+		
+		var open1 = (openDate1?.timeIntervalSinceNow <= 0 && closeDate1?.timeIntervalSinceNow >= 0)
+		var open2 = (openDate2?.timeIntervalSinceNow <= 0 && closeDate2?.timeIntervalSinceNow >= 0)
+		var open = open1 || open2
+		return (open, openDate1, closeDate1)
 	}
 	
 	func open() -> Bool {
