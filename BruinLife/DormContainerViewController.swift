@@ -33,7 +33,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	// UIPageViewControllerDataSource
-	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
 		viewController.navigationItem.leftBarButtonItem = nil
 		viewController.navigationItem.rightBarButtonItem = nil
@@ -59,7 +58,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	// UIPageViewControllerDelegate
-	
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
 		if completed {
 			// update the index
@@ -77,18 +75,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		return navVC
 	}
 	
-	override func didReceiveMemoryWarning() {
-		super.didReceiveMemoryWarning()
-		// Dispose of any resources that can be recreated.
-	}
-	
 	func nextWeek() -> Array<DayInfo> {
-		var secondsInDay = Int(timeInDay)
-		
 		var week: Array<DayInfo> = []
 		for index in 0...6 {
-			var interval = index * secondsInDay
-			var daysDate = NSDate(timeIntervalSinceNow: Double(interval))
+			var daysDate = NSDate(timeIntervalSinceNow: Double(index * Int(timeInDay)))
 			week.append(exampleDayForDate(daysDate))
 		}
 		

@@ -128,3 +128,31 @@ var weekOfYear = NSCalendar.currentCalendar().component(.CalendarUnitWeekOfYear,
 var dayOfWeekCalUnit = NSCalendar.currentCalendar().component(NSCalendarUnit.CalendarUnitWeekday, fromDate: currentDate)
 var hour = NSCalendar.currentCalendar().component(.CalendarUnitHour, fromDate: currentDate)
 var minute = NSCalendar.currentCalendar().component(.CalendarUnitMinute, fromDate: currentDate)
+
+
+
+/*
+NSError * error = nil;
+NSString * htmlString = @"<html><body><p>Test</body></html>";
+
+NSXMLDocument * doc =
+[[NSXMLDocument alloc]
+initWithXMLString: htmlString
+options: NSXMLDocumentTidyHTML
+error: &error];
+NSLog(@"Error is: %@", error);
+NSLog(@"Doc is: %@", doc);
+NSLog(@"Root element is: %@", [doc rootElement]);
+NSLog(@"Root element's children are: %@", [[doc rootElement] children]);
+
+
+
+var error: NSError? = nil
+var foodURL = NSURL(string: "http://menu.ha.ucla.edu/foodpro/default.asp?location=07&date=1%2F8%2F2015")
+//var htmlString = NSString(contentsOfURL: foodURL, encoding: NSUTF8StringEncoding, error: error)
+var htmlString = NSString(contentsOfURL: foodURL!, encoding: NSUTF8StringEncoding, error: &error)
+error?.description
+*/
+
+
+
