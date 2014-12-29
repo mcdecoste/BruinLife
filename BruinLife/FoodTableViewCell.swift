@@ -13,6 +13,7 @@ class FoodTableViewCell: UITableViewCell {
 	var date: NSDate?
 	var foodVC: FoodTableViewController?
 	var backgroundImageView: UIImageView?
+	var isHall: Bool = true
 	
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -23,15 +24,16 @@ class FoodTableViewCell: UITableViewCell {
     }
 	
 	/// Preferred method for setting information and date, as this also changes the display
-	func changeInfo(info: RestaurantInfo, andDate newDate: NSDate) {
-		information = info
-		date = newDate
+	func changeInfo(info: RestaurantInfo, andDate date: NSDate, isHall: Bool) {
+		self.information = info
+		self.date = date
+		self.isHall = isHall
 		
 		var imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: information?.image(open()))
+		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		

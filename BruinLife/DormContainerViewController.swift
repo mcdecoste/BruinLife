@@ -95,15 +95,24 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		let dOpen = Time(hour: 17, minute: 0)
 		let dClose = Time(hour: 20, minute: 0)
 		
-		var breakfast = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: bOpen, closeTime: bClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: bOpen, closeTime: bClose)]
-		var lunch = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: lOpen, closeTime: lClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: lOpen, closeTime: lClose)]
-		var dinner = [RestaurantInfo(name: "De Neve", hall: .DeNeve, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Covel", hall: .Covel, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Feast", hall: .Feast, openTime: dOpen, closeTime: dClose), RestaurantInfo(name: "Bruin Plate", hall: .BruinPlate, openTime: dOpen, closeTime: dClose)]
+		var breakfast = MealInfo(halls: [.DeNeve : RestaurantInfo(hall: .DeNeve), .BruinPlate : RestaurantInfo(hall: .BruinPlate)])
+		var lunch = MealInfo(halls: [.DeNeve : RestaurantInfo(hall: .DeNeve), .Covel : RestaurantInfo(hall: .Covel), .Feast : RestaurantInfo(hall: .Feast), .BruinPlate : RestaurantInfo(hall: .BruinPlate)])
+		var dinner = MealInfo(halls: [.DeNeve : RestaurantInfo(hall: .DeNeve), .Covel : RestaurantInfo(hall: .Covel), .Feast : RestaurantInfo(hall: .Feast), .BruinPlate : RestaurantInfo(hall: .BruinPlate)])
 		
-		var exampleBreakfast = MealInfo(meal: .Breakfast, rests: breakfast)
-		var exampleLunch = MealInfo(meal: .Lunch, rests: lunch)
-		var exampleDinner = MealInfo(meal: .Dinner, rests: dinner)
+		for key in breakfast.halls.keys {
+			breakfast.halls[key]?.openTime = bOpen
+			breakfast.halls[key]?.closeTime = bClose
+		}
+		for key in lunch.halls.keys {
+			breakfast.halls[key]?.openTime = lOpen
+			breakfast.halls[key]?.closeTime = lClose
+		}
+		for key in dinner.halls.keys {
+			dinner.halls[key]?.openTime = dOpen
+			dinner.halls[key]?.closeTime = dClose
+		}
 		
-		return DayInfo(date: date, restForMeal: [exampleBreakfast, exampleLunch, exampleDinner])
+		return DayInfo(date: date, meals: [.Breakfast : breakfast, .Lunch : lunch, .Dinner : dinner])
 	}
 	
 	func jumpToFirst() {

@@ -25,7 +25,7 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		nameLabel.minimumScaleFactor = 0.8
 		nameLabel.baselineAdjustment = .AlignBaselines
 		
-		openLabel.font = UIFont.systemFontOfSize(20) // 14 ()
+		openLabel.font = UIFont.systemFontOfSize(22) // 14 () // was 20 (14)
 		openLabel.textAlignment = .Right
 		
 		hoursLabel.font = UIFont.systemFontOfSize(12) // 9 (11)
@@ -70,8 +70,7 @@ class RestaurantTableViewCell: FoodTableViewCell {
 			}
 		}
 		
-		nameLabel.text = information?.name
-		
+		nameLabel.text = information?.name(isHall)
 		openLabel.textColor = open ? .greenColor() : .redColor()
 		openLabel.text = open ? "Open" : "Closed"
 		

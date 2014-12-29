@@ -20,7 +20,11 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var displayCell: MenuTableViewCell?
 	
 	var information = DayInfo()
+	var dateMeals: Array<MealType> = []
+	
 	var pageIndex = 0
+	
+	var isHall = true
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
@@ -28,13 +32,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var currMeal = currentMeal()
 		var sectionToShow = 0
 		
-		for (index, mealInfo) in enumerate(information.restForMeal) {
-			if mealInfo.meal.equalTo(currMeal) {
+		for (index, meal) in enumerate(orderedMeals(Array(information.meals.keys))) {
+			if meal.equalTo(currMeal) {
 				sectionToShow = index
-				break // not necessary?
+				break
 			}
 		}
-		tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: UITableViewScrollPosition.Top, animated: true)
+		tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 	}
 	
 	// MARK: Table view data source
@@ -43,30 +47,33 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		return information.restForMeal.count // Return the number of sections.
+		return information.meals.count // Return the number of sections.
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		var rowCount = information.restForMeal[section].rests.count
+		var currDate = information.date
+		var sectionMeal = dateMeals[section]
+		var mealInfo = (information.meals[sectionMeal])!
 		
-		if (hasInlineFoodDisplay() && displayIndexPath.section == section) {
-			rowCount++
-		}
-		
+		var rowCount = mealInfo.halls.count
+		if (hasInlineFoodDisplay() && displayIndexPath.section == section) { rowCount++ }
 		return rowCount
 	}
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		return information.restForMeal[section].meal.rawValue
+		return dateMeals[section].rawValue
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
-		var itemData = information.restForMeal[indexPath.section].rests[modelRow]
-		var selectionStyle: UITableViewCellSelectionStyle = .None
+		
+		var allHalls = (information.meals[dateMeals[Int(indexPath.section)]]?.halls)!
+		var hallForRow = Array(allHalls.keys)[modelRow]
+		var restaurant = (allHalls[hallForRow])!
 		
 		var cellID = kRestCellID
+		var selectionStyle: UITableViewCellSelectionStyle = .None
 		if indexPathHasFoodDisplay(indexPath) {
 			cellID = kFoodDisplayID
 			selectionStyle = .Default
@@ -78,7 +85,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		cell.selectionStyle = selectionStyle
 		cell.frame = cellFrame
 		cell.foodVC = self
-		cell.changeInfo(itemData, andDate: information.date)
+		cell.changeInfo(restaurant, andDate: information.date, isHall: isHall)
 		
 		if cellID == kFoodDisplayID {
 			displayCell = cell as? MenuTableViewCell
@@ -111,10 +118,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		if hasInlineFoodDisplay() {
 			// why not just ask about displayCell?
 			if displayCell?.scrollView != nil { // found the MenuTableViewCell
-				var index = displayIndexPath.row - 1
-				var itemData = information.restForMeal[displayIndexPath.section].rests[index]
+				var displayRow = displayIndexPath.row - 1
 				
-				displayCell?.updateInformation(itemData, controller: self)
+				var allHalls = (information.meals[dateMeals[Int(displayIndexPath.section)]]?.halls)!
+				var hallForRow = Array(allHalls.keys)[displayRow]
+				var restaurant = (allHalls[hallForRow])!
+				
+				displayCell?.updateInformation(restaurant, controller: self)
 			}
 		}
 	}
@@ -187,6 +197,31 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		foodVC.setFood((sender?.food)!)
+	}
+	
+	// TODO: replace this with real data
+	func exampleDay() -> DayInfo {
+		var date = NSDate()
+		
+		var breakfast = exampleDayHelper([.DeNeve, .BruinPlate], open: Time(hour: 7, minute: 0), close: Time(hour: 11, minute: 0))
+		var lunch = exampleDayHelper([.DeNeve, .BruinPlate, .Covel, .Feast], open: Time(hour: 11, minute: 0), close: Time(hour: 14, minute: 0))
+		var dinner = exampleDayHelper([.DeNeve, .BruinPlate, .Covel, .Feast], open: Time(hour: 17, minute: 0), close: Time(hour: 20, minute: 0))
+		
+		return DayInfo(date: date, meals: [.Breakfast : breakfast, .Lunch : lunch, .Dinner : dinner])
+	}
+	
+	/// helper method for showing example day
+	func exampleDayHelper(halls: Array<Halls>, open: Time, close: Time) -> MealInfo {
+		var meal: Dictionary<Halls, RestaurantInfo> = Dictionary()
+		for hall in halls { meal[hall] = RestaurantInfo(hall: hall) }
+		
+		var mealInfo = MealInfo(halls: meal)
+		for key in mealInfo.halls.keys {
+			mealInfo.halls[key]?.openTime = open
+			mealInfo.halls[key]?.closeTime = close
+		}
+		
+		return mealInfo
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate

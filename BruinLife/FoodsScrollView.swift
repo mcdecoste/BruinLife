@@ -47,7 +47,7 @@ class FoodsScrollView: UIScrollView {
 		
 		for food in foods {
 			let theFrame = frameForIndex(index, numRows: numRows)
-			var display = FoodDisplay(info: food, ind: index, frame: theFrame)
+			var display = FoodDisplay(food: food, index: index, frame: theFrame)
 			display.tag = index
 			display.addTarget(self, action: "hitFood:", forControlEvents: .TouchUpInside)
 			displays.append(display)

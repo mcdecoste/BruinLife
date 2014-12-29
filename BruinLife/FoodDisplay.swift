@@ -9,12 +9,12 @@
 import UIKit
 
 class FoodDisplay: UIButton { // was UIView
-	var food = FoodInfo(name: "DEFAULT")
+	var food: FoodInfo
 	var index = 0
 	
-	init(info: FoodInfo, ind: Int, frame: CGRect) {
-		food = info
-		index = ind
+	init(food: FoodInfo, index: Int, frame: CGRect) {
+		self.food = food
+		self.index = index
 		
 		// establish frame
 		super.init(frame: frame)
@@ -34,6 +34,7 @@ class FoodDisplay: UIButton { // was UIView
 	}
 	
 	required init(coder aDecoder: NSCoder) {
+		self.food = FoodInfo(name: "CODER", type: .Regular)
 	    super.init()
 	}
 }

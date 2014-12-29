@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct Time {
+class Time {
 	var hour: Int
 	var minute: Int
 	
@@ -18,13 +18,22 @@ struct Time {
 		self.minute = minute
 	}
 	
-	func timeDateForDate(dayDate: NSDate?) -> NSDate? {
-		// set dayDate back to midnight
-		var midnight = NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())
+	init(hoursString: String) {
+		// before	: = hour	|	after	: = minute	|	last two characters = am/pm
+		var colonRange = hoursString.rangeOfString(":")
+		var remainder = hoursString.substringFromIndex((colonRange?.endIndex)!)
+		var isPM = remainder.substringFromIndex((remainder.rangeOfString("m")?.startIndex.predecessor())!) == "pm"
 		
-		// add in the necessary time
+		self.hour = (hoursString.substringToIndex((colonRange?.startIndex)!) as NSString).integerValue + (isPM ? 12 : 0)
+		self.minute = (remainder.substringToIndex((colonRange?.startIndex.predecessor())!) as NSString).integerValue
+		
+		if self.hour % 12 == 0 { self.hour -= 12 }
+		if self.hour < 7 { self.hour += 24 }
+	}
+	
+	func timeDateForDate(dayDate: NSDate?) -> NSDate? {
 		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
-		return midnight?.dateByAddingTimeInterval(interval)
+		return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())?.dateByAddingTimeInterval(interval)
 	}
 }
 
@@ -38,65 +47,138 @@ enum Halls: String {
 	case Rendezvous = "Rendezvous"
 	case BruinCafe = "Bruin Cafe"
 	
-	func image(open: Bool) -> UIImage? {
-		return UIImage(named: (self.rawValue + (open ? " Dark" : " BW")))
+	static let allDiningHalls: Array<Halls> = [.DeNeve, .BruinPlate, .Feast, .Hedrick, .Covel]
+	
+	/// the exact order of this is importnat to prevent collisions between Rendezvous and Hedrick
+	static let allRestaurants: Array<Halls> = [.Cafe1919, .Rendezvous, .BruinCafe, .DeNeve, .BruinPlate, .Feast, .Hedrick, .Covel]
+	
+	/// returns the URL code (note that 03 and 05 have NO association)
+	func urlCode() -> String? {
+		switch self {
+		case .DeNeve:
+			return "01"
+		case .Covel:
+			return "07"
+		case .Hedrick:
+			return "06"
+		case .Feast:
+			return "04"
+		case .BruinPlate:
+			return "02"
+		default:
+			return nil
+		}
+	}
+	
+	static func hallForString(string: String) -> Halls? {
+		// preprocess String to prevent multiple matches?
+		for hall in Halls.allRestaurants {
+			if string.lowercaseString.rangeOfString(hall.rawValue.lowercaseString) != nil { return hall }
+		}
+		return nil
+	}
+	
+	func imageName(open: Bool) -> String {
+		return self.rawValue + (open ? " Dark" : " BW")
+	}
+	
+	func displayName(isHall: Bool) -> String {
+		if isHall { return self.rawValue }
+		
+		switch self {
+		case .DeNeve:
+			return "Late Night"
+		case .Hedrick:
+			return "Night Hedrick"
+		default:
+			return self.rawValue
+		}
 	}
 }
 
-struct DayInfo {
+class DayInfo {
 	var date = NSDate()
-	var restForMeal: Array<MealInfo> = []
+	var meals: Dictionary<MealType, MealInfo> = Dictionary()
+	var allHours: Dictionary<MealType, Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>> = Dictionary()
+	
+	init() {
+		
+	}
+	
+	init(date: NSDate, meals: Dictionary<MealType, MealInfo>) {
+		self.date = date
+		self.meals = meals
+	}
 }
 
-struct MealInfo {
-	var meal: MealType = .Lunch
-	var rests: Array<RestaurantInfo> = []
+class MealInfo {
+	var halls: Dictionary<Halls, RestaurantInfo>
+	
+	init (halls: Dictionary<Halls, RestaurantInfo>) {
+		self.halls = halls
+	}
 }
 
-struct RestaurantInfo {
-	var name: String = ""
-	var hall: Halls = .DeNeve
+class RestaurantInfo {
+	var hall: Halls // redundant storage?
 	
 	var openTime: Time = Time(hour: 8, minute: 0)
 	var closeTime: Time = Time(hour: 17, minute: 0)
 	
-	var foods: Array<FoodInfo> = [FoodInfo(name: "Thai Tea"), FoodInfo(name: "Sushi Bowl"), FoodInfo(name: "Angel Hair Pasta"), FoodInfo(name: "Turkey Burger"), FoodInfo(name: "Carne Asada Fries"), FoodInfo(name: "Barbeque Chicken Quesadilla"), FoodInfo(name: "Yogurt"), FoodInfo(name: "Pepperoni Pizza"), FoodInfo(name: "Chocolate Shake with Oreo")]
+	var sections: Array<SectionInfo>
 	
-	init(name: String, hall: Halls) {
-		self.name = name
+	init(hall: Halls) {
 		self.hall = hall
+		self.sections = []
 	}
 	
-	init(name: String, hall: Halls, openTime: Time, closeTime: Time) {
-		self.name = name
-		self.hall = hall
-		self.openTime = openTime
-		self.closeTime = closeTime
+	func name(isHall: Bool) -> String {
+		return hall.displayName(isHall)
 	}
 	
-	init(name: String, hall: Halls, foods: Array<FoodInfo>) {
-		self.name = name
-		self.hall = hall
-		self.foods = foods
-	}
-	
-	func image(open: Bool) -> UIImage? {
-		return hall.image(open)
+	func imageName(open: Bool) -> String {
+		return hall.imageName(open)
 	}
 }
 
-struct FoodInfo {
+class SectionInfo {
 	var name: String = ""
-	
-	// TODO: add nutritional information
-	var nutrients: Array<NutritionListing> = [NutritionListing(type: .Cal, measure: "100")]
+	var foods: Array<MainFoodInfo> = []
 	
 	init(name: String) {
 		self.name = name
 	}
 }
 
-enum Nutrient: String {
+class FoodInfo {
+	var name: String
+	var type: FoodType
+	var nutrition: Dictionary<Nutrient, NutritionListing> = Dictionary()
+	var ingredients: String = ""
+	var description: String = ""
+	var countryCode: String = ""
+	
+	init(name: String, type: FoodType) {
+		self.name = name
+		self.type = type
+	}
+}
+
+class MainFoodInfo: FoodInfo {
+	var withFood: SubFoodInfo?
+}
+
+class SubFoodInfo: FoodInfo {
+	
+}
+
+enum FoodType: String {
+	case Regular = ""
+	case Vegetarian = "Veget."
+	case Vegan = "Vegan"
+}
+
+enum Nutrient: String { // , Equatable
 	case Cal = "Calories"
 	case FatCal = "Calories From Fat"
 	case TotFat = "Total Fat"
@@ -125,17 +207,41 @@ enum Nutrient: String {
 			return "%"
 		}
 	}
+	
+	static let allValues: Array<Nutrient> = [.Cal, .FatCal, .TotFat, .SatFat, .TransFat, .Chol, .Sodium, .TotCarb, .DietFiber, .Sugar, .Protein, .VitA, .VitC, .Calcium, .Iron]
+	static let allMatchingValues: Array<String> = ["Calories", "Fat Cal.", "Total Fat", "Saturated Fat", "Trans Fat", "Cholesterol", "Sodium", "Total Carbohydrate", "Dietary Fiber", "Sugars", "Protein", "Vitamin A", "Vitamin C", "Calcium", "Iron"]
+	internal static let allDailyValues: Array<Int?> = [nil, nil, 65, 20, nil, 300, 1500, 130, 40, nil, nil, 100, 100, 100, 100]
+	
+	static func typeForName(name: String) -> Nutrient? {
+		var index = 0
+		var matchingValues = Nutrient.allMatchingValues
+		for value in matchingValues {
+			if name.rangeOfString(value) != nil { break }
+			index++
+		}
+		if index > matchingValues.count-1 { return nil }
+		return Nutrient.allValues[index]
+	}
 }
 
-struct NutritionListing {
+class NutritionListing {
 	var type: Nutrient = .Cal
 	var unit: String
 	var measure: String = ""
+	var percent: Int? = 0 // out of 100
 	
 	init(type: Nutrient, measure: String) {
 		self.type = type
 		self.measure = measure
 		self.unit = type.unit()
+		self.percent = dailyValue()
+	}
+	
+	internal func dailyValue() -> Int? {
+		if let dailyValue = Nutrient.allDailyValues[(find(Nutrient.allValues, self.type))!] {
+			return Int(100.0 * ((measure as NSString).floatValue) / Float(dailyValue))
+		}
+		return nil
 	}
 }
 
@@ -150,5 +256,23 @@ enum MealType : String {
 		var one = (self == .Breakfast || self == .Lunch) && otherMeal == .Brunch
 		var two = (otherMeal == .Breakfast || self == .Lunch) && self == .Brunch
 		return one || two || self.rawValue == otherMeal.rawValue
+	}
+	
+	func urlCode() -> String? {
+		switch self {
+		case .Breakfast:
+			return "1"
+		case .Lunch, .Brunch:
+			return "2"
+		case .Dinner:
+			return "3"
+		default:
+			return nil
+		}
+	}
+	
+	static func allMeals(date: NSDate) -> Array<MealType> {
+		var dow = NSCalendar.currentCalendar().component(.WeekdayCalendarUnit, fromDate: date)
+		return (dow == 1 || dow == 7) ? [.Brunch, .Dinner] : [.Breakfast, .Lunch, .Dinner]
 	}
 }

@@ -15,18 +15,29 @@ class MenuTableViewCell: FoodTableViewCell {
 	var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: UIBlurEffect(style: .Light)))
 	
 	override func updateDisplay() {
-		scrollView?.setFoods((information?.foods)!, vc: foodVC!, newFrame: frame)
+		scrollView?.setFoods(allFoodsForSections((information?.sections)!), vc: foodVC!, newFrame: frame)
+	}
+	
+	func allFoodsForSections(sections: Array<SectionInfo>) -> Array<MainFoodInfo> {
+		var allFoods: Array<MainFoodInfo> = []
+		
+		for section in sections {
+			for mainFood in section.foods {
+				allFoods.append(mainFood)
+			}
+		}
+		return allFoods
 	}
 	
 	func updateInformation(info: RestaurantInfo, controller: FoodTableViewController) {
 		information = info
 		foodVC = controller
 		scrollView?.foodVC = foodVC
-		scrollView?.setFoods((information?.foods)!)
+		scrollView?.setFoods(allFoodsForSections((information?.sections)!))
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: information?.image(open()))
+		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
 		backgroundImageView?.frame = bounds
 		backgroundImageView?.clipsToBounds = true
 		backgroundImageView?.contentMode = .ScaleAspectFill

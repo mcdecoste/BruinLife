@@ -74,7 +74,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return (food?.nutrients.count)!
+		return (food?.nutrition.count)!
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -84,7 +84,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell = NutritionTableViewCell(style: .Default, reuseIdentifier: reuse)
 		}
 		
-		var nl: NutritionListing = (food?.nutrients[indexPath.row])!
+		var nl = (food?.nutrition[Nutrient.allValues[indexPath.row]])!
 		
 		cell?.selectionStyle = .None
 		cell?.textLabel?.text = nl.type.rawValue
