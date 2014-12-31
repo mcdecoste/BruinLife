@@ -8,7 +8,7 @@
 
 import UIKit
 
-class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate {
+class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 	let kRestCellID = "FoodCell"
 	var kRestCellHeight = 88
 	let kFoodDisplayID = "DisplayCell"
@@ -117,14 +117,14 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func updateFoodDisplay() {
 		if hasInlineFoodDisplay() {
 			// why not just ask about displayCell?
-			if displayCell?.scrollView != nil { // found the MenuTableViewCell
+			if displayCell?.collectionView != nil { // found the MenuTableViewCell
 				var displayRow = displayIndexPath.row - 1
 				
 				var allHalls = (information.meals[dateMeals[Int(displayIndexPath.section)]]?.halls)!
 				var hallForRow = Array(allHalls.keys)[displayRow]
 				var restaurant = (allHalls[hallForRow])!
 				
-				displayCell?.updateInformation(restaurant, controller: self)
+				displayCell?.changeInfo(restaurant, andDate: information.date, isHall: isHall)
 			}
 		}
 	}
@@ -199,31 +199,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		foodVC.setFood((sender?.food)!)
 	}
 	
-	// TODO: replace this with real data
-	func exampleDay() -> DayInfo {
-		var date = NSDate()
-		
-		var breakfast = exampleDayHelper([.DeNeve, .BruinPlate], open: Time(hour: 7, minute: 0), close: Time(hour: 11, minute: 0))
-		var lunch = exampleDayHelper([.DeNeve, .BruinPlate, .Covel, .Feast], open: Time(hour: 11, minute: 0), close: Time(hour: 14, minute: 0))
-		var dinner = exampleDayHelper([.DeNeve, .BruinPlate, .Covel, .Feast], open: Time(hour: 17, minute: 0), close: Time(hour: 20, minute: 0))
-		
-		return DayInfo(date: date, meals: [.Breakfast : breakfast, .Lunch : lunch, .Dinner : dinner])
-	}
-	
-	/// helper method for showing example day
-	func exampleDayHelper(halls: Array<Halls>, open: Time, close: Time) -> MealInfo {
-		var meal: Dictionary<Halls, RestaurantInfo> = Dictionary()
-		for hall in halls { meal[hall] = RestaurantInfo(hall: hall) }
-		
-		var mealInfo = MealInfo(halls: meal)
-		for key in mealInfo.halls.keys {
-			mealInfo.halls[key]?.openTime = open
-			mealInfo.halls[key]?.closeTime = close
-		}
-		
-		return mealInfo
-	}
-	
 	// MARK: UIPopoverPresentationControllerDelegate
 	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
 		return .None
@@ -232,10 +207,52 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: ScrollViewDelegate
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
-		var cells = tableView.visibleCells() as Array<FoodTableViewCell>
-		for cell in cells {
-			var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
-			cell.parallaxImageWithScrollPercent(percent)
+		if scrollView == tableView {
+			var cells = tableView.visibleCells() as Array<FoodTableViewCell>
+			for cell in cells {
+				var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
+				cell.parallaxImageWithScrollPercent(percent)
+			}
 		}
+	}
+	
+	// MARK: UICollectionViewDataSource
+	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return (displayCell?.information?.sections[section].foods.count)!
+	}
+	
+	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+		var restaurant = displayCell?.information
+		var food = restaurant?.sections[indexPath.section].foods[indexPath.row]
+		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as FoodCollectionViewCell
+		cell.set(restaurant!.sections[indexPath.section].foods[indexPath.row], bounds: boundsForRow(indexPath.row))
+		println("cell \(cell.frame)")
+		return cell
+	}
+	
+	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+		return (displayCell?.information?.sections.count)!
+	}
+	
+	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
+		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as SectionCollectionReusableView
+		header.setTitle((displayCell?.information?.sections[indexPath.section].name)!)
+		println("header \(header.frame)")
+		return header
+	}
+	
+	// MARK: UICollectionViewDelegate
+	
+	// helpers
+	func boundsForRow(row: Int) -> CGSize {
+		let width: CGFloat = 240.0
+		let numRows: Int = 3 // or 2
+		let yIndent: CGFloat = 8.0 // or 10.0
+		
+		let perRowFrac = 1.0 / CGFloat(numRows)
+		let totalVertSpacing = CGFloat(numRows - 1) * 10.0 + 40.0 // don't understand why I have this...
+		let height: CGFloat = perRowFrac * (CGFloat(kFoodDisplayHeight) - totalVertSpacing)
+		
+		return CGSize(width: width, height: height)
 	}
 }

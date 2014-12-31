@@ -155,4 +155,5 @@ error?.description
 */
 
 
-
+var greenColor: UIColor = .greenColor()
+var redColor: UIColor = .redColor()

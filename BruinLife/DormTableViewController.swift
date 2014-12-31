@@ -14,8 +14,6 @@ class DormTableViewController: FoodTableViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		information = exampleDay()
-		dateMeals = orderedMeals(Array(information.meals.keys))
 		setTitle()
 		
 		isHall = true

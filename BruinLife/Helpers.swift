@@ -39,3 +39,7 @@ func orderedMeals(meals: Array<MealType>) -> Array<MealType> {
 	
 	return orderedMeals
 }
+
+func defaultFoods() -> Array<MainFoodInfo> {
+	return [MainFoodInfo(name: "Food 1", type: .Regular), MainFoodInfo(name: "Food 2", type: .Regular), MainFoodInfo(name: "Food 3", type: .Regular), MainFoodInfo(name: "Food 4", type: .Regular), MainFoodInfo(name: "Food 5", type: .Regular), MainFoodInfo(name: "Food 6", type: .Regular)]
+}

@@ -21,7 +21,7 @@ class QuickTableViewController: FoodTableViewController {
 	}
 	
 	// TODO: REPLACE SOON
-	override func exampleDay() -> DayInfo {
+	func exampleDay() -> DayInfo {
 		var date = NSDate()
 		
 		var breakfast = exampleDayHelper([.BruinCafe, .Rendezvous], open: Time(hour: 7, minute: 0), close: Time(hour: 11, minute: 0))
@@ -30,5 +30,25 @@ class QuickTableViewController: FoodTableViewController {
 		var lateNight = exampleDayHelper([.BruinCafe, .DeNeve, .Hedrick], open: Time(hour: 21, minute: 0), close: Time(hour: 26, minute: 0))
 		
 		return DayInfo(date: date, meals: [.Breakfast : breakfast, .Lunch : lunch, .Dinner : dinner, .LateNight : lateNight])
+	}
+	
+	/// helper method for showing example day
+	func exampleDayHelper(halls: Array<Halls>, open: Time, close: Time) -> MealInfo {
+		var meal: Dictionary<Halls, RestaurantInfo> = Dictionary()
+		for hall in halls { meal[hall] = RestaurantInfo(hall: hall) }
+		
+		var mealInfo = MealInfo(halls: meal)
+		for key in mealInfo.halls.keys {
+			mealInfo.halls[key]?.openTime = open
+			mealInfo.halls[key]?.closeTime = close
+			
+			var section1 = SectionInfo(name: "Section One")
+			section1.foods = defaultFoods()
+			var section2 = SectionInfo(name: "Section Two")
+			section2.foods = defaultFoods()
+			mealInfo.halls[key]?.sections = [section1, section2]
+		}
+		
+		return mealInfo
 	}
 }

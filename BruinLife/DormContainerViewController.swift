@@ -69,6 +69,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as DormTableViewController
 		vc.pageIndex = index
 		vc.information = pageInfo[index]
+		vc.dateMeals = orderedMeals(Array(vc.information.meals.keys))
 		vc.dormCVC = self
 		
 		var navVC = UINavigationController(rootViewController: vc)
@@ -79,40 +80,39 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		var week: Array<DayInfo> = []
 		for index in 0...6 {
 			var daysDate = NSDate(timeIntervalSinceNow: Double(index * Int(timeInDay)))
-			week.append(exampleDayForDate(daysDate))
+			week.append(exampleDay(daysDate))
 		}
 		
 		return week
 	}
 	
-	func exampleDayForDate(date: NSDate) -> DayInfo {
-		let bOpen = Time(hour: 7, minute: 0)
-		let bClose = Time(hour: 11, minute: 0)
-		
-		let lOpen = Time(hour: 11, minute: 0) // 11
-		let lClose = Time(hour: 14, minute: 0)
-		
-		let dOpen = Time(hour: 17, minute: 0)
-		let dClose = Time(hour: 20, minute: 0)
-		
-		var breakfast = MealInfo(halls: [.DeNeve : RestaurantInfo(hall: .DeNeve), .BruinPlate : RestaurantInfo(hall: .BruinPlate)])
-		var lunch = MealInfo(halls: [.DeNeve : RestaurantInfo(hall: .DeNeve), .Covel : RestaurantInfo(hall: .Covel), .Feast : RestaurantInfo(hall: .Feast), .BruinPlate : RestaurantInfo(hall: .BruinPlate)])
-		var dinner = MealInfo(halls: [.DeNeve : RestaurantInfo(hall: .DeNeve), .Covel : RestaurantInfo(hall: .Covel), .Feast : RestaurantInfo(hall: .Feast), .BruinPlate : RestaurantInfo(hall: .BruinPlate)])
-		
-		for key in breakfast.halls.keys {
-			breakfast.halls[key]?.openTime = bOpen
-			breakfast.halls[key]?.closeTime = bClose
-		}
-		for key in lunch.halls.keys {
-			breakfast.halls[key]?.openTime = lOpen
-			breakfast.halls[key]?.closeTime = lClose
-		}
-		for key in dinner.halls.keys {
-			dinner.halls[key]?.openTime = dOpen
-			dinner.halls[key]?.closeTime = dClose
-		}
+	// TODO: replace this with real data
+	func exampleDay(date: NSDate) -> DayInfo {
+		var breakfast = exampleDayHelper([.DeNeve, .BruinPlate], open: Time(hour: 7, minute: 0), close: Time(hour: 11, minute: 0))
+		var lunch = exampleDayHelper([.DeNeve, .BruinPlate, .Covel, .Feast], open: Time(hour: 11, minute: 0), close: Time(hour: 14, minute: 0))
+		var dinner = exampleDayHelper([.DeNeve, .BruinPlate, .Covel, .Feast], open: Time(hour: 17, minute: 0), close: Time(hour: 20, minute: 0))
 		
 		return DayInfo(date: date, meals: [.Breakfast : breakfast, .Lunch : lunch, .Dinner : dinner])
+	}
+	
+	/// helper method for showing example day
+	func exampleDayHelper(halls: Array<Halls>, open: Time, close: Time) -> MealInfo {
+		var meal: Dictionary<Halls, RestaurantInfo> = Dictionary()
+		for hall in halls { meal[hall] = RestaurantInfo(hall: hall) }
+		
+		var mealInfo = MealInfo(halls: meal)
+		for key in mealInfo.halls.keys {
+			mealInfo.halls[key]?.openTime = open
+			mealInfo.halls[key]?.closeTime = close
+			
+			var section1 = SectionInfo(name: "Section One")
+			section1.foods = defaultFoods()
+			var section2 = SectionInfo(name: "Section Two")
+			section2.foods = defaultFoods()
+			mealInfo.halls[key]?.sections = [section1, section2]
+		}
+		
+		return mealInfo
 	}
 	
 	func jumpToFirst() {

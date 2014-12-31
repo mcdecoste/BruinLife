@@ -9,58 +9,103 @@
 import UIKit
 
 class MenuTableViewCell: FoodTableViewCell {
-	var scrollView: FoodsScrollView?
+	var collectionView: UICollectionView?
 	
 	var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Light))
 	var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: UIBlurEffect(style: .Light)))
 	
 	override func updateDisplay() {
-		scrollView?.setFoods(allFoodsForSections((information?.sections)!), vc: foodVC!, newFrame: frame)
-	}
-	
-	func allFoodsForSections(sections: Array<SectionInfo>) -> Array<MainFoodInfo> {
-		var allFoods: Array<MainFoodInfo> = []
+		// do things to update the display for the new information
+		backgroundImageView?.frame = bounds
+		backgroundImageView?.clipsToBounds = true
 		
-		for section in sections {
-			for mainFood in section.foods {
-				allFoods.append(mainFood)
-			}
+		if collectionView?.frame == CGRectZero {
+			collectionView?.frame = CGRect(origin: CGPointZero, size: frame.size)
 		}
-		return allFoods
+		collectionView?.reloadData()
+		
+		blurView.frame = bounds
+		vibrancyView.frame = (collectionView?.bounds)!
 	}
 	
-	func updateInformation(info: RestaurantInfo, controller: FoodTableViewController) {
-		information = info
-		foodVC = controller
-		scrollView?.foodVC = foodVC
-		scrollView?.setFoods(allFoodsForSections((information?.sections)!))
+	
+	/// Preferred method for setting information and date, as this also changes the display
+	override func changeInfo(info: RestaurantInfo, andDate date: NSDate, isHall: Bool) {
+		self.information = info
+		self.date = date
+		self.isHall = isHall
+		
+//		collectionView?.delegate = foodVC
+		collectionView?.dataSource = foodVC
+//		collectionView?.contentSize = CGSize(width: bounds.width * 10, height: bounds.height)
+		
+		var imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
 		
 		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
-		backgroundImageView?.frame = bounds
-		backgroundImageView?.clipsToBounds = true
+		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		
-		insertSubview(backgroundImageView!, belowSubview: blurView)
+		insertSubview(backgroundImageView!, atIndex: imageIndex)
 		
-		blurView.frame = bounds
-		vibrancyView.frame = (scrollView?.bounds)!
+		updateDisplay()
 	}
+	
+//	func updateInformation(info: RestaurantInfo) {
+//		information = info
+//		
+//		if collectionView?.frame == CGRectZero {
+//			collectionView?.frame = CGRect(origin: CGPointZero, size: frame.size)
+//		}
+//		collectionView?.reloadData() // because of the new information
+//		
+//		backgroundImageView?.removeFromSuperview()
+//		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
+//		backgroundImageView?.frame = bounds
+//		backgroundImageView?.clipsToBounds = true
+//		backgroundImageView?.contentMode = .ScaleAspectFill
+//		insertSubview(backgroundImageView!, belowSubview: blurView)
+//		
+//		blurView.frame = bounds
+//		vibrancyView.frame = (collectionView?.bounds)!
+//	}
 	
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+		backgroundImageView = UIImageView(frame: CGRectZero)
+		addSubview(backgroundImageView!)
+		clipsToBounds = true
 		
-		scrollView = FoodsScrollView(frame: CGRectZero)
-		addSubview(blurView)
-		blurView.contentView.addSubview(vibrancyView)
-		vibrancyView.contentView.addSubview(scrollView!)
+		collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: HorizontalFlow())
+		collectionView?.registerClass(FoodCollectionViewCell.self, forCellWithReuseIdentifier: "foodDisplay") // is this right?
+		collectionView?.registerClass(SectionCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "headerCell")
+		collectionView?.backgroundView = blurView
+		collectionView?.backgroundColor = .clearColor()
+		collectionView?.alwaysBounceHorizontal = true
+		collectionView?.alwaysBounceVertical = false
+		
+//		addSubview(blurView)
+//		blurView.contentView.addSubview(vibrancyView)
+//		vibrancyView.contentView.addSubview(collectionView!)
+		addSubview(collectionView!)
     }
 	
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
+//	func boundsForRow(row: Int) -> CGSize {
+//		let width: CGFloat = 240.0
+//		let numRows: Int = 3 // or 2
+//		
+////		let xZeroIndent: CGFloat = 16.0 // 16.0
+//		let yIndent: CGFloat = 8.0 // or 10.0
+////		let indexLatSpacing: CGFloat = xZeroIndent
+//		let indexVertSpacing: CGFloat = yIndent
+//		let height: CGFloat = (1.0 / CGFloat(numRows)) * (frame.height - (2.0 * yIndent) - (CGFloat(numRows - 1) * indexVertSpacing))
+//		
+////		let xVal = (xZeroIndent + CGFloat(row / numRows) * (indexLatSpacing + width))
+////		let yMult = ((numRows == 0) ? 0.0 : CGFloat(row % numRows))
+////		let yVal = (yMult * (indexVertSpacing + height)) + yIndent
+//		
+//		return CGSize(width: width, height: height)
+//	}
 }
