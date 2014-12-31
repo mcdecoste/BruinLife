@@ -35,9 +35,8 @@ class MenuTableViewCell: FoodTableViewCell {
 		self.date = date
 		self.isHall = isHall
 		
-//		collectionView?.delegate = foodVC
+		collectionView?.delegate = foodVC
 		collectionView?.dataSource = foodVC
-//		collectionView?.contentSize = CGSize(width: bounds.width * 10, height: bounds.height)
 		
 		var imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
@@ -51,25 +50,6 @@ class MenuTableViewCell: FoodTableViewCell {
 		
 		updateDisplay()
 	}
-	
-//	func updateInformation(info: RestaurantInfo) {
-//		information = info
-//		
-//		if collectionView?.frame == CGRectZero {
-//			collectionView?.frame = CGRect(origin: CGPointZero, size: frame.size)
-//		}
-//		collectionView?.reloadData() // because of the new information
-//		
-//		backgroundImageView?.removeFromSuperview()
-//		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
-//		backgroundImageView?.frame = bounds
-//		backgroundImageView?.clipsToBounds = true
-//		backgroundImageView?.contentMode = .ScaleAspectFill
-//		insertSubview(backgroundImageView!, belowSubview: blurView)
-//		
-//		blurView.frame = bounds
-//		vibrancyView.frame = (collectionView?.bounds)!
-//	}
 	
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -91,21 +71,4 @@ class MenuTableViewCell: FoodTableViewCell {
 //		vibrancyView.contentView.addSubview(collectionView!)
 		addSubview(collectionView!)
     }
-	
-//	func boundsForRow(row: Int) -> CGSize {
-//		let width: CGFloat = 240.0
-//		let numRows: Int = 3 // or 2
-//		
-////		let xZeroIndent: CGFloat = 16.0 // 16.0
-//		let yIndent: CGFloat = 8.0 // or 10.0
-////		let indexLatSpacing: CGFloat = xZeroIndent
-//		let indexVertSpacing: CGFloat = yIndent
-//		let height: CGFloat = (1.0 / CGFloat(numRows)) * (frame.height - (2.0 * yIndent) - (CGFloat(numRows - 1) * indexVertSpacing))
-//		
-////		let xVal = (xZeroIndent + CGFloat(row / numRows) * (indexLatSpacing + width))
-////		let yMult = ((numRows == 0) ? 0.0 : CGFloat(row % numRows))
-////		let yVal = (yMult * (indexVertSpacing + height)) + yIndent
-//		
-//		return CGSize(width: width, height: height)
-//	}
 }

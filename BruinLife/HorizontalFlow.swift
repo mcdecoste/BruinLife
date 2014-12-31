@@ -29,7 +29,6 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 		minimumInteritemSpacing = 10.0
 		minimumLineSpacing = 10.0
 		sectionInset = UIEdgeInsets(top: 30.0, left: -100.0, bottom: 10.0, right: 30.0)
-		
 	}
 	
 	override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
@@ -64,10 +63,8 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 				} else {
 					var headerWidth = layout.frame.width
 					var minSpacingX: CGFloat = 4.0
-					var xOne = max((self.collectionView?.contentOffset.x)! + minSpacingX, (firstCellAttributes.frame.minX)) // had  - headerWidth
-					
-//					var diffToAlignMaxX = headerReferenceSize.width - layout.frame.width - sectionInset.left
-					layout.frame.origin.x = min(xOne, lastCellAttributes.frame.maxX - headerWidth) //  - diffToAlignMaxX
+					var xOne = max((self.collectionView?.contentOffset.x)! + minSpacingX, (firstCellAttributes.frame.minX))
+					layout.frame.origin.x = min(xOne, lastCellAttributes.frame.maxX - headerWidth)
 					layout.zIndex = 1024
 				}
 			}

@@ -109,9 +109,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var targetedRow = indexPath.row + 1
 		
 		var checkDisplayCell: UITableViewCell? = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: targetedRow, inSection: indexPath.section))
-		var checkFoodDisplay = checkDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
-		
-		return checkFoodDisplay != nil // has date picker
+		return displayIndexPath.section == indexPath.section && displayIndexPath.row == targetedRow
+//		var checkFoodDisplay = checkDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
+//		
+//		return checkFoodDisplay != nil // has date picker
 	}
 	
 	func updateFoodDisplay() {
@@ -179,7 +180,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		updateFoodDisplay()
 	}
 	
-	func addFoodPopover(sender: FoodDisplay?){
+	func addFoodPopover(food: MainFoodInfo?){
 		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as FoodViewController
 		
 		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
@@ -196,7 +197,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		let yVal = ((anchorFrame.origin.y) + anchorFrame.size.height / 2.0) + 11.0
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
-		foodVC.setFood((sender?.food)!)
+		
+		foodVC.setFood(food!)
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
@@ -225,8 +227,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var restaurant = displayCell?.information
 		var food = restaurant?.sections[indexPath.section].foods[indexPath.row]
 		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as FoodCollectionViewCell
-		cell.set(restaurant!.sections[indexPath.section].foods[indexPath.row], bounds: boundsForRow(indexPath.row))
-		println("cell \(cell.frame)")
+		cell.set(restaurant!.sections[indexPath.section].foods[indexPath.row], size: boundsForRow(indexPath.row))
 		return cell
 	}
 	
@@ -237,9 +238,18 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
 		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as SectionCollectionReusableView
 		header.setTitle((displayCell?.information?.sections[indexPath.section].name)!)
-		println("header \(header.frame)")
 		return header
 	}
+	
+	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+		var restaurant = displayCell?.information
+		addFoodPopover(restaurant?.sections[indexPath.section].foods[indexPath.row])
+	}
+	
+//	func collectionView(collectionView: UICollectionView, shouldShowMenuForItemAtIndexPath indexPath: NSIndexPath) -> Bool {
+//		
+//	}
+	
 	
 	// MARK: UICollectionViewDelegate
 	

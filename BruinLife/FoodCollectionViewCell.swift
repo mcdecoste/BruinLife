@@ -18,42 +18,25 @@ class FoodCollectionViewCell: UICollectionViewCell {
 		super.init(frame: frame)
 		
 		// arrange view
-		nameLabel.font = .systemFontOfSize(20)
+		nameLabel.font = .systemFontOfSize(18)
+//		nameLabel.minimumScaleFactor = 0.8
 		nameLabel.textAlignment = .Center
 		nameLabel.numberOfLines = 0 // no, not 2
 		nameLabel.lineBreakMode = .ByWordWrapping
+//		nameLabel.lineBreakMode = .ByTruncatingTail
 		
 		addSubview(nameLabel)
-		backgroundColor = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.4)
+//		backgroundColor = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.4)
 	}
 	
-	init(food: MainFoodInfo, bounds: CGSize) {
+	func set(food: MainFoodInfo, size: CGSize) {
 		self.food = food
-		var frame = CGRect(origin: CGPointZero, size: bounds)
-		nameLabel = UILabel(frame: frame)
-		
-		// establish frame
-		super.init(frame: frame)
+		var frame = CGRect(origin: CGPointZero, size: size)
 		
 		// arrange view
-		nameLabel.font = .systemFontOfSize(20)
-		nameLabel.textAlignment = .Center
-		nameLabel.numberOfLines = 0 // no, not 2
-		nameLabel.lineBreakMode = .ByWordWrapping
-		
-		set(food, bounds: bounds)
-		
-		addSubview(nameLabel)
-	}
-	
-	func set(food: MainFoodInfo, bounds: CGSize) {
-		self.food = food
-		var frame = CGRect(origin: CGPointZero, size: bounds)
-		
-		// arrange view
-		let maxNumLines = 3
+		let maxNumLines = 2
 		nameLabel.text = food.name
-		nameLabel.frame = nameLabel.textRectForBounds(nameLabel.bounds, limitedToNumberOfLines: maxNumLines)
+		nameLabel.frame = nameLabel.textRectForBounds(bounds, limitedToNumberOfLines: maxNumLines)
 		nameLabel.center = CGPoint(x: frame.origin.x + 0.5 * frame.size.width, y: frame.origin.y + 0.5 * frame.size.height)
 	}
 	

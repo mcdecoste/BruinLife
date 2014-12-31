@@ -105,9 +105,9 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 			mealInfo.halls[key]?.openTime = open
 			mealInfo.halls[key]?.closeTime = close
 			
-			var section1 = SectionInfo(name: "Section One")
+			var section1 = SectionInfo(name: "Exhibition Kitchen")
 			section1.foods = defaultFoods()
-			var section2 = SectionInfo(name: "Section Two")
+			var section2 = SectionInfo(name: "Soups")
 			section2.foods = defaultFoods()
 			mealInfo.halls[key]?.sections = [section1, section2]
 		}
