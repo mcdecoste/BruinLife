@@ -18,17 +18,17 @@ class RestaurantTableViewCell: FoodTableViewCell {
         // Initialization code
 		
 		// add the labels!
-		nameLabel.font = UIFont.systemFontOfSize(30) // 22
+		nameLabel.font = .systemFontOfSize(30) // 22
 		nameLabel.textAlignment = .Left
 		nameLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
 		nameLabel.adjustsFontSizeToFitWidth = true
 		nameLabel.minimumScaleFactor = 0.8
 		nameLabel.baselineAdjustment = .AlignBaselines
 		
-		openLabel.font = UIFont.systemFontOfSize(20) // 14 () // was 20 (14)
+		openLabel.font = .systemFontOfSize(20) // 14 () // was 20 (14)
 		openLabel.textAlignment = .Right
 		
-		hoursLabel.font = UIFont.systemFontOfSize(12) // 9 (11)
+		hoursLabel.font = .systemFontOfSize(12) // 9 (11)
 		hoursLabel.textAlignment = .Right
 		hoursLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
 		
@@ -71,9 +71,13 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		}
 		
 		nameLabel.text = information?.name(isHall)
-//		openLabel.textColor = open ? .greenColor() : .redColor()
 		
-		openLabel.textColor = UIColor(red: open ? 0.0 : 0.85, green: open ? 0.8 : 0.0, blue: 0.0, alpha: 1.0)
+//		openLabel.textColor = UIColor(red: open ? 0.0 : 0.85, green: open ? 0.8 : 0.0, blue: 0.0, alpha: 1.0)
+		openLabel.textColor = open ? UIColor(red: 0.0, green: 0.8, blue: 0.0, alpha: 1.0) : .whiteColor()
+//		much more readable
+//		openLabel.textColor = .whiteColor()
+		
+		openLabel.font = .systemFontOfSize(open ? 20 : 18)
 		
 		openLabel.text = open ? "Open" : "Closed"
 		
