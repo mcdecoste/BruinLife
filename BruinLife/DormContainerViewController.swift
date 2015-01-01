@@ -12,8 +12,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 0.0]) // good default is 32.0, tight is 0.0
 	var pageInfo: Array<DayInfo> = []
 	var currIndex = 0
-	
-	var pageStoryboardID = "dormTableView"
+	let pageStoryboardID = "dormTableView"
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()

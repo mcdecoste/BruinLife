@@ -18,7 +18,7 @@ enum DaysOfWeekNames: String {
 	case Sun = "Sunday"
 	
 	static let allValues = [Mon, Tues, Wed, Thur, Fri, Sat, Sun]
-	static let allRawValues = [Mon.rawValue, Tues.rawValue, Wed.rawValue, Thur.rawValue, Fri.rawValue, Sat.rawValue, Sun.rawValue]
+	static let allRawValues = DaysOfWeekNames.allValues.map { (dow: DaysOfWeekNames) -> String in return dow.rawValue }
 }
 
 enum WeekNames: String {
@@ -35,7 +35,7 @@ enum WeekNames: String {
 	case Final = "Finals Week"
 	
 	static let allValues = [One, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Final]
-//	static let allRawValues = [One.rawValue, Two.rawValue, Three.rawValue, Four.rawValue, Five.rawValue, Six.rawValue, Seven.rawValue, Eight.rawValue, Nine.rawValue, Ten.rawValue, Final.rawValue]
+	static let allRawValues = WeekNames.allValues.map { (week: WeekNames) -> String in return week.rawValue }
 }
 
 enum QuarterType: String {
@@ -44,8 +44,8 @@ enum QuarterType: String {
 	case Spring = "Spring"
 	
 	static let allValues = [Fall, Winter, Spring]
-//	static let allRawValues = [Fall.rawValue, Winter.rawValue, Spring.rawValue]
-	static let startValues = [(1, Winter), (14, Spring), (41, Fall)]
+	static let allRawValues = QuarterType.allValues.map { (quarter: QuarterType) -> String in return quarter.rawValue }
+	static let startValues = [(2, Winter), (15, Spring), (41, Fall)]
 }
 
 enum MealPlanType: String {
@@ -56,7 +56,7 @@ enum MealPlanType: String {
 	case C11 = "Cub 11"
 	
 	static let allValues = [C11, G14, G19, BP14, BP19]
-//	static let allRawValues = [C11.rawValue, G14.rawValue, G19.rawValue, BP14.rawValue, BP19.rawValue]
+	static let allRawValues = MealPlanType.allValues.map { (plan: MealPlanType) -> String in return plan.rawValue }
 	
 	func hasRollover() -> Bool {
 		return self == .BP19 || self == .BP14
@@ -111,14 +111,11 @@ class SwipeModel: NSObject {
 	
 	/// Returns the current week and quarter (since they're related)
 	func currentWeekAndQuarter() -> (week: Int, quarter: QuarterType?) {
-		var cal = NSCalendar.currentCalendar()
-		var weekOfYear = cal.component(.CalendarUnitWeekOfYear, fromDate: NSDate())
+		var weekOfYear = NSCalendar.currentCalendar().component(.CalendarUnitWeekOfYear, fromDate: NSDate())
 		
 		for (startWeek, quarter) in startWeeks {
 			var currWeek = weekOfYear - startWeek
-			if currWeek < 11 {
-				return (currWeek, quarter)
-			}
+			if currWeek >= 0 && currWeek < 11 { return (currWeek, quarter) }
 		}
 		
 		return (0, nil) // default values

@@ -54,7 +54,8 @@ class SwipesTableViewController: UITableViewController {
     }
 	
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		return section == 1 ? "Will likely differ from your actual swipe count." : nil
+		var displayText = model.currentWeekAndQuarter().quarter == nil ? "It doesn't appear to be any quarter right now." : "Will likely differ from your actual swipe count."
+		return section == 1 ? displayText : nil
 	}
 	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -118,7 +119,6 @@ class SwipesTableViewController: UITableViewController {
 		if index < 0 { index = 0 }
 		
 		var reload = true
-		
 		switch scrollView.tag {
 		case planTag:
 			if index >= model.plans.count { index = model.plans.count - 1 }
@@ -133,10 +133,7 @@ class SwipesTableViewController: UITableViewController {
 			reload = false
 		}
 		
-		if reload {
-			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None)
-		}
-		
+		if reload { tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None) }
 		self.navigationItem.leftBarButtonItem?.enabled = !model.sameAsCurrent()
 	}
 	
