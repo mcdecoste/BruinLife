@@ -227,7 +227,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var restaurant = displayCell?.information
 		var food = restaurant?.sections[indexPath.section].foods[indexPath.row]
 		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as FoodCollectionViewCell
-		cell.set(restaurant!.sections[indexPath.section].foods[indexPath.row], size: boundsForRow(indexPath.row))
+		cell.setFood(restaurant!.sections[indexPath.section].foods[indexPath.row])
 		return cell
 	}
 	
@@ -253,16 +253,4 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: UICollectionViewDelegate
 	
-	// helpers
-	func boundsForRow(row: Int) -> CGSize {
-		let width: CGFloat = 240.0
-		let numRows: Int = 3 // or 2
-		let yIndent: CGFloat = 8.0 // or 10.0
-		
-		let perRowFrac = 1.0 / CGFloat(numRows)
-		let totalVertSpacing = CGFloat(numRows - 1) * 10.0 + 40.0 // don't understand why I have this...
-		let height: CGFloat = perRowFrac * (CGFloat(kFoodDisplayHeight) - totalVertSpacing)
-		
-		return CGSize(width: width, height: height)
-	}
 }

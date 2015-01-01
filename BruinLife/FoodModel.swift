@@ -174,8 +174,20 @@ class SubFoodInfo: FoodInfo {
 
 enum FoodType: String {
 	case Regular = ""
-	case Vegetarian = "Veget."
+	case Vegetarian = "Vegetarian"
 	case Vegan = "Vegan"
+	
+	/// returns the preferred color when displaying food type
+	func displayColor(alpha: CGFloat) -> UIColor {
+		switch self {
+		case .Vegetarian:
+			return UIColor(red: 0.2, green: 0.9, blue: 0.3, alpha: alpha)
+		case .Vegan:
+			return UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: alpha)
+		default:
+			return UIColor(white: 1.0, alpha: alpha)
+		}
+	}
 }
 
 enum Nutrient: String { // , Equatable

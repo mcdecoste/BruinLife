@@ -41,5 +41,8 @@ func orderedMeals(meals: Array<MealType>) -> Array<MealType> {
 }
 
 func defaultFoods() -> Array<MainFoodInfo> {
-	return [MainFoodInfo(name: "Greek Cream of Roaster Garlic & Cauliflower Soup", type: .Regular), MainFoodInfo(name: "Italian Minestrone Soup", type: .Regular), MainFoodInfo(name: "Mediterranean Spiced Beef Soup", type: .Regular), MainFoodInfo(name: "Chicken Pasta w/ Lemon Caper Sauce", type: .Regular), MainFoodInfo(name: "Linguini w/ Lemon Sauce", type: .Regular), MainFoodInfo(name: "Chicken Keftedes Pita Sandwich", type: .Regular)]
+	var lastFood = MainFoodInfo(name: "Super Awesome Angel Hair Pasta", type: .Regular)
+	lastFood.withFood = SubFoodInfo(name: "Garlic Bread", type: .Vegetarian)
+	
+	return [MainFoodInfo(name: "Greek Cream of Roaster Garlic & Cauliflower Soup", type: .Regular), MainFoodInfo(name: "Italian Minestrone Soup", type: .Vegetarian), MainFoodInfo(name: "Mediterranean Spiced Beef Soup", type: .Regular), MainFoodInfo(name: "Chicken Pasta w/ Lemon Caper Sauce", type: .Regular), MainFoodInfo(name: "Linguini w/ Lemon Sauce", type: .Vegan), MainFoodInfo(name: "Chicken Keftedes Pita Sandwich", type: .Regular), lastFood]
 }

@@ -25,10 +25,10 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	func setupHelper() {
 		scrollDirection = .Horizontal
 		headerReferenceSize = CGSize(width: 120, height: 26)
-		itemSize = CGSize(width: 240, height: 50)
-		minimumInteritemSpacing = 10.0
-		minimumLineSpacing = 10.0
-		sectionInset = UIEdgeInsets(top: 30.0, left: -100.0, bottom: 10.0, right: 30.0)
+		itemSize = CGSize(width: 240, height: 60)
+		minimumInteritemSpacing = 4.0
+		minimumLineSpacing = 10.0 // not super set clean yet
+		sectionInset = UIEdgeInsets(top: 30.0, left: -100.0, bottom: 2.0, right: 30.0)
 	}
 	
 	override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
