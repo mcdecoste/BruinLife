@@ -65,7 +65,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row
+		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row && displayIndexPath.section == indexPath.section
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
 		
 		var allHalls = (information.meals[dateMeals[Int(indexPath.section)]]?.halls)!
@@ -238,6 +238,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
 		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as SectionCollectionReusableView
 		header.setTitle((displayCell?.information?.sections[indexPath.section].name)!)
+		
+		var flow = collectionView.collectionViewLayout as HorizontalFlow
+		while (flow.headerWidths.count) - indexPath.section < 1 {
+			flow.headerWidths.append(240.0)
+		}
+		flow.headerWidths[indexPath.section] = header.title.frame.width
+		
 		return header
 	}
 	

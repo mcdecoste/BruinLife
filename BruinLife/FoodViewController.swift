@@ -15,7 +15,7 @@ struct NutriTableDisplay {
 }
 
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-	var food: FoodInfo?
+	var food: MainFoodInfo?
 	
 	var foodName = UILabel()
 	var nutriTable: UITableView?
@@ -38,7 +38,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispose of any resources that can be recreated.
     }
 	
-	func setFood(info: FoodInfo) {
+	func setFood(info: MainFoodInfo) {
 		food = info
 		establishLayout()
 	}
@@ -47,7 +47,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		var prefSize = preferredContentSize()
 		foodName.frame.size = CGSize(width: prefSize.width * 0.9, height: prefSize.height * 0.5)
 		foodName.text = food?.name
-		foodName.font = .systemFontOfSize(24)
+		foodName.font = .systemFontOfSize(18)
 		foodName.textAlignment = .Center
 		foodName.numberOfLines = 0 // no, not 2
 		foodName.lineBreakMode = .ByWordWrapping
@@ -61,7 +61,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func preferredContentSize() -> CGSize {
-		return CGSize(width: 260.0, height: 360.0)
+		return CGSize(width: 280.0, height: 360.0)
 	}
 	
 	func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {

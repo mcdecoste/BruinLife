@@ -12,7 +12,7 @@ class MenuTableViewCell: FoodTableViewCell {
 	var collectionView: UICollectionView?
 	
 	var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Light))
-	var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: UIBlurEffect(style: .Light)))
+//	var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: UIBlurEffect(style: .Light)))
 	
 	override func updateDisplay() {
 		// do things to update the display for the new information
@@ -25,7 +25,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		collectionView?.reloadData()
 		
 		blurView.frame = bounds
-		vibrancyView.frame = (collectionView?.bounds)!
+//		vibrancyView.frame = (collectionView?.bounds)!
 	}
 	
 	
