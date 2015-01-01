@@ -38,18 +38,14 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		viewController.navigationItem.rightBarButtonItem = nil
 		var pageVC = dormVCfromNavVC(viewController as UINavigationController)
 		var index = pageVC.pageIndex
-		if index == 0 {
-			return nil
-		}
+		if index == 0 { return nil }
 		return vcForIndex(index - 1)
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
 		var pageVC = dormVCfromNavVC(viewController as UINavigationController)
 		var index = pageVC.pageIndex
-		if index == pageInfo.count - 1 {
-			return nil
-		}
+		if index == pageInfo.count - 1 { return nil }
 		return vcForIndex(index + 1)
 	}
 	

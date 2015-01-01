@@ -11,12 +11,10 @@ import UIKit
 class QuickTableViewController: FoodTableViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
 		self.navigationItem.title = "Quick Service"
 		
 		information = exampleDay()
 		dateMeals = orderedMeals(Array(information.meals.keys))
-		
 		isHall = false	
 	}
 	
@@ -42,9 +40,9 @@ class QuickTableViewController: FoodTableViewController {
 			mealInfo.halls[key]?.openTime = open
 			mealInfo.halls[key]?.closeTime = close
 			
-			var section1 = SectionInfo(name: "Section One")
+			var section1 = SectionInfo(name: "Entrees")
 			section1.foods = defaultFoods()
-			var section2 = SectionInfo(name: "Section Two")
+			var section2 = SectionInfo(name: "Tea Latte & Cookies")
 			section2.foods = defaultFoods()
 			mealInfo.halls[key]?.sections = [section1, section2]
 		}

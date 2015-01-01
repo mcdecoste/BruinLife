@@ -10,20 +10,17 @@ import UIKit
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 	let kRestCellID = "FoodCell"
-	var kRestCellHeight = 88
+	let kRestCellHeight = 88
 	let kFoodDisplayID = "DisplayCell"
-	var kFoodDisplayHeight = 220
-	let kFoodDisplayTag = 99
+	let kFoodDisplayHeight = 220
 	let foodVCid = "foodDescriptionViewController"
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
-	
 	var information = DayInfo()
 	var dateMeals: Array<MealType> = []
 	
 	var pageIndex = 0
-	
 	var isHall = true
 	
 	override func viewDidAppear(animated: Bool) {
@@ -105,16 +102,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	// MARK: Utilities
-	func hasDisplayForIndexPath(indexPath: NSIndexPath) -> Bool {
-		var targetedRow = indexPath.row + 1
-		
-		var checkDisplayCell: UITableViewCell? = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: targetedRow, inSection: indexPath.section))
-		return displayIndexPath.section == indexPath.section && displayIndexPath.row == targetedRow
-//		var checkFoodDisplay = checkDisplayCell?.viewWithTag(kFoodDisplayTag) as FoodsScrollView?
-//		
-//		return checkFoodDisplay != nil // has date picker
-	}
-	
 	func updateFoodDisplay() {
 		if hasInlineFoodDisplay() {
 			// why not just ask about displayCell?
@@ -149,6 +136,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var deletingDisplay = hasInlineFoodDisplay()
 		
 		var shouldScroll = false
+		var newDisplayBelowOld = false
 		
 		if deletingDisplay {
 			replaceDisplayWithNew = (displayIndexPath.section != indexPath.section) || (indexPath.row != displayIndexPath.row - 1)
@@ -160,6 +148,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 		
 		if replaceDisplayWithNew || (!deletingDisplay && (displayIndexPath.row - 1 != indexPath.row)) {
+			newDisplayBelowOld = before
+			
 			// show new display
 			var rowToReveal = before ? indexPath.row : indexPath.row + 1
 			var indexPathToReveal = NSIndexPath(forRow: rowToReveal, inSection: indexPath.section)
@@ -173,8 +163,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		tableView.endUpdates()
 		
-		if (shouldScroll) {
-			tableView.scrollToRowAtIndexPath(displayIndexPath, atScrollPosition: .Middle, animated: true)
+		if shouldScroll {
+			var pathToShow = newDisplayBelowOld ? NSIndexPath(forRow: indexPath.row-1, inSection: indexPath.section) : indexPath
+			tableView.scrollToRowAtIndexPath(pathToShow, atScrollPosition: .Top, animated: true)
 		}
 		
 		updateFoodDisplay()
@@ -252,11 +243,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var restaurant = displayCell?.information
 		addFoodPopover(restaurant?.sections[indexPath.section].foods[indexPath.row])
 	}
-	
-//	func collectionView(collectionView: UICollectionView, shouldShowMenuForItemAtIndexPath indexPath: NSIndexPath) -> Bool {
-//		
-//	}
-	
 	
 	// MARK: UICollectionViewDelegate
 	

@@ -13,9 +13,7 @@ class DormTableViewController: FoodTableViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
 		setTitle()
-		
 		isHall = true
 	}
 	
@@ -30,9 +28,7 @@ class DormTableViewController: FoodTableViewController {
 		formatter.dateFormat = dayFormat
 		var day = formatter.stringFromDate(information.date)
 		var dayIndex = NSString(string: day).integerValue
-		if dayIndex > 3 {
-			dayIndex = 0
-		}
+		if dayIndex > 3 { dayIndex = 0 }
 		
 		formatter.dateFormat = dateFormat
 		var title = formatter.stringFromDate(information.date)
