@@ -20,6 +20,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var foodName = UILabel()
 	var nutriTable: UITableView?
 	
+	let cellHeight: CGFloat = 44.0
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -31,6 +33,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		view.addSubview(nutriTable!)
 		nutriTable?.delegate = self
 		nutriTable?.dataSource = self
+		
+		nutriTable?.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: "nutrition")
     }
 
     override func didReceiveMemoryWarning() {
@@ -65,7 +69,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-		return 44.0
+		return cellHeight
 	}
 	
 	func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -74,25 +78,28 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return (food?.nutrition.count)!
+		return Nutrient.allValues.count
+//		return (food?.nutrition.count)!
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let reuse = "nutrition"
-		var cell = tableView.dequeueReusableCellWithIdentifier(reuse) as NutritionTableViewCell?
-		if cell == nil {
-			cell = NutritionTableViewCell(style: .Default, reuseIdentifier: reuse)
-		}
+		var cell = tableView.dequeueReusableCellWithIdentifier(reuse) as NutritionTableViewCell
+		cell.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForRowAtIndexPath: indexPath))
 		
-		var nl = (food?.nutrition[Nutrient.allValues[indexPath.row]])!
+//		var nutrient = (food?.nutrition[Nutrient.allValues[indexPath.row]])!
+		var nutrient = Nutrient.allValues[indexPath.row]
+		var base: Int = 900
+		var dv: Int? = Nutrient.allDailyValues[indexPath.row]
+		if dv != nil { base = dv! }
+		var randomNumber: Int = Int(rand()) % base
+		var nutrientListing = NutritionListing(type: nutrient, measure: "\(randomNumber)")
 		
-		cell?.selectionStyle = .None
-		cell?.textLabel?.text = nl.type.rawValue
-		var displayText = nl.measure + nl.unit
-//		cell?.detailTextLabel?.text = displayText
-		cell?.detailLabel.text = displayText
+		cell.selectionStyle = .None
+		cell.setNutrition(nutrientListing)
+		cell.display.center.y = cellHeight / 2
 		
-		return cell!
+		return cell
 	}
 	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {

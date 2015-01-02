@@ -158,3 +158,204 @@ error?.description
 var greenColor: UIColor = .greenColor()
 var redColor: UIColor = .redColor()
 UIColor(red: 0.2, green: 0.9, blue: 0.3, alpha: 1.0)
+
+import UIKit
+import QuartzCore
+import CoreGraphics
+
+class CircleDisplay: UIView {
+	var centralLabel: UILabel
+	
+	var backgroundLayer: CAShapeLayer
+	var foregroundLayer: CAShapeLayer
+	
+	var nutrition: NutritionListing?
+	var showingAmount: Bool = true
+	
+	var progress: CGFloat = 0.0
+	var lineWidth: CGFloat = 0.0
+	
+	let tickWidthRatio: CGFloat = 0.3
+	let progressWidthRatio: CGFloat = 2.0 // must be larger than 1
+	
+	override init(frame: CGRect) {
+		centralLabel = UILabel(frame: frame)
+		
+		backgroundLayer = CAShapeLayer()
+		foregroundLayer = CAShapeLayer()
+		super.init(frame: frame)
+		
+		setup()
+	}
+	
+	required init(coder aDecoder: NSCoder) {
+		centralLabel = UILabel(coder: aDecoder)
+		
+		backgroundLayer = CAShapeLayer(coder: aDecoder)
+		foregroundLayer = CAShapeLayer(coder: aDecoder)
+		super.init(coder: aDecoder)
+		
+		setup()
+	}
+	
+	func setup() {
+		backgroundColor = .clearColor()
+		
+		// label
+		centralLabel.text = ""
+		centralLabel.font = UIFont.systemFontOfSize(14)
+		centralLabel.sizeToFit()
+		centralLabel.center = center
+		
+		// layers time
+		lineWidth = max(0.025 * frame.width, 1.0)
+		var contentsScale: CGFloat = UIScreen.mainScreen().scale
+		
+		backgroundLayer.frame = bounds
+		backgroundLayer.contentsScale = contentsScale
+		backgroundLayer.strokeColor = tintColor.CGColor
+		backgroundLayer.fillColor = (backgroundColor?.CGColor)!
+		backgroundLayer.lineCap = kCALineCapRound // change?
+		backgroundLayer.lineWidth = lineWidth
+		
+		foregroundLayer.frame = bounds
+		foregroundLayer.contentsScale = contentsScale
+		foregroundLayer.strokeColor = tintColor.CGColor
+		foregroundLayer.fillColor = UIColor.clearColor().CGColor // or nil
+		foregroundLayer.lineCap = kCALineCapSquare
+		foregroundLayer.lineWidth = lineWidth * progressWidthRatio
+		
+		layer.addSublayer(backgroundLayer)
+		layer.addSublayer(foregroundLayer)
+		addSubview(centralLabel)
+	}
+	
+	// MARK: Setters
+	func setNutrition(nutrition: NutritionListing) {
+		self.nutrition = nutrition
+		
+		setProgress(CGFloat((self.nutrition?.percent)!) / 100)
+		updateDisplayText()
+	}
+	
+	func handleTap() {
+		if (nutrition?.type.hasDVpercentage())! {
+			showingAmount = !showingAmount
+			updateDisplayText()
+		}
+	}
+	
+	func setProgress(progress: CGFloat) {
+		self.progress = progress
+		
+		let startAngle = CGFloat(3*M_PI_2)
+		let endAngle = startAngle + (2 * CGFloat(M_PI) * self.progress)
+		let radius = (bounds.width - (3 * lineWidth)) / 2
+		
+		var processPath = UIBezierPath()
+		processPath.lineCapStyle = kCGLineCapButt
+		processPath.lineWidth = lineWidth
+		processPath.addArcWithCenter(center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+		
+		foregroundLayer.path = processPath.CGPath
+		
+		setNeedsDisplay()
+	}
+	
+	func setLineWidth(width: CGFloat) {
+		self.lineWidth = width
+		
+		backgroundLayer.lineWidth = width
+		foregroundLayer.lineWidth = width * progressWidthRatio
+	}
+	
+	func updateDisplayText() {
+		centralLabel.removeFromSuperview()
+		
+		let text = showingAmount ? (self.nutrition?.measure)! + (self.nutrition?.unit)! : "\((self.nutrition?.percent)!)%"
+		println(text)
+		centralLabel.text = text
+		centralLabel.sizeToFit()
+		centralLabel.center = center
+		
+		addSubview(centralLabel)
+	}
+}
+
+class NutritionListing {
+	var type: Nutrient = .Cal
+	var unit: String
+	var measure: String = ""
+	var percent: Int = 0 // out of 100
+	
+	init(type: Nutrient, measure: String) {
+		self.type = type
+		self.measure = measure
+		self.unit = type.unit()
+		self.percent = dailyValue()
+	}
+	
+	internal func dailyValue() -> Int {
+		if let dailyValue = Nutrient.allDailyValues[(find(Nutrient.allValues, self.type))!] {
+			return Int(100.0 * ((measure as NSString).floatValue) / Float(dailyValue))
+		}
+		return 0
+	}
+}
+
+enum Nutrient: String { // , Equatable
+	case Cal = "Calories"
+	case FatCal = "Calories From Fat"
+	case TotFat = "Total Fat"
+	case SatFat = "Saturated Fat"
+	case TransFat = "Trans Fat"
+	case Chol = "Cholesterol"
+	case Sodium = "Sodium"
+	case TotCarb = "Total Carbs"
+	case DietFiber = "Dietary Fiber"
+	case Sugar = "Sugars"
+	case Protein = "Protein"
+	case VitA = "Vitamin A"
+	case VitC = "Vitamin C"
+	case Calcium = "Calcium"
+	case Iron = "Iron"
+	
+	func unit() -> String {
+		switch self {
+		case .Cal, .FatCal:
+			return ""
+		case .TotFat, .SatFat, .TransFat, .TotCarb, .DietFiber, .Sugar, .Protein:
+			return "g"
+		case .Chol, .Sodium:
+			return "mg"
+		case .VitA, .VitC, .Calcium, .Iron:
+			return "%"
+		}
+	}
+	
+	static let allValues: Array<Nutrient> = [.Cal, .FatCal, .TotFat, .SatFat, .TransFat, .Chol, .Sodium, .TotCarb, .DietFiber, .Sugar, .Protein, .VitA, .VitC, .Calcium, .Iron]
+	static let allRawValues = Nutrient.allValues.map { (nut: Nutrient) -> String in return nut.rawValue }
+	static let allMatchingValues: Array<String> = ["Calories", "Fat Cal.", "Total Fat", "Saturated Fat", "Trans Fat", "Cholesterol", "Sodium", "Total Carbohydrate", "Dietary Fiber", "Sugars", "Protein", "Vitamin A", "Vitamin C", "Calcium", "Iron"]
+	internal static let allDailyValues: Array<Int?> = [nil, nil, 65, 20, nil, 300, 1500, 130, 40, nil, nil, 100, 100, 100, 100]
+	
+	static func typeForName(name: String) -> Nutrient? {
+		var index = 0
+		var matchingValues = Nutrient.allMatchingValues
+		for value in matchingValues {
+			if name.rangeOfString(value) != nil { break }
+			index++
+		}
+		if index > matchingValues.count-1 { return nil }
+		return Nutrient.allValues[index]
+	}
+	
+	func hasDVpercentage() -> Bool {
+		var index = (Nutrient.allRawValues as NSArray).indexOfObject(rawValue)
+		return Nutrient.allDailyValues[index] != nil
+	}
+}
+
+var circle: CircleDisplay = CircleDisplay(frame: CGRect(x: 0, y: 0, width: 40, height: 40))
+circle.setNutrition(NutritionListing(type: .TotFat, measure: "23"))
+
+

@@ -192,13 +192,13 @@ enum FoodType: String {
 
 enum Nutrient: String { // , Equatable
 	case Cal = "Calories"
-	case FatCal = "Calories From Fat"
+	case FatCal = "Cal From Fat"
 	case TotFat = "Total Fat"
 	case SatFat = "Saturated Fat"
 	case TransFat = "Trans Fat"
 	case Chol = "Cholesterol"
 	case Sodium = "Sodium"
-	case TotCarb = "Total Carbohydrate"
+	case TotCarb = "Total Carbs"
 	case DietFiber = "Dietary Fiber"
 	case Sugar = "Sugars"
 	case Protein = "Protein"
@@ -235,13 +235,18 @@ enum Nutrient: String { // , Equatable
 		if index > matchingValues.count-1 { return nil }
 		return Nutrient.allValues[index]
 	}
+	
+	func hasDVpercentage() -> Bool {
+		var index = (Nutrient.allRawValues as NSArray).indexOfObject(rawValue)
+		return Nutrient.allDailyValues[index] != nil
+	}
 }
 
 class NutritionListing {
 	var type: Nutrient = .Cal
 	var unit: String
 	var measure: String = ""
-	var percent: Int? = 0 // out of 100
+	var percent: Int = 0 // out of 100
 	
 	init(type: Nutrient, measure: String) {
 		self.type = type
@@ -250,11 +255,11 @@ class NutritionListing {
 		self.percent = dailyValue()
 	}
 	
-	internal func dailyValue() -> Int? {
+	internal func dailyValue() -> Int {
 		if let dailyValue = Nutrient.allDailyValues[(find(Nutrient.allValues, self.type))!] {
 			return Int(100.0 * ((measure as NSString).floatValue) / Float(dailyValue))
 		}
-		return nil
+		return 0
 	}
 }
 
