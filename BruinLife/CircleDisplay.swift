@@ -10,7 +10,7 @@ import UIKit
 import QuartzCore
 import CoreGraphics
 
-class CircleDisplay: UIView {
+class CircleDisplay: UIButton {
 	var centralLabel: UILabel
 	var percLayer: CAShapeLayer
 	
@@ -55,13 +55,15 @@ class CircleDisplay: UIView {
 		
 		percLayer.frame = bounds
 		percLayer.contentsScale = contentsScale
-		percLayer.strokeColor = tintColor.CGColor
+		percLayer.strokeColor = tintColor!.CGColor
 		percLayer.fillColor = nil
 		percLayer.lineCap = kCALineCapSquare
 		percLayer.lineWidth = lineWidth * progressWidthRatio
 		
 		layer.addSublayer(percLayer)
 		addSubview(centralLabel)
+		
+		addTarget(self, action: "handleTap", forControlEvents: .TouchUpInside)
 	}
 	
 	// MARK: Setters
@@ -75,7 +77,7 @@ class CircleDisplay: UIView {
 			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
 		} else {
 			setProgress(CGFloat((self.nutrition?.percent)!) / 100)
-			percLayer.strokeColor = tintColor.CGColor
+			percLayer.strokeColor = tintColor!.CGColor
 		}
 		updateDisplayText()
 	}

@@ -15,15 +15,16 @@ struct NutriTableDisplay {
 }
 
 enum NutrientDisplayType {
-	case oneMain
-	case twoMain
-	case oneSub
-	case twoSub
+	case oneMain // bold
+	case doubleMain // both bold
+	case twoMain // first bold
+	case oneSub // not bold (replacing twoSub)
+	case empty // since no nils possible in tuples
 }
 
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 	let cellHeight: CGFloat = 44.0
-	let rowPairs: Array<(left: Nutrient?, right: Nutrient?)> = [(.Cal, .FatCal), (.TotFat, nil), (.SatFat, .TransFat), (.Chol, .Sodium), (.TotCarb, nil), (.DietFiber, .Sugar), (.Protein, nil), (.VitA, .VitC), (.Calcium, .Iron)]
+	let smallCellHeight: CGFloat = 36.0
 	
 	var food: MainFoodInfo?
 	var foodName = UILabel()
@@ -40,6 +41,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		view.addSubview(nutriTable!)
 		nutriTable?.delegate = self
 		nutriTable?.dataSource = self
+		nutriTable?.separatorStyle = .None
 		
 		nutriTable?.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: "nutrition")
     }
@@ -72,10 +74,12 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func preferredContentSize() -> CGSize {
-		return CGSize(width: 280.0, height: 360.0)
+		return CGSize(width: 280, height: 460) // 260 is a little too narrow
 	}
 	
 	func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+//		let cellType = Nutrient.rowPairs[indexPath.row].0
+//		return cellType == .oneSub ? smallCellHeight : cellHeight
 		return cellHeight
 	}
 	
@@ -85,7 +89,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		return Nutrient.allValues.count
+		return Nutrient.rowPairs.count
+//		return Nutrient.allValues.count
 //		return (food?.nutrition.count)!
 	}
 	
@@ -95,16 +100,28 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		cell.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForRowAtIndexPath: indexPath))
 		
 //		var nutrient = (food?.nutrition[Nutrient.allValues[indexPath.row]])!
-		var nutrient = Nutrient.allValues[indexPath.row]
+		
+		var cellType: NutrientDisplayType = .empty
+		var nutrientLeft: Nutrient = .Cal
+		var nutrientRight: Nutrient = .FatCal
+		(cellType, nutrientLeft, nutrientRight) = Nutrient.rowPairs[indexPath.row]
+		
 		var base: Int = 900
-		var dv: Int? = Nutrient.allDailyValues[indexPath.row]
-		if dv != nil { base = dv! }
+		var leftIndex = (Nutrient.allRawValues as NSArray).indexOfObject(nutrientLeft.rawValue)
+		var dvLeft: Int? = Nutrient.allDailyValues[leftIndex]
+		if dvLeft != nil { base = dvLeft! }
 		var randomNumber: Int = Int(rand()) % base
-		var nutrientListing = NutritionListing(type: nutrient, measure: "\(randomNumber)")
+		var nutrientListingLeft = NutritionListing(type: nutrientLeft, measure: "\(randomNumber)")
+		
+		base = 900
+		var rightIndex = (Nutrient.allRawValues as NSArray).indexOfObject(nutrientRight.rawValue)
+		var dv: Int? = Nutrient.allDailyValues[rightIndex]
+		if dv != nil { base = dv! }
+		randomNumber = Int(rand()) % base
+		var nutrientListingRight = NutritionListing(type: nutrientRight, measure: "\(randomNumber)")
 		
 		cell.selectionStyle = .None
-		cell.setNutrition(nutrientListing)
-		cell.display.center.y = cellHeight / 2
+		cell.setInformation((type: cellType, left: nutrientListingLeft, right: nutrientListingRight))
 		
 		return cell
 	}

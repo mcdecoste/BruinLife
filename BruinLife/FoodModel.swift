@@ -223,7 +223,9 @@ enum Nutrient: String { // , Equatable
 	static let allValues: Array<Nutrient> = [.Cal, .FatCal, .TotFat, .SatFat, .TransFat, .Chol, .Sodium, .TotCarb, .DietFiber, .Sugar, .Protein, .VitA, .VitC, .Calcium, .Iron]
 	static let allRawValues = Nutrient.allValues.map { (nut: Nutrient) -> String in return nut.rawValue }
 	static let allMatchingValues: Array<String> = ["Calories", "Fat Cal.", "Total Fat", "Saturated Fat", "Trans Fat", "Cholesterol", "Sodium", "Total Carbohydrate", "Dietary Fiber", "Sugars", "Protein", "Vitamin A", "Vitamin C", "Calcium", "Iron"]
-	internal static let allDailyValues: Array<Int?> = [nil, nil, 65, 20, nil, 300, 1500, 130, 40, nil, nil, 100, 100, 100, 100]
+	internal static let allDailyValues: Array<Int?> = [2000, nil, 65, 20, nil, 300, 1500, 130, 40, nil, nil, 100, 100, 100, 100]
+//	static let rowPairs: Array<(NutrientDisplayType, Nutrient, Nutrient)> = [(.twoMain, .Cal, .FatCal), (.oneMain, .TotFat, .Cal), (.twoSub, .SatFat, .TransFat), (.doubleMain, .Chol, .Sodium), (.oneMain, .TotCarb, .Cal), (.twoSub, .DietFiber, .Sugar), (.oneMain, .Protein, .Cal), (.doubleMain, .VitA, .VitC), (.doubleMain, .Calcium, .Iron)]
+	static let rowPairs: Array<(NutrientDisplayType, Nutrient, Nutrient)> = [(.twoMain, .Cal, .FatCal), (.oneMain, .TotFat, .Cal), (.oneSub, .SatFat, .Cal), (.oneSub, .TransFat, .Cal), (.oneMain, .Chol, .Cal), (.oneMain, .Sodium, .Cal), (.oneMain, .TotCarb, .Cal), (.oneSub, .DietFiber, .Cal), (.oneSub, .Sugar, .Cal), (.oneMain, .Protein, .Cal), (.doubleMain, .VitA, .VitC), (.doubleMain, .Calcium, .Iron)]
 	
 	static func typeForName(name: String) -> Nutrient? {
 		var index = 0
