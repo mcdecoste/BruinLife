@@ -50,7 +50,7 @@ class CircleDisplay: UIView {
 		centralLabel.textAlignment = .Center
 		
 		// layers time
-		lineWidth = max(0.0375 * frame.width, 1.0) // 0.025
+		lineWidth = max(0.025 * frame.width, 1.0) // 0.025 | 0.0375
 		var contentsScale: CGFloat = UIScreen.mainScreen().scale
 		
 		percLayer.frame = bounds
@@ -68,7 +68,15 @@ class CircleDisplay: UIView {
 	func setNutrition(nutrition: NutritionListing) {
 		self.nutrition = nutrition
 		
-		setProgress(CGFloat((self.nutrition?.percent)!) / 100)
+		var percent = self.nutrition?.percent
+		
+		if percent == nil {
+			setProgress(1)
+			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
+		} else {
+			setProgress(CGFloat((self.nutrition?.percent)!) / 100)
+			percLayer.strokeColor = tintColor.CGColor
+		}
 		updateDisplayText()
 	}
 	
@@ -105,7 +113,8 @@ class CircleDisplay: UIView {
 	func updateDisplayText() {
 		let measure = (self.nutrition?.measure)!
 		let unit = (self.nutrition?.unit)!
-		let perc = (self.nutrition?.percent)!
+		let percOpt = self.nutrition?.percent
+		let perc = percOpt == nil ? 100 : percOpt!
 		
 		let tooLong = countElements(measure + unit) > 4
 		let inbetweenText = tooLong ? "\n" : ""

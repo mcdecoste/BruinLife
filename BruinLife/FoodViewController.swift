@@ -14,13 +14,20 @@ struct NutriTableDisplay {
 	var measures: Array<String>
 }
 
+enum NutrientDisplayType {
+	case oneMain
+	case twoMain
+	case oneSub
+	case twoSub
+}
+
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-	var food: MainFoodInfo?
+	let cellHeight: CGFloat = 44.0
+	let rowPairs: Array<(left: Nutrient?, right: Nutrient?)> = [(.Cal, .FatCal), (.TotFat, nil), (.SatFat, .TransFat), (.Chol, .Sodium), (.TotCarb, nil), (.DietFiber, .Sugar), (.Protein, nil), (.VitA, .VitC), (.Calcium, .Iron)]
 	
+	var food: MainFoodInfo?
 	var foodName = UILabel()
 	var nutriTable: UITableView?
-	
-	let cellHeight: CGFloat = 44.0
 	
     override func viewDidLoad() {
         super.viewDidLoad()
