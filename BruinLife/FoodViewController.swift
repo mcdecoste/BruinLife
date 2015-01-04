@@ -28,7 +28,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	private let servingCellID = "serving"
 	private let cellHeight: CGFloat = 44.0
 	private let smallCellHeight: CGFloat = 36.0
-//	private let ingredientBottomGap: CGFloat = 4
 	private let nutritionGap: CGFloat = 2
 	private let headerGap: CGFloat = 8
 	
@@ -48,7 +47,13 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var food: MainFoodInfo = MainFoodInfo(name: "", type: .Regular)
 	var foodLabel = UILabel()
 	var typeLabel = UILabel()
+	
 	var nutriTable: UITableView?
+	
+	var ingredientsLabel = UILabel()
+	var descriptionLabel = UILabel()
+	var nutritionLabel = UILabel()
+	var personalLabel = UILabel()
 	
 	// track information
 	var numberOfServings = 0
@@ -88,6 +93,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		let country = food.countryCode
 		let typeText = (type != "" && country != "") ? "\(country)  •  \(type)" : (country + type)
 		
+		makeIngredientsLabel()
+		makeDescriptionLabel()
+		makeNutritionLabel()
+		makePersonalLabel()
+		
 		foodLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
 		foodLabel.text = food.name
 		foodLabel.font = .systemFontOfSize(18)
@@ -105,6 +115,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		typeLabel.sizeToFit()
 		typeLabel.center.x = view.center.x
 		typeLabel.frame.origin.y = foodLabel.frame.maxY
+		
+		
 		
 		var ntY = typeLabel.frame.maxY + 2
 		
@@ -136,9 +148,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 		switch section {
 		case nutritionSection:
-			return nutritionLabel().frame.maxY
+			return nutritionLabel.frame.maxY
 		case personalSection:
-			return personalLabel().frame.maxY
+			return personalLabel.frame.maxY
 		default:
 			return 0
 		}
@@ -149,9 +161,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case nutritionSection:
 			return Nutrient.rowPairs[indexPath.row].0 == .oneSub ? smallCellHeight : cellHeight
 		case ingredientSection:
-			return ingredientsLabel().frame.maxY + 4
+			return ingredientsLabel.frame.maxY + 4
 		case descriptionSection:
-			return descriptionLabel().frame.maxY
+			return descriptionLabel.frame.maxY
 		default:
 			return cellHeight
 		}
@@ -163,9 +175,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		switch section {
 		case nutritionSection:
-			header.addSubview(nutritionLabel())
+			header.addSubview(nutritionLabel)
 		default:
-			header.addSubview(personalLabel())
+			header.addSubview(personalLabel)
 		}
 		
 		return header
@@ -175,7 +187,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		switch indexPath.section {
 		case descriptionSection, ingredientSection:
 			var cell = tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as UITableViewCell
-			var label = indexPath.section == descriptionSection ? descriptionLabel() : ingredientsLabel()
+			var label = indexPath.section == descriptionSection ? descriptionLabel : ingredientsLabel
 			
 			for subview in cell.subviews {
 				if subview.isMemberOfClass(UILabel.self) { subview.removeFromSuperview() }
@@ -237,26 +249,22 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		}
 	}
 	
-	func ingredientsLabel() -> UILabel {
-		var testLabel = UILabel()
-//		testLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
-		testLabel.frame.size = CGSize(width: view.frame.width * 19/20, height: baseHeight)
-		testLabel.text = "Ingredients: \(food.ingredients)"
-		testLabel.font = .systemFontOfSize(11)
-		testLabel.textColor = UIColor(white: 0.3, alpha: 1.0)
-		testLabel.textAlignment = .Left
-		testLabel.numberOfLines = 0
-		testLabel.lineBreakMode = .ByWordWrapping
-		testLabel.sizeToFit()
-		testLabel.frame.origin.y = 8
-		testLabel.center.x = view.center.x
-		
-		return testLabel
+	func makeIngredientsLabel() {
+		ingredientsLabel = UILabel()
+		ingredientsLabel.frame.size = CGSize(width: view.frame.width * 19/20, height: baseHeight)
+		ingredientsLabel.text = "Ingredients: \(food.ingredients)"
+		ingredientsLabel.font = .systemFontOfSize(11)
+		ingredientsLabel.textColor = UIColor(white: 0.3, alpha: 1.0)
+		ingredientsLabel.textAlignment = .Left
+		ingredientsLabel.numberOfLines = 0
+		ingredientsLabel.lineBreakMode = .ByWordWrapping
+		ingredientsLabel.sizeToFit()
+		ingredientsLabel.frame.origin.y = 8
+		ingredientsLabel.center.x = view.center.x
 	}
 	
-	func descriptionLabel() -> UILabel {
+	func makeDescriptionLabel() {
 		let hasDescription = food.description != ""
-		var descriptionLabel = UILabel()
 		descriptionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
 		descriptionLabel.text = hasDescription ? food.description : "No description available"
 		descriptionLabel.font = hasDescription ? .systemFontOfSize(12) : .italicSystemFontOfSize(12)
@@ -266,32 +274,24 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		descriptionLabel.lineBreakMode = .ByWordWrapping
 		descriptionLabel.sizeToFit()
 		descriptionLabel.center.x = view.center.x
-		
-		return descriptionLabel
 	}
 	
-	func nutritionLabel() -> UILabel {
-		var nutritionLabel = UILabel()
+	func makeNutritionLabel() {
 		nutritionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
 		nutritionLabel.text = "Nutrition Facts"
 		nutritionLabel.font = .boldSystemFontOfSize(20)
 		nutritionLabel.textAlignment = .Left
 		nutritionLabel.sizeToFit()
 		nutritionLabel.frame.origin = CGPoint(x: 8, y: headerGap)
-		
-		return nutritionLabel
 	}
 	
-	func personalLabel() -> UILabel {
-		var personalLabel = UILabel()
+	func makePersonalLabel() {
 		personalLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
 		personalLabel.text = "Bruin Tracks"
 		personalLabel.font = .boldSystemFontOfSize(20)
 		personalLabel.textAlignment = .Left
 		personalLabel.sizeToFit()
 		personalLabel.frame.origin = CGPoint(x: 8, y: headerGap)
-		
-		return personalLabel
 	}
 	
 	func servingsNumberChanged(count: Int) {
@@ -299,18 +299,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		// TODO: change the nutrition facts calculations based on this
 	}
 	
-	func favoriteChanged() {
-		favorited = !favorited
-		// TODO: change the color of the text here and on the other display based on it being favorited
-	}
-	
 	func favoriteChanged(sender: UISwitch) {
 		favorited = sender.on
-		// TODO: change the color of the text here and on the other display based on it being favorited
-	}
-	
-	func favoriteChanged(favorited: Bool) {
-		self.favorited = favorited
-		// TODO: change the color of the text here and on the other display based on it being favorited
+		// TODO: change the color of the text here and on the other display based on it being favorited?
 	}
 }
