@@ -70,9 +70,7 @@ class CircleDisplay: UIButton {
 	func setNutrition(nutrition: NutritionListing) {
 		self.nutrition = nutrition
 		
-		var percent = self.nutrition?.percent
-		
-		if percent == nil {
+		if self.nutrition?.percent == nil {
 			setProgress(1)
 			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
 		} else {

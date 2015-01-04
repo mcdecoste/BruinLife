@@ -150,28 +150,6 @@ class SectionInfo {
 	}
 }
 
-class FoodInfo {
-	var name: String
-	var type: FoodType
-	var nutrition: Dictionary<Nutrient, NutritionListing> = Dictionary()
-	var ingredients: String = ""
-	var description: String = ""
-	var countryCode: String = ""
-	
-	init(name: String, type: FoodType) {
-		self.name = name
-		self.type = type
-	}
-}
-
-class MainFoodInfo: FoodInfo {
-	var withFood: SubFoodInfo?
-}
-
-class SubFoodInfo: FoodInfo {
-	
-}
-
 enum FoodType: String {
 	case Regular = ""
 	case Vegetarian = "Vegetarian"
@@ -190,6 +168,30 @@ enum FoodType: String {
 	}
 }
 
+class FoodInfo {
+	var name: String
+	var type: FoodType
+	var nutrition: Array<NutritionListing> = []
+	var ingredients: String = ""
+	var description: String = ""
+	var countryCode: String = ""
+	
+	init(name: String, type: FoodType) {
+		self.name = name
+		self.type = type
+		
+		for nutrient in Nutrient.allValues { nutrition.append(NutritionListing(type: nutrient, measure: "0")) }
+	}
+}
+
+class MainFoodInfo: FoodInfo {
+	var withFood: SubFoodInfo?
+}
+
+class SubFoodInfo: FoodInfo {
+	
+}
+
 enum Nutrient: String { // , Equatable
 	case Cal = "Calories"
 	case FatCal = "From Fat"
@@ -198,7 +200,7 @@ enum Nutrient: String { // , Equatable
 	case TransFat = "Trans Fat"
 	case Chol = "Cholesterol"
 	case Sodium = "Sodium"
-	case TotCarb = "Total Carbs"
+	case TotCarb = "Total Carbohydrates"
 	case DietFiber = "Dietary Fiber"
 	case Sugar = "Sugars"
 	case Protein = "Protein"
@@ -224,7 +226,6 @@ enum Nutrient: String { // , Equatable
 	static let allRawValues = Nutrient.allValues.map { (nut: Nutrient) -> String in return nut.rawValue }
 	static let allMatchingValues: Array<String> = ["Calories", "Fat Cal.", "Total Fat", "Saturated Fat", "Trans Fat", "Cholesterol", "Sodium", "Total Carbohydrate", "Dietary Fiber", "Sugars", "Protein", "Vitamin A", "Vitamin C", "Calcium", "Iron"]
 	internal static let allDailyValues: Array<Int?> = [2000, nil, 65, 20, nil, 300, 1500, 130, 40, nil, nil, 100, 100, 100, 100]
-//	static let rowPairs: Array<(NutrientDisplayType, Nutrient, Nutrient)> = [(.twoMain, .Cal, .FatCal), (.oneMain, .TotFat, .Cal), (.twoSub, .SatFat, .TransFat), (.doubleMain, .Chol, .Sodium), (.oneMain, .TotCarb, .Cal), (.twoSub, .DietFiber, .Sugar), (.oneMain, .Protein, .Cal), (.doubleMain, .VitA, .VitC), (.doubleMain, .Calcium, .Iron)]
 	static let rowPairs: Array<(NutrientDisplayType, Nutrient, Nutrient)> = [(.twoMain, .Cal, .FatCal), (.oneMain, .TotFat, .Cal), (.oneSub, .SatFat, .Cal), (.oneSub, .TransFat, .Cal), (.oneMain, .Chol, .Cal), (.oneMain, .Sodium, .Cal), (.oneMain, .TotCarb, .Cal), (.oneSub, .DietFiber, .Cal), (.oneSub, .Sugar, .Cal), (.oneMain, .Protein, .Cal), (.doubleMain, .VitA, .VitC), (.doubleMain, .Calcium, .Iron)]
 	
 	static func typeForName(name: String) -> Nutrient? {

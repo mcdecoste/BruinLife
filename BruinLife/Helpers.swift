@@ -44,5 +44,20 @@ func defaultFoods() -> Array<MainFoodInfo> {
 	var lastFood = MainFoodInfo(name: "Super Awesome Angel Hair Pasta", type: .Regular)
 	lastFood.withFood = SubFoodInfo(name: "Garlic Bread", type: .Vegetarian)
 	
-	return [MainFoodInfo(name: "Greek Cream of Roaster Garlic & Cauliflower Soup", type: .Regular), MainFoodInfo(name: "Italian Minestrone Soup", type: .Vegetarian), MainFoodInfo(name: "Mediterranean Spiced Beef Soup", type: .Regular), MainFoodInfo(name: "Chicken Pasta w/ Lemon Caper Sauce", type: .Regular), MainFoodInfo(name: "Linguini w/ Lemon Sauce", type: .Vegan), MainFoodInfo(name: "Chicken Keftedes Pita Sandwich", type: .Regular), lastFood]
+	var theFoods = [MainFoodInfo(name: "Greek Cream of Roaster Garlic & Cauliflower Soup", type: .Regular), MainFoodInfo(name: "Italian Minestrone Soup", type: .Vegetarian), MainFoodInfo(name: "Mediterranean Spiced Beef Soup", type: .Regular), MainFoodInfo(name: "Chicken Pasta w/ Lemon Caper Sauce", type: .Regular), MainFoodInfo(name: "Linguini w/ Lemon Sauce", type: .Vegan), MainFoodInfo(name: "Chicken Keftedes Pita Sandwich", type: .Regular), lastFood]
+	
+	var theValues = [1300, 120, 30, 12, 2, 243, 1231, 102, 26, 8, 6, 64, 43, 82, 68]
+	
+	for food in theFoods {
+//		food.description = "Hello there this food is made so well oh man it's so dang tasty I can't believe how great it is man oh man go get it."
+		food.description = "White wine marinated chicken breast sautéed with garlic and parsley. Tossed with ziti noodles and fragrant lemon caper sauce."
+		food.countryCode = "Hawaii"
+//		food.ingredients = "Awesome, Sauce, Insanity, Taste Bud Explosions, Fireworks of Umami"
+		food.ingredients = "Lemon Caper Sauce.. (Water, Fresh Lemon Juice, Capers, Flour, Butter, Vegetarian Base, Garlic Powder, Onion Powder), Ziti Noodles (Ziti Pasta, Olive Oil Blend, Sea Salt), Marinated Chicken Breast (Chicken Breast, Garlic, Poultry Marinade (Chablis Wine, Olive Oil Blend, Garlic, Sea Salt, Black Pepper)), Garlic, Parsley"
+		for (index, listing) in enumerate(food.nutrition) {
+			food.nutrition[index] = NutritionListing(type: Nutrient.allValues[index], measure: "\(theValues[index])")
+		}
+	}
+	
+	return theFoods
 }

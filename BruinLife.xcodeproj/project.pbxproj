@@ -29,6 +29,7 @@
 		66B9785D1A524B5500144876 /* HorizontalFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785C1A524B5500144876 /* HorizontalFlow.swift */; };
 		66B9785F1A52B18D00144876 /* FoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */; };
 		66B978611A53E11B00144876 /* SectionCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */; };
+		66C7C94D1A58B4370084ACB6 /* ServingTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C7C94C1A58B4370084ACB6 /* ServingTableViewCell.swift */; };
 		66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */; };
 		66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E553DC1A31582800BF314E /* MenuTableViewCell.swift */; };
 		66FA9B691A56088100F03407 /* NutritionDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA9B681A56088100F03407 /* NutritionDisplay.swift */; };
@@ -73,6 +74,7 @@
 		66B9785C1A524B5500144876 /* HorizontalFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalFlow.swift; sourceTree = "<group>"; };
 		66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionCollectionReusableView.swift; sourceTree = "<group>"; };
+		66C7C94C1A58B4370084ACB6 /* ServingTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServingTableViewCell.swift; sourceTree = "<group>"; };
 		66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		66E553DC1A31582800BF314E /* MenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
 		66FA9B681A56088100F03407 /* NutritionDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionDisplay.swift; sourceTree = "<group>"; };
@@ -225,6 +227,7 @@
 				66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */,
 				66E553DC1A31582800BF314E /* MenuTableViewCell.swift */,
 				66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */,
+				66C7C94C1A58B4370084ACB6 /* ServingTableViewCell.swift */,
 				66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */,
 				66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */,
 			);
@@ -354,6 +357,7 @@
 				66B5BEC31A401D10004D0492 /* FoodModel.swift in Sources */,
 				669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */,
 				66FB03F91A4055560099760E /* ScrollSelectionTableViewCell.swift in Sources */,
+				66C7C94D1A58B4370084ACB6 /* ServingTableViewCell.swift in Sources */,
 				666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
