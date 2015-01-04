@@ -44,6 +44,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	private let baseWidth: CGFloat = 280 * 0.9
 	private let baseHeight: CGFloat = 460 * 0.5
 	
+	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
+	private let lightGreyTextColor = UIColor(white: 0.45, alpha: 1.0)
+	
 	var food: MainFoodInfo = MainFoodInfo(name: "", type: .Regular)
 	var foodLabel = UILabel()
 	var typeLabel = UILabel()
@@ -175,6 +178,23 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		switch section {
 		case nutritionSection:
+//			var servingCountLabel = UILabel(frame: CGRect(x: 0, y: 0, width: header.frame.width, height: header.frame.height))
+//			servingCountLabel.font = .italicSystemFontOfSize(14)
+//			servingCountLabel.textColor = darkGreyTextColor
+//			servingCountLabel.textAlignment = .Right
+//			switch numberOfServings {
+//			case 0:
+//				servingCountLabel.text = ""
+//			case 1:
+//				servingCountLabel.text = "for 1 serving"
+//			default:
+//				servingCountLabel.text = "for \(numberOfServings) servings"
+//			}
+//			servingCountLabel.sizeToFit()
+//			servingCountLabel.frame.origin.x = header.frame.width - servingCountLabel.frame.width - 8
+//			servingCountLabel.frame.origin.y = nutritionLabel.frame.maxY - servingCountLabel.frame.height
+//			header.addSubview(servingCountLabel)
+			
 			header.addSubview(nutritionLabel)
 		default:
 			header.addSubview(personalLabel)
@@ -241,6 +261,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForRowAtIndexPath: indexPath))
 			cell.backgroundColor = .clearColor()
 			cell.selectionStyle = .None
+//			cell.setServingCount(numberOfServings)
 			cell.setInformation((type: cellType, left: nutrientListingLeft, right: nutrientListingRight))
 			
 			return cell
@@ -254,7 +275,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		ingredientsLabel.frame.size = CGSize(width: view.frame.width * 19/20, height: baseHeight)
 		ingredientsLabel.text = "Ingredients: \(food.ingredients)"
 		ingredientsLabel.font = .systemFontOfSize(11)
-		ingredientsLabel.textColor = UIColor(white: 0.3, alpha: 1.0)
+		ingredientsLabel.textColor = darkGreyTextColor
 		ingredientsLabel.textAlignment = .Left
 		ingredientsLabel.numberOfLines = 0
 		ingredientsLabel.lineBreakMode = .ByWordWrapping
@@ -268,7 +289,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		descriptionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
 		descriptionLabel.text = hasDescription ? food.description : "No description available"
 		descriptionLabel.font = hasDescription ? .systemFontOfSize(12) : .italicSystemFontOfSize(12)
-		descriptionLabel.textColor = hasDescription ? UIColor(white: 0.3, alpha: 1.0) : UIColor(white: 0.45, alpha: 1.0)
+		descriptionLabel.textColor = hasDescription ? darkGreyTextColor : lightGreyTextColor
 		descriptionLabel.textAlignment = .Center
 		descriptionLabel.numberOfLines = 0
 		descriptionLabel.lineBreakMode = .ByWordWrapping
@@ -296,6 +317,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func servingsNumberChanged(count: Int) {
 		numberOfServings = count
+//		nutriTable?.reloadSections(NSIndexSet(index: nutritionSection), withRowAnimation: .None)
 		// TODO: change the nutrition facts calculations based on this
 	}
 	

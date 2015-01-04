@@ -9,10 +9,11 @@
 import UIKit
 
 class NutritionTableViewCell: UITableViewCell {
-	var leftText = UILabel()
-	var rightText = UILabel()
-	var leftDisplay = CircleDisplay(frame: CGRect(x: 0, y: 0, width: 36, height: 36))	// 36 or 40
-	var rightDisplay = CircleDisplay(frame: CGRect(x: 0, y: 0, width: 36, height: 36))	// 36 or 40
+	private var leftText = UILabel()
+	private var rightText = UILabel()
+	private var leftDisplay = CircleDisplay(frame: CGRect(x: 0, y: 0, width: 36, height: 36))	// 36 or 40
+	private var rightDisplay = CircleDisplay(frame: CGRect(x: 0, y: 0, width: 36, height: 36))	// 36 or 40
+	private var numberServings: Int = 1
 	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -33,6 +34,8 @@ class NutritionTableViewCell: UITableViewCell {
 		addSubview(leftDisplay)
 		addSubview(rightDisplay)
 	}
+	
+	func setServingCount(count: Int) { numberServings = count == 0 ? 1 : count }
 	
 	func setInformation(information: (type: NutrientDisplayType, left: NutritionListing?, right: NutritionListing?)) {
 		let textIndent: CGFloat = 15 // to line it up with regular displays
@@ -60,7 +63,7 @@ class NutritionTableViewCell: UITableViewCell {
 		// displays
 		leftDisplay.frame.origin.x = halfway - leftDisplay.frame.width // - rightDisplayIndent
 		leftDisplay.center.y = center.y
-		leftDisplay.setNutrition((information.left)!)
+		leftDisplay.setNutrition((information.left)!, servingCount: numberServings)
 		
 		rightDisplay.frame.origin.x = frame.width - rightDisplay.frame.width - rightDisplayIndent
 		rightDisplay.center.y = center.y
@@ -72,20 +75,20 @@ class NutritionTableViewCell: UITableViewCell {
 			leftText.font = UIFont.boldSystemFontOfSize(bigFontSize)
 			leftDisplay.hidden = true
 			rightText.text = ""
-			rightDisplay.setNutrition((information.left)!)
+			rightDisplay.setNutrition((information.left)!, servingCount: numberServings)
 			rightDisplay.hidden = false
 		case .twoMain:
 			leftText.font = UIFont.boldSystemFontOfSize(bigFontSize)
 			leftDisplay.hidden = false
 			rightText.font = UIFont.systemFontOfSize(smallFontSize)
 			rightText.text = information.right?.type.rawValue
-			rightDisplay.setNutrition((information.right)!)
+			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
 			rightDisplay.hidden = false
 		case .oneSub:
 			leftText.font = UIFont.systemFontOfSize(smallFontSize)
 			leftDisplay.hidden = true
 			rightText.text = ""
-			rightDisplay.setNutrition((information.left)!)
+			rightDisplay.setNutrition((information.left)!, servingCount: numberServings)
 			rightDisplay.hidden = false
 			displayCenter -= 4
 		case .doubleMain:
@@ -93,7 +96,7 @@ class NutritionTableViewCell: UITableViewCell {
 			leftDisplay.hidden = false
 			rightText.font = UIFont.boldSystemFontOfSize(bigFontSize)
 			rightText.text = information.right?.type.rawValue
-			rightDisplay.setNutrition((information.right)!)
+			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
 			rightDisplay.hidden = false
 		default:
 			leftText.text = ""

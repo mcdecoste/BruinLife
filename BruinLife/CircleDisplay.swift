@@ -22,6 +22,8 @@ class CircleDisplay: UIButton {
 	
 	let progressWidthRatio: CGFloat = 2.0 // must be larger than 1
 	
+	var servingCount: Int = 1
+	
 	override init(frame: CGRect) {
 		centralLabel = UILabel(frame: frame)
 		percLayer = CAShapeLayer()
@@ -67,14 +69,15 @@ class CircleDisplay: UIButton {
 	}
 	
 	// MARK: Setters
-	func setNutrition(nutrition: NutritionListing) {
+	func setNutrition(nutrition: NutritionListing, servingCount: Int) {
 		self.nutrition = nutrition
+		self.servingCount = servingCount
 		
 		if self.nutrition?.percent == nil {
 			setProgress(1)
 			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
 		} else {
-			setProgress(CGFloat((self.nutrition?.percent)!) / 100)
+			setProgress(CGFloat(self.servingCount * (self.nutrition?.percent)!) / 100)
 			percLayer.strokeColor = tintColor!.CGColor
 		}
 		updateDisplayText()
@@ -88,7 +91,7 @@ class CircleDisplay: UIButton {
 	}
 	
 	func setProgress(progress: CGFloat) {
-		self.progress = progress
+		self.progress = min(progress, 1)
 		
 		let startAngle = CGFloat(3*M_PI_2)
 		let endAngle = startAngle + (2 * CGFloat(M_PI) * self.progress)
@@ -111,7 +114,7 @@ class CircleDisplay: UIButton {
 	}
 	
 	func updateDisplayText() {
-		let measure = (self.nutrition?.measure)!
+		let measure = "\(self.servingCount * NSString(string: (self.nutrition?.measure)!).integerValue)"
 		let unit = (self.nutrition?.unit)!
 		let percOpt = self.nutrition?.percent
 		let perc = percOpt == nil ? 100 : percOpt!
