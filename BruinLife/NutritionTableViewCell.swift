@@ -35,7 +35,12 @@ class NutritionTableViewCell: UITableViewCell {
 		addSubview(rightDisplay)
 	}
 	
-	func setServingCount(count: Int) { numberServings = count == 0 ? 1 : count }
+	func setServingCount(count: Int) {
+		numberServings = count == 0 ? 1 : count
+		
+		leftDisplay.setServingCount(numberServings)
+		rightDisplay.setServingCount(numberServings)
+	}
 	
 	func setInformation(information: (type: NutrientDisplayType, left: NutritionListing?, right: NutritionListing?)) {
 		let textIndent: CGFloat = 15 // to line it up with regular displays

@@ -111,7 +111,9 @@ class SwipeModel: NSObject {
 	
 	/// Returns the current week and quarter (since they're related)
 	func currentWeekAndQuarter() -> (week: Int, quarter: QuarterType?) {
-		var weekOfYear = NSCalendar.currentCalendar().component(.CalendarUnitWeekOfYear, fromDate: NSDate())
+		// decrement if sunday
+		let isSunday = currentDayOfWeek() == 6
+		let weekOfYear = NSCalendar.currentCalendar().component(.CalendarUnitWeekOfYear, fromDate: isSunday ? NSDate(timeIntervalSinceNow: -7 * timeInDay) : NSDate())
 		
 		for (startWeek, quarter) in startWeeks {
 			var currWeek = weekOfYear - startWeek
@@ -122,20 +124,8 @@ class SwipeModel: NSObject {
 	}
 	
 	func currentDayOfWeek() -> Int {
-		// find current day of week
-		var formatter = NSDateFormatter()
-		formatter.dateFormat = dateFormatWeekday
-		var dayOfWeek = formatter.stringFromDate(NSDate())
-		
-		var dowIndex = 0
-		// find index for day of week
-		for (index, dayLabel) in enumerate(daysOfWeek) {
-			if dayLabel.rawValue == dayOfWeek {
-				dowIndex = index
-				break
-			}
-		}
-		return dowIndex
+		var regularDow = NSCalendar.currentCalendar().component(.CalendarUnitWeekday, fromDate: NSDate()) // Sunday = 1, Saturday = 6
+		return (regularDow + 5) % 7 // Monday = 0, Sunday = 6
 	}
 	
 	func swipesForSelectedDay() -> Int {

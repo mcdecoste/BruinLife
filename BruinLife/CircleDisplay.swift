@@ -73,6 +73,16 @@ class CircleDisplay: UIButton {
 		self.nutrition = nutrition
 		self.servingCount = servingCount
 		
+		update()
+	}
+	
+	func setServingCount(count: Int) {
+		servingCount = count
+		
+		update()
+	}
+	
+	func update() {
 		if self.nutrition?.percent == nil {
 			setProgress(1)
 			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
@@ -117,7 +127,7 @@ class CircleDisplay: UIButton {
 		let measure = "\(self.servingCount * NSString(string: (self.nutrition?.measure)!).integerValue)"
 		let unit = (self.nutrition?.unit)!
 		let percOpt = self.nutrition?.percent
-		let perc = percOpt == nil ? 100 : percOpt!
+		let perc = percOpt == nil ? 100 : (percOpt! * self.servingCount)
 		
 		let tooLong = countElements(measure + unit) > 4
 		let inbetweenText = tooLong ? "\n" : ""

@@ -53,6 +53,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	var nutriTable: UITableView?
 	
+	var nutritionHeader: NutritionHeaderView? // for updating on the fly (hopefully)
+	
 	var ingredientsLabel = UILabel()
 	var descriptionLabel = UILabel()
 	var nutritionLabel = UILabel()
@@ -79,6 +81,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutrientCellID)
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: ingredientCellID)
 		nutriTable?.registerClass(ServingTableViewCell.self, forCellReuseIdentifier: servingCellID)
+		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientCellID)
     }
 
     override func didReceiveMemoryWarning() {
@@ -173,34 +176,20 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-		var header = UIView(frame: CGRect(x: 0, y: 0, width: (nutriTable?.frame.width)!, height: self.tableView(tableView, heightForHeaderInSection: section)))
-		header.backgroundColor = .whiteColor()
-		
 		switch section {
 		case nutritionSection:
-//			var servingCountLabel = UILabel(frame: CGRect(x: 0, y: 0, width: header.frame.width, height: header.frame.height))
-//			servingCountLabel.font = .italicSystemFontOfSize(14)
-//			servingCountLabel.textColor = darkGreyTextColor
-//			servingCountLabel.textAlignment = .Right
-//			switch numberOfServings {
-//			case 0:
-//				servingCountLabel.text = ""
-//			case 1:
-//				servingCountLabel.text = "for 1 serving"
-//			default:
-//				servingCountLabel.text = "for \(numberOfServings) servings"
-//			}
-//			servingCountLabel.sizeToFit()
-//			servingCountLabel.frame.origin.x = header.frame.width - servingCountLabel.frame.width - 8
-//			servingCountLabel.frame.origin.y = nutritionLabel.frame.maxY - servingCountLabel.frame.height
-//			header.addSubview(servingCountLabel)
-			
-			header.addSubview(nutritionLabel)
+			if nutritionHeader == nil {
+				nutritionHeader = nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(nutrientCellID) as NutritionHeaderView?
+			}
+			nutritionHeader?.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForHeaderInSection: section))
+			nutritionHeader?.setServingsCount(numberOfServings)
+			return nutritionHeader
 		default:
+			var header = UIView(frame: CGRect(x: 0, y: 0, width: (nutriTable?.frame.width)!, height: self.tableView(tableView, heightForHeaderInSection: section)))
+			header.backgroundColor = .whiteColor()
 			header.addSubview(personalLabel)
+			return header
 		}
-		
-		return header
 	}
 	
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -261,8 +250,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForRowAtIndexPath: indexPath))
 			cell.backgroundColor = .clearColor()
 			cell.selectionStyle = .None
-//			cell.setServingCount(numberOfServings)
 			cell.setInformation((type: cellType, left: nutrientListingLeft, right: nutrientListingRight))
+			cell.setServingCount(numberOfServings)
 			
 			return cell
 		default:
@@ -317,7 +306,20 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func servingsNumberChanged(count: Int) {
 		numberOfServings = count
-//		nutriTable?.reloadSections(NSIndexSet(index: nutritionSection), withRowAnimation: .None)
+		
+//		var theView = tableView(nutriTable!, viewForHeaderInSection: nutritionSection) as NutritionHeaderView
+//		(tableView(nutriTable!, viewForHeaderInSection: nutritionSection) as NutritionHeaderView).setServingsCount(numberOfServings)
+//		theView.setServingsCount(numberOfServings)
+//		theView.setNeedsDisplay()
+		nutritionHeader?.setServingsCount(numberOfServings)
+		for cell in (nutriTable?.visibleCells() as [UITableViewCell]) {
+			if let cellPath = nutriTable?.indexPathForCell(cell) {
+				if cellPath.section == nutritionSection {
+					(cell as NutritionTableViewCell).setServingCount(numberOfServings)
+				}
+			}
+		}
+		
 		// TODO: change the nutrition facts calculations based on this
 	}
 	

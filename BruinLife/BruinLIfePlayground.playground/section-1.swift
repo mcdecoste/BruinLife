@@ -359,3 +359,4 @@ var circle: CircleDisplay = CircleDisplay(frame: CGRect(x: 0, y: 0, width: 40, h
 circle.setNutrition(NutritionListing(type: .TotFat, measure: "23"))
 
 
+var isSunday = NSCalendar.currentCalendar().component(.CalendarUnitWeekday, fromDate: NSDate(timeIntervalSinceNow: 6*24*3600))
