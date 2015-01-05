@@ -25,6 +25,7 @@ enum NutrientDisplayType {
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 	private let nutrientCellID = "nutrition"
 	private let ingredientCellID = "ingredient"
+	private let personalCellID = "personal"
 	private let servingCellID = "serving"
 	private let cellHeight: CGFloat = 44.0
 	private let smallCellHeight: CGFloat = 36.0
@@ -34,7 +35,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	private let descriptionSection: Int = 0
 	private let personalSection: Int = 1
 		private let favoriteRow: Int = 0
-		private let servingRow: Int = 1
+		private let reminderRow: Int = 1
+		private let servingRow: Int = 2
 	private let nutritionSection: Int = 2
 	private let ingredientSection: Int = 3
 	
@@ -46,6 +48,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
 	private let lightGreyTextColor = UIColor(white: 0.45, alpha: 1.0)
+	
+	/// date displayed food is being offered (based on food table view controller)
+	var date: NSDate = NSDate()
+	var meal: MealType = .Breakfast
+	var place: RestaurantInfo = RestaurantInfo(hall: .DeNeve)
 	
 	var food: MainFoodInfo = MainFoodInfo(name: "", type: .Regular)
 	var foodLabel = UILabel()
@@ -63,6 +70,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	// track information
 	var numberOfServings = 0
 	var favorited = false
+	var reminding = false
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -80,7 +88,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		nutriTable?.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutrientCellID)
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: ingredientCellID)
-		nutriTable?.registerClass(ServingTableViewCell.self, forCellReuseIdentifier: servingCellID)
+		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: personalCellID)
 		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientCellID)
     }
 
@@ -89,8 +97,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
         // Dispose of any resources that can be recreated.
     }
 	
-	func setFood(info: MainFoodInfo) {
-		food = info
+	func setFood(food: MainFoodInfo, date: NSDate, meal: MealType, place: RestaurantInfo) {
+		self.food = food
+		self.date = date
+		self.meal = meal
+		self.place = place
 		establishLayout()
 	}
 	
@@ -145,7 +156,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case nutritionSection:
 			return Nutrient.rowPairs.count
 		case personalSection:
-			return 2
+			return 3
 		default:
 			return 1
 		}
@@ -203,37 +214,44 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			}
 			
 			cell.textLabel?.text = nil
-			
+			cell.selectionStyle = .None
 			cell.accessoryView = nil
 			cell.addSubview(label)
 			return cell
 		case personalSection:
+			let isFav = indexPath.row == favoriteRow
+			let needsStepper = indexPath.row == servingRow
+			
+			var cell = tableView.dequeueReusableCellWithIdentifier(personalCellID) as UITableViewCell
+			cell.selectionStyle = .None
+			
 			switch indexPath.row {
 			case favoriteRow:
-				var cell = tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as UITableViewCell
-				
-				for subview in cell.subviews {
-					if subview.isMemberOfClass(UILabel.self) { subview.removeFromSuperview() }
-				}
-				
 				cell.textLabel?.text = "Favorite Food"
-				cell.textLabel?.textAlignment = .Left
-				cell.textLabel?.font = .systemFontOfSize(17)
-				
-				var rightSwitch = UISwitch()
-				rightSwitch.setOn(favorited, animated: false)
-				rightSwitch.addTarget(self, action: "favoriteChanged:", forControlEvents: .ValueChanged)
-				
-				cell.accessoryView = rightSwitch
-				return cell
-			default: // case servingRow:
-				var cell = tableView.dequeueReusableCellWithIdentifier(servingCellID) as ServingTableViewCell
-				cell.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForRowAtIndexPath: indexPath))
-				
-				cell.newlyDisplaying(numberOfServings, withController: self)
-				
-				return cell
+			case reminderRow:
+				cell.textLabel?.text = "Remind Me"
+			case servingRow:
+				cell.textLabel?.text = servingText()
+			default:
+				cell.textLabel?.text = ""
 			}
+			
+			if needsStepper {
+				var stepper = UIStepper()
+				stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
+				stepper.wraps = false
+				stepper.autorepeat = true
+				stepper.maximumValue = 16
+				stepper.stepValue = 1
+				cell.accessoryView = stepper
+			} else {
+				var switcher = UISwitch()
+				switcher.setOn(isFav ? favorited : reminding, animated: false)
+				switcher.addTarget(self, action: isFav ? "favoriteChanged:" : "reminderChanged:", forControlEvents: .ValueChanged)
+				cell.accessoryView = switcher
+			}
+			
+			return cell
 		case nutritionSection:
 			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as NutritionTableViewCell
 			
@@ -307,10 +325,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func servingsNumberChanged(count: Int) {
 		numberOfServings = count
 		
-//		var theView = tableView(nutriTable!, viewForHeaderInSection: nutritionSection) as NutritionHeaderView
-//		(tableView(nutriTable!, viewForHeaderInSection: nutritionSection) as NutritionHeaderView).setServingsCount(numberOfServings)
-//		theView.setServingsCount(numberOfServings)
-//		theView.setNeedsDisplay()
 		nutritionHeader?.setServingsCount(numberOfServings)
 		for cell in (nutriTable?.visibleCells() as [UITableViewCell]) {
 			if let cellPath = nutriTable?.indexPathForCell(cell) {
@@ -319,12 +333,37 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 				}
 			}
 		}
-		
-		// TODO: change the nutrition facts calculations based on this
 	}
 	
 	func favoriteChanged(sender: UISwitch) {
 		favorited = sender.on
 		// TODO: change the color of the text here and on the other display based on it being favorited?
+	}
+	
+	func reminderChanged(sender: UISwitch) {
+		reminding = sender.on
+		// TODO: change the color of the text here and on the other display based on it being favorited?
+	}
+	
+	func stepperChanged(sender: UIStepper) {
+		numberOfServings = Int(sender.value)
+		
+		nutritionHeader?.setServingsCount(numberOfServings)
+		for cell in (nutriTable?.visibleCells() as [UITableViewCell]) {
+			if let cellPath = nutriTable?.indexPathForCell(cell) {
+				if cellPath.section == nutritionSection {
+					(cell as NutritionTableViewCell).setServingCount(numberOfServings)
+				}
+				
+				if cellPath.section == personalSection && cellPath.row == servingRow {
+					cell.textLabel?.text = servingText()
+				}
+			}
+		}
+	}
+	
+	func servingText() -> String {
+		var addendum = numberOfServings == 1 ? "" : "s"
+		return "\(numberOfServings) Serving\(addendum)"
 	}
 }

@@ -189,7 +189,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		
-		foodVC.setFood(food!)
+		foodVC.setFood(food!, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.information)!)
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
@@ -239,11 +239,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		return header
 	}
 	
+	// MARK: UICollectionViewDelegate
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 		var restaurant = displayCell?.information
 		addFoodPopover(restaurant?.sections[indexPath.section].foods[indexPath.row])
 	}
-	
-	// MARK: UICollectionViewDelegate
-	
 }

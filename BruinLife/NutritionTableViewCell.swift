@@ -26,6 +26,8 @@ class NutritionTableViewCell: UITableViewCell {
 	}
 	
 	func finishSetup() {
+		selectionStyle = .None
+		
 		leftText.textAlignment = .Left
 		rightText.textAlignment = .Left
 		
