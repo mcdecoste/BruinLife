@@ -9,7 +9,6 @@
 import UIKit
 
 var timeInDay: Double = 24*60*60
-var dateFormatWeekday = "EEEE"
 
 /// Returns the most likely Meal given the time
 func currentMeal() -> MealType {

@@ -17,6 +17,7 @@ struct NutriTableDisplay {
 enum NutrientDisplayType {
 	case oneMain // bold
 	case doubleMain // both bold
+	case doublePlain // both regular
 	case twoMain // first bold
 	case oneSub // not bold (replacing twoSub)
 	case empty // since no nils possible in tuples
@@ -238,11 +239,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			
 			if needsStepper {
 				var stepper = UIStepper()
-				stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
-				stepper.wraps = false
-				stepper.autorepeat = true
+				stepper.value = Double(numberOfServings)
 				stepper.maximumValue = 16
-				stepper.stepValue = 1
+				stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
 				cell.accessoryView = stepper
 			} else {
 				var switcher = UISwitch()

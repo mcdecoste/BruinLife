@@ -46,7 +46,7 @@ class NutritionTableViewCell: UITableViewCell {
 	
 	func setInformation(information: (type: NutrientDisplayType, left: NutritionListing?, right: NutritionListing?)) {
 		let textIndent: CGFloat = 15 // to line it up with regular displays
-		let rightDisplayIndent: CGFloat = 6
+		let rightDisplayIndent: CGFloat = 15 // was 6
 		let bigFontSize: CGFloat = 17 // prev 16
 		let mediumFontSize: CGFloat = 16 // prev 15
 		let smallFontSize: CGFloat = 15 // prev 4
@@ -99,9 +99,16 @@ class NutritionTableViewCell: UITableViewCell {
 			rightDisplay.hidden = false
 			displayCenter -= 4
 		case .doubleMain:
-			leftText.font = UIFont.boldSystemFontOfSize(bigFontSize)
+			leftText.font = UIFont.boldSystemFontOfSize(mediumFontSize)
 			leftDisplay.hidden = false
-			rightText.font = UIFont.boldSystemFontOfSize(bigFontSize)
+			rightText.font = UIFont.boldSystemFontOfSize(mediumFontSize)
+			rightText.text = information.right?.type.rawValue
+			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
+			rightDisplay.hidden = false
+		case .doublePlain:
+			leftText.font = UIFont.systemFontOfSize(mediumFontSize)
+			leftDisplay.hidden = false
+			rightText.font = UIFont.systemFontOfSize(mediumFontSize)
 			rightText.text = information.right?.type.rawValue
 			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
 			rightDisplay.hidden = false
