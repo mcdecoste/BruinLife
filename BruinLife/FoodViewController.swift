@@ -23,10 +23,11 @@ enum NutrientDisplayType {
 	case empty // since no nils possible in tuples
 }
 
-class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate {
 	private let nutrientCellID = "nutrition"
 	private let ingredientCellID = "ingredient"
 	private let personalCellID = "personal"
+	private let reminderCellID = "reminder"
 	private let servingCellID = "serving"
 	private let cellHeight: CGFloat = 44.0
 	private let smallCellHeight: CGFloat = 36.0
@@ -55,7 +56,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var meal: MealType = .Breakfast
 	var place: RestaurantInfo = RestaurantInfo(hall: .DeNeve)
 	
-	var food: MainFoodInfo = MainFoodInfo(name: "", type: .Regular)
+	var food: MainFoodInfo = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
 	var foodLabel = UILabel()
 	var typeLabel = UILabel()
 	
@@ -72,6 +73,17 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var numberOfServings = 0
 	var favorited = false
 	var reminding = false
+	
+	var foodVC: FoodTableViewController?
+	
+	let alertCancel = "Cancel"
+	let alertNever = "Never"
+	let alertMorningFull = "Start of Day (9:00 AM)"
+	let alertMorning = "Start of Day"
+	var alertHall = ""
+	
+	var notificationTimeText: String?
+	var notificationCell: FoodNotificationTableViewCell?
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -90,6 +102,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutrientCellID)
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: ingredientCellID)
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: personalCellID)
+		nutriTable?.registerClass(FoodNotificationTableViewCell.self, forCellReuseIdentifier: reminderCellID)
 		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientCellID)
     }
 
@@ -103,6 +116,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		self.date = date
 		self.meal = meal
 		self.place = place
+		alertHall = "When \(place.hall.displayName((foodVC?.isHall)!)) Opens (\(place.openTime.displayString()))"
+		// set reminder time based on whether there is a saved reminder for that time
+		notificationTimeText = alertNever
 		establishLayout()
 	}
 	
@@ -133,8 +149,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		typeLabel.sizeToFit()
 		typeLabel.center.x = view.center.x
 		typeLabel.frame.origin.y = foodLabel.frame.maxY
-		
-		
 		
 		var ntY = typeLabel.frame.maxY + 2
 		
@@ -220,37 +234,46 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell.addSubview(label)
 			return cell
 		case personalSection:
-			let isFav = indexPath.row == favoriteRow
-			let needsStepper = indexPath.row == servingRow
-			
-			var cell = tableView.dequeueReusableCellWithIdentifier(personalCellID) as UITableViewCell
-			cell.selectionStyle = .None
-			
-			switch indexPath.row {
-			case favoriteRow:
-				cell.textLabel?.text = "Favorite Food"
-			case reminderRow:
-				cell.textLabel?.text = "Remind Me"
-			case servingRow:
-				cell.textLabel?.text = servingText()
-			default:
-				cell.textLabel?.text = ""
-			}
-			
-			if needsStepper {
-				var stepper = UIStepper()
-				stepper.value = Double(numberOfServings)
-				stepper.maximumValue = 16
-				stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
-				cell.accessoryView = stepper
+			if indexPath.row == reminderRow {
+				notificationCell = tableView.dequeueReusableCellWithIdentifier(reminderCellID) as? FoodNotificationTableViewCell
+				
+				if notificationCell?.textLabel?.text == nil {
+					notificationCell?.textLabel?.text = "Remind Me"
+				}
+				notificationCell?.detailTextLabel?.text = notificationTimeText
+				notificationCell?.detailTextLabel?.adjustsFontSizeToFitWidth = true
+				notificationCell?.detailTextLabel?.minimumScaleFactor = 0.4
+				return notificationCell!
 			} else {
-				var switcher = UISwitch()
-				switcher.setOn(isFav ? favorited : reminding, animated: false)
-				switcher.addTarget(self, action: isFav ? "favoriteChanged:" : "reminderChanged:", forControlEvents: .ValueChanged)
-				cell.accessoryView = switcher
+				let needsStepper = indexPath.row == servingRow
+				
+				var cell = tableView.dequeueReusableCellWithIdentifier(personalCellID) as UITableViewCell
+				cell.selectionStyle = .None
+				
+				switch indexPath.row {
+				case favoriteRow:
+					cell.textLabel?.text = "Favorite Food"
+				case servingRow:
+					cell.textLabel?.text = servingText()
+				default:
+					cell.textLabel?.text = ""
+				}
+				
+				if needsStepper {
+					var stepper = UIStepper()
+					stepper.value = Double(numberOfServings)
+					stepper.maximumValue = 16
+					stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
+					cell.accessoryView = stepper
+				} else {
+					var switcher = UISwitch()
+					switcher.setOn(favorited, animated: false)
+					switcher.addTarget(self, action: "favoriteChanged:", forControlEvents: .ValueChanged) //  : "reminderChanged:"
+					cell.accessoryView = switcher
+				}
+				
+				return cell
 			}
-			
-			return cell
 		case nutritionSection:
 			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as NutritionTableViewCell
 			
@@ -273,6 +296,15 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			return cell
 		default:
 			return tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as UITableViewCell
+		}
+	}
+	
+	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+		
+		if indexPath.section == personalSection && indexPath.row == reminderRow {
+			showNotificationActionSheet()
+			
 		}
 	}
 	
@@ -336,12 +368,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func favoriteChanged(sender: UISwitch) {
 		favorited = sender.on
-		// TODO: change the color of the text here and on the other display based on it being favorited?
-	}
-	
-	func reminderChanged(sender: UISwitch) {
-		reminding = sender.on
-		// TODO: change the color of the text here and on the other display based on it being favorited?
 	}
 	
 	func stepperChanged(sender: UIStepper) {
@@ -364,5 +390,81 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func servingText() -> String {
 		var addendum = numberOfServings == 1 ? "" : "s"
 		return "\(numberOfServings) Serving\(addendum)"
+	}
+	
+	
+	// MARK: Action Sheets
+	func showNotificationActionSheet() {
+		var actionSheet = UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: alertCancel, destructiveButtonTitle: alertNever, otherButtonTitles: alertMorningFull, alertHall)
+		actionSheet.showInView(foodVC?.view)
+	}
+	
+	// MARK: UIActionSheetDelegate
+	func actionSheet(actionSheet: UIActionSheet, willDismissWithButtonIndex buttonIndex: Int) {
+		switch actionSheet.buttonTitleAtIndex(buttonIndex) {
+		case alertNever:
+			notificationTimeText = alertNever
+			removeNotification()
+		case alertMorningFull: // , alertMeal
+			notificationTimeText = alertMorning
+			addNotification(Time(hour: 9, minute: 0).timeDateForDate(date)!)
+		case alertHall:
+			notificationTimeText = place.openTime.displayString()
+			addNotification(place.openTime.timeDateForDate(date)!)
+		case alertCancel:
+			println("Cancelling")
+		default:
+			println("ERROR")
+		}
+		
+		nutriTable?.reloadRowsAtIndexPaths([NSIndexPath(forRow: reminderRow, inSection: personalSection)], withRowAnimation: .Fade)
+	}
+	
+	// Remove any existing notification
+	func removeNotification() {
+		// check if we even have one
+		var notifs = UIApplication.sharedApplication().scheduledLocalNotifications as Array<UILocalNotification>
+		for notif in notifs {
+			println(notif.alertBody)
+			println(notif.description)
+		}
+	}
+	
+	/// Add a new notification or modify an old one
+	func addNotification(date: NSDate) {
+		// check if already exists
+		
+		
+		// TEST RUN
+		var notif = UILocalNotification()
+		notif.fireDate = NSDate(timeIntervalSinceNow: 60)
+		notif.alertBody = "\(place.hall.displayName((foodVC?.isHall)!)) has \(food.name) for \(meal.rawValue)"
+//		notif.alertAction = "Show me boba"
+		notif.timeZone = .defaultTimeZone()
+		notif.applicationIconBadgeNumber = UIApplication.sharedApplication().applicationIconBadgeNumber + 1
+		UIApplication.sharedApplication().scheduleLocalNotification(notif)
+		
+		
+		
+		/*
+		// Schedule the notification
+    UILocalNotification* localNotification = [[UILocalNotification alloc] init];
+    localNotification.fireDate = pickerDate;
+    localNotification.alertBody = self.itemText.text;
+    localNotification.alertAction = @"Show me the item";
+    localNotification.timeZone = [NSTimeZone defaultTimeZone];
+    localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+    
+    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
+		*/
+		
+	}
+	
+	func notificationDescriptoin() -> String {
+		return ""
+	}
+	
+	func typeForFireTime(time: NSDate) -> String {
+		return ""
 	}
 }

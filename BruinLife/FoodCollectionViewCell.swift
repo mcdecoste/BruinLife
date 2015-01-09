@@ -15,7 +15,7 @@ class FoodCollectionViewCell: UICollectionViewCell {
 	var extraLabel: UILabel
 	
 	override init(frame: CGRect) {
-		food = MainFoodInfo(name: "", type: .Regular)
+		food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
 		nameLabel = UILabel(frame: frame)
 		typeLabel = UILabel(frame: frame)
 		extraLabel = UILabel(frame: frame)
@@ -78,7 +78,7 @@ class FoodCollectionViewCell: UICollectionViewCell {
 	func preferredSize() -> CGSize { return CGSize(width: 240, height: 60) }
 	
 	required init(coder aDecoder: NSCoder) {
-		food = MainFoodInfo(name: "", type: .Regular)
+		food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
 		nameLabel = UILabel(frame: CGRectZero)
 		typeLabel = UILabel(frame: CGRectZero)
 		extraLabel = UILabel(frame: CGRectZero)

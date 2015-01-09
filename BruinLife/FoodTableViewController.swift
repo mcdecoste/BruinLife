@@ -7,6 +7,7 @@
 //
 
 import UIKit
+//import CoreData
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 	let kRestCellID = "FoodCell"
@@ -22,6 +23,20 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	var pageIndex = 0
 	var isHall = true
+	
+	
+	// Core Data
+	
+//	lazy var managedObjectContext : NSManagedObjectContext? = {
+//		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+//		if let managedObjectContext = appDelegate.managedObjectContext {
+//			return managedObjectContext
+//		}
+//		else {
+//			return nil
+//		}
+//	}()
+	
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
@@ -176,6 +191,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
 		foodVC.preferredContentSize = foodVC.preferredContentSize
+		foodVC.foodVC = self
 		
 		let ppc = foodVC.popoverPresentationController
 		ppc?.permittedArrowDirections = UIPopoverArrowDirection.allZeros

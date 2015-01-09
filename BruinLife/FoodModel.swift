@@ -35,6 +35,16 @@ class Time {
 		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
 		return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())?.dateByAddingTimeInterval(interval)
 	}
+	
+	func displayString() -> String {
+		let AMPM = ((hour/12) == 0 || (hour/12) == 2) ? "AM" : "PM"
+		
+		if minute < 10 {
+			return "\(hour):0\(minute) \(AMPM)"
+		} else {
+			return "\(hour):\(minute) \(AMPM)"
+		}
+	}
 }
 
 enum Halls: String {
@@ -170,14 +180,16 @@ enum FoodType: String {
 
 class FoodInfo {
 	var name: String
+	var recipe: String
 	var type: FoodType
 	var nutrition: Array<NutritionListing> = []
 	var ingredients: String = ""
 	var description: String = ""
 	var countryCode: String = ""
 	
-	init(name: String, type: FoodType) {
+	init(name: String, recipe: String, type: FoodType) {
 		self.name = name
+		self.recipe = recipe
 		self.type = type
 		
 		for nutrient in Nutrient.allValues { nutrition.append(NutritionListing(type: nutrient, measure: "0")) }
