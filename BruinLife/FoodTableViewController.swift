@@ -53,6 +53,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			}
 			tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 		}
+		
+		tableView.separatorStyle = .None
 	}
 	
 	// MARK: Table view data source
