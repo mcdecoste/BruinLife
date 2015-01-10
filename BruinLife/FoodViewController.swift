@@ -23,6 +23,13 @@ enum NutrientDisplayType {
 	case empty // since no nils possible in tuples
 }
 
+enum ReminderCase: Int {
+	case beforeAll = 0
+	case beforeMorning = 1
+	case beforeOpen = 2
+	case afterAll = 3
+}
+
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate {
 	private let nutrientCellID = "nutrition"
 	private let ingredientCellID = "ingredient"
@@ -50,6 +57,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
 	private let lightGreyTextColor = UIColor(white: 0.45, alpha: 1.0)
+	
+	private let morningTime = Time(hour: 9, minute: 0)
 	
 	/// date displayed food is being offered (based on food table view controller)
 	var date: NSDate = NSDate()
@@ -82,7 +91,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	let alertMorning = "Start of Day"
 	var alertHall = ""
 	
-	var notificationTimeText: String?
 	var notificationCell: FoodNotificationTableViewCell?
 	
     override func viewDidLoad() {
@@ -105,11 +113,29 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.registerClass(FoodNotificationTableViewCell.self, forCellReuseIdentifier: reminderCellID)
 		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientCellID)
     }
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+	}
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+	
+	func reminderCase() -> ReminderCase {
+		let openDate = place.openTime.timeDateForDate(date)
+		let morningDate = morningTime.timeDateForDate(date)
+		
+		var timeCase = (morningDate?.timeIntervalSinceNow)! > 0 ? 0 : 2
+		timeCase += (openDate?.timeIntervalSinceNow)! > 0 ? 0 : 1
+		
+		return ReminderCase(rawValue: timeCase)!
+	}
+	
+	func hideReminders() -> Bool {
+		return reminderCase() == ReminderCase.afterAll
+	}
 	
 	func setFood(food: MainFoodInfo, date: NSDate, meal: MealType, place: RestaurantInfo) {
 		self.food = food
@@ -118,7 +144,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		self.place = place
 		alertHall = "When \(place.hall.displayName((foodVC?.isHall)!)) Opens (\(place.openTime.displayString()))"
 		// set reminder time based on whether there is a saved reminder for that time
-		notificationTimeText = alertNever
 		establishLayout()
 	}
 	
@@ -171,7 +196,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case nutritionSection:
 			return Nutrient.rowPairs.count
 		case personalSection:
-			return 3
+			var baseNum = 3
+			if !representsToday(date) { baseNum-- }
+			if hideReminders() { baseNum-- }
+			return baseNum
 		default:
 			return 1
 		}
@@ -234,41 +262,39 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell.addSubview(label)
 			return cell
 		case personalSection:
-			if indexPath.row == reminderRow {
+			var row = indexPath.row
+			if row >= reminderRow && hideReminders() { row++ }
+			
+			if row == reminderRow {
 				notificationCell = tableView.dequeueReusableCellWithIdentifier(reminderCellID) as? FoodNotificationTableViewCell
 				
 				if notificationCell?.textLabel?.text == nil {
 					notificationCell?.textLabel?.text = "Remind Me"
 				}
-				notificationCell?.detailTextLabel?.text = notificationTimeText
+				notificationCell?.detailTextLabel?.text = notificationDisplay()
 				notificationCell?.detailTextLabel?.adjustsFontSizeToFitWidth = true
 				notificationCell?.detailTextLabel?.minimumScaleFactor = 0.4
 				return notificationCell!
 			} else {
-				let needsStepper = indexPath.row == servingRow
+				let needsStepper = row == servingRow
 				
 				var cell = tableView.dequeueReusableCellWithIdentifier(personalCellID) as UITableViewCell
 				cell.selectionStyle = .None
 				
-				switch indexPath.row {
-				case favoriteRow:
-					cell.textLabel?.text = "Favorite Food"
-				case servingRow:
-					cell.textLabel?.text = servingText()
-				default:
-					cell.textLabel?.text = ""
-				}
-				
 				if needsStepper {
+					cell.textLabel?.text = servingText()
+					
 					var stepper = UIStepper()
 					stepper.value = Double(numberOfServings)
 					stepper.maximumValue = 16
 					stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
 					cell.accessoryView = stepper
 				} else {
+					cell.textLabel?.text = "Favorite Food"
+					
 					var switcher = UISwitch()
 					switcher.setOn(favorited, animated: false)
-					switcher.addTarget(self, action: "favoriteChanged:", forControlEvents: .ValueChanged) //  : "reminderChanged:"
+					switcher.addTarget(self, action: "favoriteChanged:", forControlEvents: .ValueChanged)
 					cell.accessoryView = switcher
 				}
 				
@@ -395,21 +421,36 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	// MARK: Action Sheets
 	func showNotificationActionSheet() {
-		var actionSheet = UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: alertCancel, destructiveButtonTitle: alertNever, otherButtonTitles: alertMorningFull, alertHall)
-		actionSheet.showInView(foodVC?.view)
+		var actionSheet: UIActionSheet?
+		
+		let hasReminder = getNotification() != nil
+		
+		let noChangeText = hasReminder ? alertCancel : alertNever
+		let removeText: String? = hasReminder ? alertNever : nil
+		
+		// determine what kind of action sheet to show
+		switch reminderCase() {
+		case .beforeAll: // before both
+			actionSheet = UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: alertMorningFull, alertHall)
+		case .beforeMorning: // before morning, after opening
+			actionSheet = UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: alertMorningFull)
+		case .beforeOpen: // after morning, before opening
+			actionSheet = UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: alertHall)
+		default: // after both
+			actionSheet = UIActionSheet(title: "There are no reminder options.", delegate: self, cancelButtonTitle: alertCancel, destructiveButtonTitle: removeText) // had to customize this one
+		}
+		
+		actionSheet?.showInView(foodVC?.view)
 	}
 	
 	// MARK: UIActionSheetDelegate
 	func actionSheet(actionSheet: UIActionSheet, willDismissWithButtonIndex buttonIndex: Int) {
 		switch actionSheet.buttonTitleAtIndex(buttonIndex) {
 		case alertNever:
-			notificationTimeText = alertNever
 			removeNotification()
-		case alertMorningFull: // , alertMeal
-			notificationTimeText = alertMorning
-			addNotification(Time(hour: 9, minute: 0).timeDateForDate(date)!)
+		case alertMorningFull:
+			addNotification(morningTime.timeDateForDate(date)!)
 		case alertHall:
-			notificationTimeText = place.openTime.displayString()
 			addNotification(place.openTime.timeDateForDate(date)!)
 		case alertCancel:
 			println("Cancelling")
@@ -420,51 +461,86 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.reloadRowsAtIndexPaths([NSIndexPath(forRow: reminderRow, inSection: personalSection)], withRowAnimation: .Fade)
 	}
 	
+	func notificationString() -> String {
+		return "\(place.hall.displayName((foodVC?.isHall)!)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString()) - \(place.closeTime.displayString()))"
+	}
+	
 	// Remove any existing notification
 	func removeNotification() {
-		// check if we even have one
-		var notifs = UIApplication.sharedApplication().scheduledLocalNotifications as Array<UILocalNotification>
-		for notif in notifs {
-			println(notif.alertBody)
-			println(notif.description)
+		// using if assumes there's only one
+		// using while should remove all possible conflicts
+		while let notification = getNotification() {
+			UIApplication.sharedApplication().cancelLocalNotification(notification)
 		}
 	}
 	
-	/// Add a new notification or modify an old one
+	func getNotification() -> UILocalNotification? {
+		var notifications = UIApplication.sharedApplication().scheduledLocalNotifications as Array<UILocalNotification>
+		for not in notifications {
+			if let value = (not.userInfo as [String : String])[notificationID] {
+				if value == identifierForFood() { return not }
+			}
+		}
+		
+		return nil
+	}
+	
+	/// Add a new notification or modify an old one.
 	func addNotification(date: NSDate) {
-		// check if already exists
+		// if already exists, delete it
+		removeNotification()
 		
-		
-		// TEST RUN
+		// build it up
 		var notif = UILocalNotification()
-		notif.fireDate = NSDate(timeIntervalSinceNow: 60)
-		notif.alertBody = "\(place.hall.displayName((foodVC?.isHall)!)) has \(food.name) for \(meal.rawValue)"
-//		notif.alertAction = "Show me boba"
 		notif.timeZone = .defaultTimeZone()
-		notif.applicationIconBadgeNumber = UIApplication.sharedApplication().applicationIconBadgeNumber + 1
+		notif.fireDate = date // NSDate(timeIntervalSinceNow: 30)
+		notif.alertBody = notificationString()
+		notif.timeZone = .defaultTimeZone()
+		
+		var information = [String:String]()
+		information[notificationID] = identifierForFood()
+		information[notificationFoodID] = food.name
+		information[notificationPlaceID] = place.hall.displayName((foodVC?.isHall)!)
+		information[notificationDateID] = weekdayForFood()
+		information[notificationMealID] = meal.rawValue
+		information[notificationHoursID] = "\(place.openTime.displayString()) until \(place.closeTime.displayString())"
+		
+		let fireCal = NSCalendar.currentCalendar().components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: notif.fireDate!)
+		let fireTime = Time(hour: fireCal.hour, minute: fireCal.minute)
+		information[notificationTimeID] = fireTime.displayString()
+		notif.userInfo = information
+		
+		// check if date makes sense
+		if notif.fireDate!.timeIntervalSinceNow <= 0 { // TODO: set back to 0
+			return // Don't add. Time already passed.
+		}
+		
 		UIApplication.sharedApplication().scheduleLocalNotification(notif)
-		
-		
-		
-		/*
-		// Schedule the notification
-    UILocalNotification* localNotification = [[UILocalNotification alloc] init];
-    localNotification.fireDate = pickerDate;
-    localNotification.alertBody = self.itemText.text;
-    localNotification.alertAction = @"Show me the item";
-    localNotification.timeZone = [NSTimeZone defaultTimeZone];
-    localNotification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
-    
-    [[UIApplication sharedApplication] scheduleLocalNotification:localNotification];
-		*/
-		
 	}
 	
-	func notificationDescriptoin() -> String {
-		return ""
+	func identifierForFood() -> String {
+		let currCal = NSCalendar.currentCalendar()
+		let components = currCal.components(.CalendarUnitMonth | .CalendarUnitDay, fromDate: date)
+		
+		return "\(components.month)/\(components.day) - \(place.hall.displayName((foodVC?.isHall)!)) - \(meal.rawValue) - \(food.name)"
 	}
 	
-	func typeForFireTime(time: NSDate) -> String {
-		return ""
+	func weekdayForFood() -> String {
+		let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+		return weekdays[NSCalendar.currentCalendar().components(.CalendarUnitWeekday, fromDate: date).weekday - 1]
+	}
+	
+	func displayForFireDate(date: NSDate) -> String {
+		var components = NSCalendar.currentCalendar().components(NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute, fromDate: date)
+		
+		return Time(hour: components.hour, minute: components.minute).displayString()
+	}
+	
+	func notificationDisplay() -> String {
+		if let notification = getNotification() {
+			return displayForFireDate(notification.fireDate!)
+		} else {
+			return alertNever
+		}
 	}
 }

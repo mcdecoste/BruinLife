@@ -24,6 +24,7 @@
 		66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */; };
 		667F4CA11A405CF4005D07E5 /* ScrollSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667F4CA01A405CF4005D07E5 /* ScrollSelectionView.swift */; };
 		668120CD1A5F264E00872400 /* FoodNotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668120CC1A5F264E00872400 /* FoodNotificationTableViewCell.swift */; };
+		668120CF1A608A7200872400 /* NotificationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668120CE1A608A7200872400 /* NotificationTableViewController.swift */; };
 		669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669F43E71A280A140059F84E /* FoodTableViewController.swift */; };
 		66A47FCD1A5930BB0025F653 /* NutritionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A47FCC1A5930BB0025F653 /* NutritionHeaderView.swift */; };
 		66B333FB1A38ABEE00AE01DD /* NutritionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */; };
@@ -71,6 +72,7 @@
 		66755C4A1A306D2C0067C670 /* RestaurantTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestaurantTableViewCell.swift; sourceTree = "<group>"; };
 		667F4CA01A405CF4005D07E5 /* ScrollSelectionView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionView.swift; sourceTree = "<group>"; };
 		668120CC1A5F264E00872400 /* FoodNotificationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodNotificationTableViewCell.swift; sourceTree = "<group>"; };
+		668120CE1A608A7200872400 /* NotificationTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTableViewController.swift; sourceTree = "<group>"; };
 		669F43E71A280A140059F84E /* FoodTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewController.swift; sourceTree = "<group>"; usesTabs = 1; };
 		66A47FCC1A5930BB0025F653 /* NutritionHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionHeaderView.swift; sourceTree = "<group>"; };
 		66B333FA1A38ABEE00AE01DD /* NutritionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NutritionTableViewCell.swift; sourceTree = "<group>"; };
@@ -210,6 +212,7 @@
 			children = (
 				666B70291A26CDD400E8EAAC /* SettingsTableViewController.swift */,
 				666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */,
+				668120CE1A608A7200872400 /* NotificationTableViewController.swift */,
 			);
 			name = Other;
 			sourceTree = "<group>";
@@ -341,6 +344,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				668120CF1A608A7200872400 /* NotificationTableViewController.swift in Sources */,
 				66FA9B6B1A560E6500F03407 /* CircleDisplay.swift in Sources */,
 				66B5BEC11A401CEB004D0492 /* SwipeModel.swift in Sources */,
 				66B9785F1A52B18D00144876 /* FoodCollectionViewCell.swift in Sources */,

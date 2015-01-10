@@ -88,7 +88,7 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="uDL-Rx-w60">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="swipeCell" id="vIE-Nf-96g" customClass="ScrollSelectionTableViewCell" customModule="BruinLife" customModuleProvider="target">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -113,6 +113,24 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UQP-dJ-N76" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1570" y="1738"/>
+        </scene>
+        <!--Notification Table View Controller-->
+        <scene sceneID="c0u-dn-rJ9">
+            <objects>
+                <tableViewController storyboardIdentifier="notificationVC" id="NP7-2t-U8G" customClass="NotificationTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="mRf-PA-mv8">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <connections>
+                            <outlet property="dataSource" destination="NP7-2t-U8G" id="KZp-Jt-Jt4"/>
+                            <outlet property="delegate" destination="NP7-2t-U8G" id="Hbs-TA-v9G"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="qCl-2d-i7U" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2324" y="1038"/>
         </scene>
         <!--Swipes-->
         <scene sceneID="uk0-hr-wQ1">

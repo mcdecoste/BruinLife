@@ -36,13 +36,18 @@ class Time {
 		return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())?.dateByAddingTimeInterval(interval)
 	}
 	
+	// TODO: reimplement with dateformatter
 	func displayString() -> String {
 		let AMPM = ((hour/12) == 0 || (hour/12) == 2) ? "AM" : "PM"
+		var displayHour = hour % 12
+		if displayHour == 0 {
+			displayHour = 12
+		}
 		
 		if minute < 10 {
-			return "\(hour):0\(minute) \(AMPM)"
+			return "\(displayHour):0\(minute) \(AMPM)"
 		} else {
-			return "\(hour):\(minute) \(AMPM)"
+			return "\(displayHour):\(minute) \(AMPM)"
 		}
 	}
 }

@@ -41,16 +41,18 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		var currMeal = currentMeal()
-		var sectionToShow = 0
-		
-		for (index, meal) in enumerate(orderedMeals(Array(information.meals.keys))) {
-			if meal.equalTo(currMeal) {
-				sectionToShow = index
-				break
+		if representsToday(information.date) {
+			var currMeal = currentMeal()
+			var sectionToShow = 0
+			
+			for (index, meal) in enumerate(orderedMeals(Array(information.meals.keys))) {
+				if meal.equalTo(currMeal) {
+					sectionToShow = index
+					break
+				}
 			}
+			tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 		}
-		tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 	}
 	
 	// MARK: Table view data source
@@ -91,7 +93,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			selectionStyle = .Default
 		}
 		
-		let cellFrame = CGRect(x: 0, y: 0, width: self.tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
+		let cellFrame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
 		
 		var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as FoodTableViewCell
 		cell.selectionStyle = selectionStyle

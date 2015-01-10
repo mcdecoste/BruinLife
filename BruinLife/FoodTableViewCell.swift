@@ -46,8 +46,9 @@ class FoodTableViewCell: UITableViewCell {
 		var openDate1 = information?.openTime.timeDateForDate(date)
 		var closeDate1 = information?.closeTime.timeDateForDate(date)
 		
-		var openDate2 = information?.openTime.timeDateForDate(date?.dateByAddingTimeInterval(-timeInDay))
-		var closeDate2 = information?.closeTime.timeDateForDate(date?.dateByAddingTimeInterval(-timeInDay))
+		let diff = (daysInFuture(date!)-1) * timeInDay
+		var openDate2 = information?.openTime.timeDateForDate(date?.dateByAddingTimeInterval(diff))
+		var closeDate2 = information?.closeTime.timeDateForDate(date?.dateByAddingTimeInterval(diff))
 		
 		var open1 = (openDate1?.timeIntervalSinceNow <= 0 && closeDate1?.timeIntervalSinceNow >= 0)
 		var open2 = (openDate2?.timeIntervalSinceNow <= 0 && closeDate2?.timeIntervalSinceNow >= 0)

@@ -9,15 +9,13 @@
 import UIKit
 
 class SettingsTableViewController: UITableViewController {
-
+//	let cellInfo: Array<(Title: String, accessType: UITableViewCellAccessoryType, detailText: String)>
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
+		navigationItem.title = "Bruin Life"
     }
 
     override func didReceiveMemoryWarning() {
@@ -30,24 +28,32 @@ class SettingsTableViewController: UITableViewController {
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         // #warning Potentially incomplete method implementation.
         // Return the number of sections.
-        return 0
+        return 1
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete method implementation.
         // Return the number of rows in the section.
-        return 0
+        return 1
     }
-
-    /*
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("reuseIdentifier", forIndexPath: indexPath) as UITableViewCell
-
-        // Configure the cell...
-
-        return cell
-    }
-    */
+	
+	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+		let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as UITableViewCell
+		
+		// Configure the cell...
+		cell.textLabel?.text = "Pending Notifications"
+		cell.accessoryType = .DisclosureIndicator
+		
+		return cell
+	}
+	
+	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		var vc = storyboard?.instantiateViewControllerWithIdentifier("notificationVC") as NotificationTableViewController
+		
+		self.showViewController(vc, sender: self)
+		
+		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+	}
 
     /*
     // Override to support conditional editing of the table view.

@@ -8,7 +8,23 @@
 
 import UIKit
 
-var timeInDay: Double = 24*60*60
+/// Number of seconds in a day
+let timeInDay: Double = 24*60*60
+
+/// Used to determine notification identity
+let notificationID: String = "NotificationID"
+/// Used for text label in NotificationTableViewController
+let notificationFoodID: String = "NotificationFoodID"
+/// Used for detail text label in NotificationTableViewController with Meal
+let notificationPlaceID: String = "NotificationPlaceID"
+/// Used for detail text label in NotificationTableViewController with Place
+let notificationMealID: String = "NotificationMealID"
+/// Used to determine section in NotificationTableViewController
+let notificationDateID: String = "NotificationDateID" // should pair up to "EEEE, h:m a" OR "M/d h:m a"
+/// Used for detail text label in NotificationTableViewController
+let notificationTimeID: String = "NotificationTimeID"
+/// Used to describe when the hall is open
+let notificationHoursID: String = "NotificationHoursID"
 
 /// Returns the most likely Meal given the time
 func currentMeal() -> MealType {
@@ -19,6 +35,16 @@ func currentMeal() -> MealType {
 	if hour <= 15 { return .Lunch }
 	if hour <= 20 { return .Dinner }
 	return .LateNight
+}
+
+func representsToday(date: NSDate) -> Bool {
+	return daysInFuture(date) == 0
+}
+
+func daysInFuture(date: NSDate) -> Double {
+	let today = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: NSDate()).day
+	let selectedDay = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: date).day
+	return Double(abs(today - selectedDay))
 }
 
 func orderedMeals(meals: Array<MealType>) -> Array<MealType> {

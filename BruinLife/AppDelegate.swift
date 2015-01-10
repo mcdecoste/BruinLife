@@ -51,6 +51,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	// MARK: Local Notifications
 	
 	func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+		application.applicationIconBadgeNumber++
+		
 		if application.applicationState == .Active {
 			let alertView = UIAlertView(title: "Food Reminder", message: notification.alertBody, delegate: self, cancelButtonTitle: "Okay")
 			alertView.show()
