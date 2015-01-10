@@ -40,8 +40,8 @@ class NotificationTableViewController: UITableViewController {
 	func removeNotification(indexPath: NSIndexPath) {
 		let realSection = sectionFromSection(indexPath.section)
 		
-		notifications[realSection].removeAtIndex(indexPath.row)
 		UIApplication.sharedApplication().cancelLocalNotification(notifications[realSection][indexPath.row])
+		notifications[realSection].removeAtIndex(indexPath.row)
 	}
 	
 	func indexForWeekday(string: String) -> Int {
