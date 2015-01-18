@@ -66,7 +66,7 @@ func orderedMeals(meals: Array<MealType>) -> Array<MealType> {
 }
 
 func defaultFoods() -> Array<MainFoodInfo> {
-	var lastFood = MainFoodInfo(name: "Super Awesome Angel Hair Pasta", recipe: "000007", type: .Regular)
+	var lastFood = MainFoodInfo(name: "Super Awesome Angel Hair Pasta Super Awesome Angel Hair Pasta Super Awesome Angel Hair Pasta", recipe: "000007", type: .Regular)
 	lastFood.withFood = SubFoodInfo(name: "Garlic Bread", recipe: "000008", type: .Vegetarian)
 	
 	var theFoods = [MainFoodInfo(name: "Greek Cream of Roaster Garlic & Cauliflower Soup", recipe: "000001", type: .Regular), MainFoodInfo(name: "Italian Minestrone Soup", recipe: "000002", type: .Vegetarian), MainFoodInfo(name: "Mediterranean Spiced Beef Soup", recipe: "000003", type: .Regular), MainFoodInfo(name: "Chicken Pasta w/ Lemon Caper Sauce", recipe: "000004", type: .Regular), MainFoodInfo(name: "Linguini w/ Lemon Sauce", recipe: "000005", type: .Vegan), MainFoodInfo(name: "Chicken Keftedes Pita Sandwich", recipe: "000006", type: .Regular), lastFood]

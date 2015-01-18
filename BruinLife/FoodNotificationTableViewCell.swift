@@ -9,8 +9,6 @@
 import UIKit
 
 class FoodNotificationTableViewCell: UITableViewCell {
-//	class let reuseID = "foodNotification"
-	
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

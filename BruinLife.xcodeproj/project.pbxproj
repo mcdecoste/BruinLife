@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */; };
 		6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */; };
-		661CB4411A5C8949009ED55B /* BruinLife.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 661CB4401A5C8949009ED55B /* BruinLife.xcdatamodel */; };
 		661CB4431A5DDA82009ED55B /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661CB4421A5DDA82009ED55B /* Food.swift */; };
 		666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */; };
 		666B70051A26CBCD00E8EAAC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666B70031A26CBCD00E8EAAC /* Main.storyboard */; };
@@ -34,6 +33,10 @@
 		66B9785D1A524B5500144876 /* HorizontalFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785C1A524B5500144876 /* HorizontalFlow.swift */; };
 		66B9785F1A52B18D00144876 /* FoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */; };
 		66B978611A53E11B00144876 /* SectionCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */; };
+		66CD8A321A6730E600F52334 /* FavoritesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */; };
+		66CD8A341A67310000F52334 /* ServingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A331A67310000F52334 /* ServingsTableViewController.swift */; };
+		66CD8A681A673A5B00F52334 /* BruinLife.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A661A673A5B00F52334 /* BruinLife.xcdatamodeld */; };
+		66CD8A6A1A68859C00F52334 /* ServingsDisplayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A691A68859C00F52334 /* ServingsDisplayTableViewCell.swift */; };
 		66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */; };
 		66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E553DC1A31582800BF314E /* MenuTableViewCell.swift */; };
 		66FA9B6B1A560E6500F03407 /* CircleDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA9B6A1A560E6500F03407 /* CircleDisplay.swift */; };
@@ -53,7 +56,6 @@
 /* Begin PBXFileReference section */
 		660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewCell.swift; sourceTree = "<group>"; };
 		6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DormContainerViewController.swift; sourceTree = "<group>"; };
-		661CB4401A5C8949009ED55B /* BruinLife.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BruinLife.xcdatamodel; sourceTree = "<group>"; };
 		661CB4421A5DDA82009ED55B /* Food.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
 		666B6FF81A26CBCD00E8EAAC /* BruinLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BruinLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666B6FFC1A26CBCD00E8EAAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -82,6 +84,10 @@
 		66B9785C1A524B5500144876 /* HorizontalFlow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HorizontalFlow.swift; sourceTree = "<group>"; };
 		66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionCollectionReusableView.swift; sourceTree = "<group>"; };
+		66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesTableViewController.swift; sourceTree = "<group>"; };
+		66CD8A331A67310000F52334 /* ServingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServingsTableViewController.swift; sourceTree = "<group>"; };
+		66CD8A671A673A5B00F52334 /* BruinLife.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BruinLife.xcdatamodel; sourceTree = "<group>"; };
+		66CD8A691A68859C00F52334 /* ServingsDisplayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServingsDisplayTableViewCell.swift; sourceTree = "<group>"; };
 		66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		66E553DC1A31582800BF314E /* MenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
 		66FA9B6A1A560E6500F03407 /* CircleDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleDisplay.swift; sourceTree = "<group>"; };
@@ -109,7 +115,8 @@
 		6619E7CB1A35300800052B6D /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				666B70261A26CD4B00E8EAAC /* Other */,
+				666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */,
+				666B70261A26CD4B00E8EAAC /* Settings */,
 				666B70201A26CC4700E8EAAC /* Food View Controllers */,
 			);
 			name = Controllers;
@@ -201,20 +208,21 @@
 				666B70031A26CBCD00E8EAAC /* Main.storyboard */,
 				666B70061A26CBCD00E8EAAC /* Images.xcassets */,
 				666B70081A26CBCD00E8EAAC /* LaunchScreen.xib */,
-				661CB4401A5C8949009ED55B /* BruinLife.xcdatamodel */,
+				66CD8A661A673A5B00F52334 /* BruinLife.xcdatamodeld */,
 				661CB4421A5DDA82009ED55B /* Food.swift */,
 			);
 			name = Required;
 			sourceTree = "<group>";
 		};
-		666B70261A26CD4B00E8EAAC /* Other */ = {
+		666B70261A26CD4B00E8EAAC /* Settings */ = {
 			isa = PBXGroup;
 			children = (
 				666B70291A26CDD400E8EAAC /* SettingsTableViewController.swift */,
-				666B702B1A26CF1600E8EAAC /* SwipesTableViewController.swift */,
 				668120CE1A608A7200872400 /* NotificationTableViewController.swift */,
+				66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */,
+				66CD8A331A67310000F52334 /* ServingsTableViewController.swift */,
 			);
-			name = Other;
+			name = Settings;
 			sourceTree = "<group>";
 		};
 		666B70351A26D4BE00E8EAAC /* Aux Views */ = {
@@ -239,6 +247,7 @@
 				66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */,
 				66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */,
 				668120CC1A5F264E00872400 /* FoodNotificationTableViewCell.swift */,
+				66CD8A691A68859C00F52334 /* ServingsDisplayTableViewCell.swift */,
 			);
 			name = Cells;
 			sourceTree = "<group>";
@@ -353,6 +362,7 @@
 				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
 				667F4CA11A405CF4005D07E5 /* ScrollSelectionView.swift in Sources */,
 				66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */,
+				66CD8A6A1A68859C00F52334 /* ServingsDisplayTableViewCell.swift in Sources */,
 				660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */,
 				66B9785D1A524B5500144876 /* HorizontalFlow.swift in Sources */,
 				66B333FB1A38ABEE00AE01DD /* NutritionTableViewCell.swift in Sources */,
@@ -363,14 +373,16 @@
 				6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */,
 				668120CD1A5F264E00872400 /* FoodNotificationTableViewCell.swift in Sources */,
 				666B70241A26CCE000E8EAAC /* QuickTableViewController.swift in Sources */,
+				66CD8A321A6730E600F52334 /* FavoritesTableViewController.swift in Sources */,
 				66B5BEC51A402A5F004D0492 /* Helpers.swift in Sources */,
 				66B5BEC31A401D10004D0492 /* FoodModel.swift in Sources */,
+				66CD8A681A673A5B00F52334 /* BruinLife.xcdatamodeld in Sources */,
 				669F43E81A280A140059F84E /* FoodTableViewController.swift in Sources */,
 				661CB4431A5DDA82009ED55B /* Food.swift in Sources */,
 				66FB03F91A4055560099760E /* ScrollSelectionTableViewCell.swift in Sources */,
 				66A47FCD1A5930BB0025F653 /* NutritionHeaderView.swift in Sources */,
+				66CD8A341A67310000F52334 /* ServingsTableViewController.swift in Sources */,
 				666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */,
-				661CB4411A5C8949009ED55B /* BruinLife.xcdatamodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -581,6 +593,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		66CD8A661A673A5B00F52334 /* BruinLife.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				66CD8A671A673A5B00F52334 /* BruinLife.xcdatamodel */,
+			);
+			currentVersion = 66CD8A671A673A5B00F52334 /* BruinLife.xcdatamodel */;
+			path = BruinLife.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 666B6FF01A26CBCD00E8EAAC /* Project object */;
 }

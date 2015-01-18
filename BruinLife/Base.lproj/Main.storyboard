@@ -41,18 +41,10 @@
         <scene sceneID="cdd-c7-0Sp">
             <objects>
                 <tableViewController id="Lgo-al-v5L" customClass="SettingsTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="7zg-Ro-66v">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="7zg-Ro-66v">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="settingCell" id="Nrr-rq-Ck2">
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="Nrr-rq-Ck2" id="fEi-q1-qV5">
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
+                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
                         <connections>
                             <outlet property="dataSource" destination="Lgo-al-v5L" id="fOb-SS-ajr"/>
                             <outlet property="delegate" destination="Lgo-al-v5L" id="LzV-fn-pg1"/>
@@ -131,6 +123,42 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="qCl-2d-i7U" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2324" y="1038"/>
+        </scene>
+        <!--Favorites Table View Controller-->
+        <scene sceneID="wXb-gx-4Hd">
+            <objects>
+                <tableViewController storyboardIdentifier="favoriteVC" id="krv-7q-3R6" customClass="FavoritesTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="bHk-bY-JW5">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <connections>
+                            <outlet property="dataSource" destination="krv-7q-3R6" id="rAi-Kn-6OM"/>
+                            <outlet property="delegate" destination="krv-7q-3R6" id="vAH-9Z-0OQ"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sz0-7Z-Lnh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2960" y="1038"/>
+        </scene>
+        <!--Servings Table View Controller-->
+        <scene sceneID="dbW-7m-eb6">
+            <objects>
+                <tableViewController storyboardIdentifier="servingVC" id="cj0-B3-xCM" customClass="ServingsTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="tH8-Al-SBK">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="0.93725490196078431" green="0.93725490196078431" blue="0.95686274509803926" alpha="1" colorSpace="calibratedRGB"/>
+                        <connections>
+                            <outlet property="dataSource" destination="cj0-B3-xCM" id="leS-e5-WEy"/>
+                            <outlet property="delegate" destination="cj0-B3-xCM" id="zTp-PN-yjf"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="rZw-Xi-9Rm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2647" y="1668"/>
         </scene>
         <!--Swipes-->
         <scene sceneID="uk0-hr-wQ1">

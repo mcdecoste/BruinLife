@@ -6,77 +6,6 @@
 //  Copyright (c) 2015 Matthew DeCoste. All rights reserved.
 //
 
-//import UIKit
-//import CoreData
-//
-//class Favorite: NSManagedObject {
-//	// inherent, unchanging properties (replace with reference to FoodItem?)
-//	@NSManaged var name: String
-//	@NSManaged var recipe: String
-//	
-//	// mutable properties
-////	@NSManaged var favorited: Bool
-////	@NSManaged var servings: Int
-//	
-//	/// returns existing entity if it exists, creates one if it has to.
-//	class func favoriteFromInformation(moc: NSManagedObjectContext, name: String, recipe: String) -> (created: Bool, entity: Favorite) {
-//        if let fetchResults = moc.executeFetchRequest(NSFetchRequest(entityName: "Favorite"), error: nil) as? [Favorite] {
-//			for result in fetchResults {
-//				if result.recipe == recipe {
-//					return (created: false, entity: result)
-//				}
-//			}
-//        }
-//		
-//		let newItem = NSEntityDescription.insertNewObjectForEntityForName("Favorite", inManagedObjectContext: moc) as Favorite
-//		newItem.name = name
-//		newItem.recipe = recipe
-//		
-//		// we have no reason to believe
-////		newItem.favorited = false
-////		newItem.servings = 0
-//		
-//		return (created: true, entity: newItem)
-//	}
-//}
-//
-//class Servings: NSManagedObject {
-//	// inherent, unchanging properties (replace with reference to FoodItem?)
-//	@NSManaged var name: String
-//	@NSManaged var recipe: String
-//	
-//	// mutable properties
-//	//	@NSManaged var favorited: Bool
-//	@NSManaged var servings: Int
-//	@NSManaged var date: NSDate // should reset on each new day
-//	
-//	/// returns existing entity if it exists, creates one if it has to.
-//	class func servingsFromInformation(moc: NSManagedObjectContext, name: String, recipe: String, servings: Int) -> (created: Bool, entity: Servings) {
-//		if let fetchResults = moc.executeFetchRequest(NSFetchRequest(entityName: "Servings"), error: nil) as? [Servings] {
-//			for result in fetchResults {
-//				if result.recipe == recipe {
-//					// clear out old servings listings
-//					if result.date == NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: NSDate(), options: nil)! {
-//						result.servings = servings // includ this?
-//						return (created: false, entity: result)
-//					} else {
-//						// It's an old listing. Delete it!
-//						moc.deleteObject(result)
-//					}
-//				}
-//			}
-//		}
-//		
-//		let newItem = NSEntityDescription.insertNewObjectForEntityForName("Servings", inManagedObjectContext: moc) as Servings
-//		newItem.name = name
-//		newItem.recipe = recipe
-//		newItem.servings = servings
-//		newItem.date = NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: NSDate(), options: nil)!
-//		
-//		return (created: true, entity: newItem)
-//	}
-//}
-
 import UIKit
 import CoreData
 
@@ -93,20 +22,7 @@ class Food: NSManagedObject {
 		if let fetchResults = moc.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
 			for result in fetchResults {
 				if result.recipe == recipe {
-					let currentCalendar = NSCalendar.currentCalendar()
-					
-					let date = comparisonDate(NSDate())
-					let bool1 = currentCalendar.component(.CalendarUnitWeekOfYear, fromDate: date) == currentCalendar.component(.CalendarUnitWeekOfYear, fromDate: result.date)
-					let bool2 = currentCalendar.component(.CalendarUnitWeekday, fromDate: date) == currentCalendar.component(.CalendarUnitWeekday, fromDate: result.date)
-					
-					if !(bool1 && bool2) {
-						println(result.date)
-						println(date)
-						
-						result.date = date
-						result.servings = 0
-					}
-					
+					result.checkDate()
 					return (created: false, entity: result)
 				}
 			}
@@ -117,7 +33,7 @@ class Food: NSManagedObject {
 		newItem.recipe = recipe
 		
 		newItem.favorite = false
-		newItem.date = NSDate()
+		newItem.date = Food.comparisonDate(NSDate())
 		newItem.servings = 0
 		
 		return (created: true, entity: newItem)
@@ -125,5 +41,18 @@ class Food: NSManagedObject {
 	
 	class func comparisonDate(date: NSDate) -> NSDate {
 		return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: nil)!
+	}
+	
+	func checkDate() {
+		let currentCalendar = NSCalendar.currentCalendar()
+		let comparisonDate = Food.comparisonDate(NSDate())
+		
+		let dateComponents = currentCalendar.components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: comparisonDate)
+		let resultComponents = currentCalendar.components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: date)
+		
+		if !(dateComponents.weekOfYear == resultComponents.weekOfYear && dateComponents.weekday == resultComponents.weekday) {
+			date = comparisonDate
+			servings = 0
+		}
 	}
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 struct NutriTableDisplay {
 	var name: String
@@ -93,6 +94,13 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	var notificationCell: FoodNotificationTableViewCell?
 	
+	// CORE DATA
+	lazy var managedObjectContext: NSManagedObjectContext? = {
+		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		if let moc = appDelegate.managedObjectContext { return moc }
+		else { return nil }
+	}()
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -116,6 +124,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+		
+		fetchFoods()
 	}
 
     override func didReceiveMemoryWarning() {
@@ -136,6 +146,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func hideReminders() -> Bool {
 		return reminderCase() == ReminderCase.afterAll
 	}
+	
+	// MARK: - Setup
 	
 	func setFood(food: MainFoodInfo, date: NSDate, meal: MealType, place: RestaurantInfo) {
 		self.food = food
@@ -183,6 +195,55 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func preferredContentSize() -> CGSize {
 		return CGSize(width: realWidth, height: realHeight) // 260 is a little too narrow
 	}
+	
+	// MARK: Label
+	
+	func makeIngredientsLabel() {
+		ingredientsLabel = UILabel()
+		ingredientsLabel.frame.size = CGSize(width: view.frame.width * 19/20, height: baseHeight)
+		ingredientsLabel.text = "Ingredients: \(food.ingredients)"
+		ingredientsLabel.font = .systemFontOfSize(11)
+		ingredientsLabel.textColor = darkGreyTextColor
+		ingredientsLabel.textAlignment = .Left
+		ingredientsLabel.numberOfLines = 0
+		ingredientsLabel.lineBreakMode = .ByWordWrapping
+		ingredientsLabel.sizeToFit()
+		ingredientsLabel.frame.origin.y = 8
+		ingredientsLabel.center.x = view.center.x
+	}
+	
+	func makeDescriptionLabel() {
+		let hasDescription = food.description != ""
+		descriptionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
+		descriptionLabel.text = hasDescription ? food.description : "No description available"
+		descriptionLabel.font = hasDescription ? .systemFontOfSize(12) : .italicSystemFontOfSize(12)
+		descriptionLabel.textColor = hasDescription ? darkGreyTextColor : lightGreyTextColor
+		descriptionLabel.textAlignment = .Center
+		descriptionLabel.numberOfLines = 0
+		descriptionLabel.lineBreakMode = .ByWordWrapping
+		descriptionLabel.sizeToFit()
+		descriptionLabel.center.x = view.center.x
+	}
+	
+	func makeNutritionLabel() {
+		nutritionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
+		nutritionLabel.text = "Nutrition Facts"
+		nutritionLabel.font = .boldSystemFontOfSize(20)
+		nutritionLabel.textAlignment = .Left
+		nutritionLabel.sizeToFit()
+		nutritionLabel.frame.origin = CGPoint(x: 8, y: headerGap)
+	}
+	
+	func makePersonalLabel() {
+		personalLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
+		personalLabel.text = "Bruin Tracks"
+		personalLabel.font = .boldSystemFontOfSize(20)
+		personalLabel.textAlignment = .Left
+		personalLabel.sizeToFit()
+		personalLabel.frame.origin = CGPoint(x: 8, y: headerGap)
+	}
+
+	// MARK: - Table View Data Source
 	
 	func numberOfSectionsInTableView(tableView: UITableView) -> Int {
 		// Return the number of sections.
@@ -262,8 +323,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			cell.addSubview(label)
 			return cell
 		case personalSection:
-			var row = indexPath.row
-			if row >= reminderRow && hideReminders() { row++ }
+			var row = personalRow(indexPath.row)
 			
 			if row == reminderRow {
 				notificationCell = tableView.dequeueReusableCellWithIdentifier(reminderCellID) as? FoodNotificationTableViewCell
@@ -325,6 +385,15 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		}
 	}
 	
+	func personalRow(row: Int) -> Int {
+		var theRow = row
+		if theRow >= reminderRow && hideReminders() { theRow++ }
+		
+		return theRow
+	}
+	
+	// MARK: Table View Delegate
+	
 	func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 		
@@ -334,66 +403,37 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		}
 	}
 	
-	func makeIngredientsLabel() {
-		ingredientsLabel = UILabel()
-		ingredientsLabel.frame.size = CGSize(width: view.frame.width * 19/20, height: baseHeight)
-		ingredientsLabel.text = "Ingredients: \(food.ingredients)"
-		ingredientsLabel.font = .systemFontOfSize(11)
-		ingredientsLabel.textColor = darkGreyTextColor
-		ingredientsLabel.textAlignment = .Left
-		ingredientsLabel.numberOfLines = 0
-		ingredientsLabel.lineBreakMode = .ByWordWrapping
-		ingredientsLabel.sizeToFit()
-		ingredientsLabel.frame.origin.y = 8
-		ingredientsLabel.center.x = view.center.x
-	}
+	// MARK: - Core Data
 	
-	func makeDescriptionLabel() {
-		let hasDescription = food.description != ""
-		descriptionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
-		descriptionLabel.text = hasDescription ? food.description : "No description available"
-		descriptionLabel.font = hasDescription ? .systemFontOfSize(12) : .italicSystemFontOfSize(12)
-		descriptionLabel.textColor = hasDescription ? darkGreyTextColor : lightGreyTextColor
-		descriptionLabel.textAlignment = .Center
-		descriptionLabel.numberOfLines = 0
-		descriptionLabel.lineBreakMode = .ByWordWrapping
-		descriptionLabel.sizeToFit()
-		descriptionLabel.center.x = view.center.x
-	}
-	
-	func makeNutritionLabel() {
-		nutritionLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
-		nutritionLabel.text = "Nutrition Facts"
-		nutritionLabel.font = .boldSystemFontOfSize(20)
-		nutritionLabel.textAlignment = .Left
-		nutritionLabel.sizeToFit()
-		nutritionLabel.frame.origin = CGPoint(x: 8, y: headerGap)
-	}
-	
-	func makePersonalLabel() {
-		personalLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
-		personalLabel.text = "Bruin Tracks"
-		personalLabel.font = .boldSystemFontOfSize(20)
-		personalLabel.textAlignment = .Left
-		personalLabel.sizeToFit()
-		personalLabel.frame.origin = CGPoint(x: 8, y: headerGap)
-	}
-	
-	func servingsNumberChanged(count: Int) {
-		numberOfServings = count
+	func fetchFoods() {
+		var fetchRequest = NSFetchRequest(entityName: "Food")
+		fetchRequest.predicate = NSPredicate(format: "recipe == %@", food.recipe)
 		
-		nutritionHeader?.setServingsCount(numberOfServings)
-		for cell in (nutriTable?.visibleCells() as [UITableViewCell]) {
-			if let cellPath = nutriTable?.indexPathForCell(cell) {
-				if cellPath.section == nutritionSection {
-					(cell as NutritionTableViewCell).setServingCount(numberOfServings)
-				}
+		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
+			if fetchResults.count == 1 {
+				var theFood = fetchResults[0]
+				numberOfServings = Int(theFood.servings)
+				favorited = theFood.favorite
 			}
+		}
+	}
+	
+	func save() {
+		var error: NSError?
+		if managedObjectContext!.save(&error) {
+			if error != nil { println(error?.localizedDescription) }
 		}
 	}
 	
 	func favoriteChanged(sender: UISwitch) {
 		favorited = sender.on
+		
+		// Core Data
+		if let moc = managedObjectContext {
+			var theFood = Food.foodFromInformation(moc, name: food.name, recipe: food.recipe).entity
+			theFood.favorite = favorited
+			save()
+		}
 	}
 	
 	func stepperChanged(sender: UIStepper) {
@@ -402,24 +442,28 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutritionHeader?.setServingsCount(numberOfServings)
 		for cell in (nutriTable?.visibleCells() as [UITableViewCell]) {
 			if let cellPath = nutriTable?.indexPathForCell(cell) {
+				// update nutritional cells
 				if cellPath.section == nutritionSection {
 					(cell as NutritionTableViewCell).setServingCount(numberOfServings)
 				}
 				
-				if cellPath.section == personalSection && cellPath.row == servingRow {
+				// update the serving count cell
+				if cellPath.section == personalSection && personalRow(cellPath.row) == servingRow {
 					cell.textLabel?.text = servingText()
 				}
 			}
 		}
+		
+		// Core Data
+		if let moc = managedObjectContext {
+			var theFood = Food.foodFromInformation(moc, name: food.name, recipe: food.recipe).entity
+			theFood.servings = Int16(numberOfServings)
+			save()
+		}
 	}
 	
-	func servingText() -> String {
-		var addendum = numberOfServings == 1 ? "" : "s"
-		return "\(numberOfServings) Serving\(addendum)"
-	}
+	// MARK: - Action Sheets
 	
-	
-	// MARK: Action Sheets
 	func showNotificationActionSheet() {
 		var actionSheet: UIActionSheet?
 		
@@ -460,6 +504,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		nutriTable?.reloadRowsAtIndexPaths([NSIndexPath(forRow: reminderRow, inSection: personalSection)], withRowAnimation: .Fade)
 	}
+	
+	// MARK: - Notifications
 	
 	func notificationString() -> String {
 		return "\(place.hall.displayName((foodVC?.isHall)!)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString()) - \(place.closeTime.displayString()))"
@@ -510,12 +556,17 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		information[notificationTimeID] = fireTime.displayString()
 		notif.userInfo = information
 		
-		// check if date makes sense
-		if notif.fireDate!.timeIntervalSinceNow <= 0 { // TODO: set back to 0
-			return // Don't add. Time already passed.
+		// Sanity check: only add notifications for the future
+		if notif.fireDate!.timeIntervalSinceNow > 0 {
+			UIApplication.sharedApplication().scheduleLocalNotification(notif)
 		}
-		
-		UIApplication.sharedApplication().scheduleLocalNotification(notif)
+	}
+	
+	// MARK: Helpers
+	
+	func servingText() -> String {
+		var addendum = numberOfServings == 1 ? "" : "s"
+		return "\(numberOfServings) Serving\(addendum)"
 	}
 	
 	func identifierForFood() -> String {

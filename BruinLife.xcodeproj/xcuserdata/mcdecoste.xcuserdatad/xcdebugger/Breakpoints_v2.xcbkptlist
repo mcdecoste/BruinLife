@@ -41,22 +41,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "BruinLife/FoodTableViewController.swift"
-            timestampString = "442544362.595651"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "223"
-            endingLineNumber = "223"
-            landmarkName = "scrollViewDidScroll(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "BruinLife/MenuTableViewCell.swift"
             timestampString = "441694311.92854"
             startingColumnNumber = "9223372036854775807"
@@ -86,17 +70,47 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "BruinLife/FoodTableViewController.swift"
-            timestampString = "442544362.595651"
+            filePath = "BruinLife/Food.swift"
+            timestampString = "443261012.103632"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "235"
-            endingLineNumber = "235"
-            landmarkName = "collectionView(_:numberOfItemsInSection:)"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "checkDate()"
             landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "BruinLife.Food.checkDate (BruinLife.Food)() -&gt; ()"
+                  moduleName = "BruinLife"
+                  urlString = "file:///Users/mcdecoste/Documents/Development/iOS/Bruin%20Life/BruinLife/Food.swift"
+                  timestampString = "443261012.124714"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "636">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "BruinLife.Food.checkDate (BruinLife.Food)() -&gt; ()"
+                  moduleName = "BruinLife"
+                  urlString = "file:///Users/mcdecoste/Documents/Development/iOS/Bruin%20Life/BruinLife/Food.swift"
+                  timestampString = "443261012.124884"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "53"
+                  endingLineNumber = "53"
+                  offsetFromSymbolStart = "952">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

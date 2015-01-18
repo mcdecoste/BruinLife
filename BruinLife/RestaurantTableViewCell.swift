@@ -74,8 +74,6 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		
 //		openLabel.textColor = UIColor(red: open ? 0.0 : 0.85, green: open ? 0.8 : 0.0, blue: 0.0, alpha: 1.0)
 		openLabel.textColor = open ? UIColor(red: 0.0, green: 0.8, blue: 0.0, alpha: 1.0) : .whiteColor()
-//		much more readable
-//		openLabel.textColor = .whiteColor()
 		
 		openLabel.font = .systemFontOfSize(open ? 20 : 18)
 		

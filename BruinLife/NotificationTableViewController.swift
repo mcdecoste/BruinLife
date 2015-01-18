@@ -65,6 +65,7 @@ class NotificationTableViewController: UITableViewController {
 		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as FoodNotificationTableViewCell
 		let userInfo = notificationForPath(indexPath).userInfo as [String : String]
 		cell.textLabel?.text = userInfo[notificationFoodID]
+		cell.textLabel?.numberOfLines = 0
 		cell.detailTextLabel?.text = userInfo[notificationTimeID]
         return cell
     }
@@ -110,12 +111,4 @@ class NotificationTableViewController: UITableViewController {
 		let realSection = sectionFromSection(section)
 		return notifications[realSection].count > 0 ? weekdays[realSection] : nil
 	}
-	
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-        // Return NO if you do not want the specified item to be editable.
-        return true
-    }
-    */
 }

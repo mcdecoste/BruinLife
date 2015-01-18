@@ -24,7 +24,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var pageIndex = 0
 	var isHall = true
 	
-	
 	// Core Data
 	
 //	lazy var managedObjectContext : NSManagedObjectContext? = {
@@ -37,6 +36,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 //		}
 //	}()
 	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		tableView.separatorStyle = .None
+		for cell in tableView.visibleCells() as Array<FoodTableViewCell> {
+			cell.updateDisplay()
+		}
+	}
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
@@ -53,11 +59,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			}
 			tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 		}
-		
-		tableView.separatorStyle = .None
 	}
 	
-	// MARK: Table view data source
+	// MARK: - Table view data source
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 		return indexPathHasFoodDisplay(indexPath) ? CGFloat(kFoodDisplayHeight) : CGFloat(kRestCellHeight)
 	}
@@ -103,9 +107,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		cell.foodVC = self
 		cell.changeInfo(restaurant, andDate: information.date, isHall: isHall)
 		
-		if cellID == kFoodDisplayID {
-			displayCell = cell as? MenuTableViewCell
-		}
+		if cellID == kFoodDisplayID { displayCell = cell as? MenuTableViewCell }
 		
 		return cell
 	}
@@ -120,7 +122,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		tableView.deselectRowAtIndexPath(indexPath, animated:true)
 	}
 	
-	// MARK: Utilities
+	// MARK: - Utilities
 	func updateFoodDisplay() {
 		if hasInlineFoodDisplay() {
 			// why not just ask about displayCell?
@@ -190,6 +192,17 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		updateFoodDisplay()
 	}
 	
+	// MARK: ScrollViewDelegate
+	override func scrollViewDidScroll(scrollView: UIScrollView) {
+		if scrollView == tableView {
+			for cell in (tableView.visibleCells() as Array<FoodTableViewCell>) {
+				var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
+				cell.parallaxImageWithScrollPercent(percent)
+			}
+		}
+	}
+	
+	// MARK: - Popovers
 	func addFoodPopover(food: MainFoodInfo?){
 		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as FoodViewController
 		
@@ -217,19 +230,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		return .None
 	}
 	
-	
-	// MARK: ScrollViewDelegate
-	override func scrollViewDidScroll(scrollView: UIScrollView) {
-		if scrollView == tableView {
-			var cells = tableView.visibleCells() as Array<FoodTableViewCell>
-			for cell in cells {
-				var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
-				cell.parallaxImageWithScrollPercent(percent)
-			}
-		}
-	}
-	
-	// MARK: UICollectionViewDataSource
+	// MARK: - UICollectionViewDataSource
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
 		return (displayCell?.information?.sections[section].foods.count)!
 	}
