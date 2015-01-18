@@ -64,7 +64,7 @@ class SwipesTableViewController: UITableViewController {
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
-			var strArray: Array<String> = []
+			var strArray = [String]()
 			
 			switch indexPath.row {
 			case 0:

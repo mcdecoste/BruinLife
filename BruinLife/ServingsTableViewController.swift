@@ -22,8 +22,8 @@ class ServingsTableViewController: UITableViewController {
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 	}()
-	var foodItems: Array<Food> = []
-	var nutritionValues: Array<NutritionListing> = []
+	var foodItems = [Food]()
+	var nutritionValues = [NutritionListing]()
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,12 +49,24 @@ class ServingsTableViewController: UITableViewController {
     }
 	
 	func calculateNutritionData() -> Array<NutritionListing> {
-		var newInfo: Array<NutritionListing> = []
+		var measures = [Int]()
+		for index in 0..<Nutrient.allValues.count {
+			measures.append(0)
+		}
 		
-		for nutrient in Nutrient.allValues { newInfo.append(NutritionListing(type: nutrient, measure: "0")) }
-		
+		// add in the various foods
 		for food in foodItems {
-			// grab nutritional information (go into core data?)
+			for (index, nutr) in enumerate(food.info().nutrition) {
+				let existingInt = measures[index]
+				let additional = nutr.measure.toInt()! * Int(food.servings)
+				
+				measures[index] = existingInt + additional
+			}
+		}
+		
+		var newInfo = [NutritionListing]()
+		for (index, nutrient) in enumerate(Nutrient.allValues) {
+			newInfo.append(NutritionListing(type: nutrient, measure: "\(measures[index])"))
 		}
 		
 		return newInfo
@@ -143,20 +155,15 @@ class ServingsTableViewController: UITableViewController {
 			if hasFood() {
 				var cell = tableView.dequeueReusableCellWithIdentifier(nutritionID) as NutritionTableViewCell
 				
-				var cellType: NutrientDisplayType = .empty
-				var nutrientLeft: Nutrient = .Cal
-				var nutrientRight: Nutrient = .FatCal
-				(cellType, nutrientLeft, nutrientRight) = Nutrient.rowPairs[indexPath.row]
+				let cellInfo = Nutrient.rowPairs[indexPath.row] as (type: NutrientDisplayType, left: Nutrient, right: Nutrient) // more readable
 				
-				var leftIndex = (Nutrient.allRawValues as NSArray).indexOfObject(nutrientLeft.rawValue)
-				var rightIndex = (Nutrient.allRawValues as NSArray).indexOfObject(nutrientRight.rawValue)
-				var nutrientListingLeft = nutritionValues[leftIndex]
-				var nutrientListingRight = nutritionValues[rightIndex]
+				var leftIndex = (Nutrient.allRawValues as NSArray).indexOfObject(cellInfo.left.rawValue)
+				var rightIndex = (Nutrient.allRawValues as NSArray).indexOfObject(cellInfo.right.rawValue)
 				
 				cell.frame.size.width = tableView.frame.width
 				cell.selectionStyle = .None
-				cell.setInformation((type: cellType, left: nutrientListingLeft, right: nutrientListingRight))
-				cell.setServingCount(1)
+				cell.setInformation((type: cellInfo.type, left: nutritionValues[leftIndex], right: nutritionValues[rightIndex]))
+				cell.setServingCount(0)
 				
 				return cell
 			} else {

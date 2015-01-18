@@ -83,12 +83,12 @@ class CircleDisplay: UIButton {
 	}
 	
 	func update() {
-		if self.nutrition?.percent == nil {
+		if nutrition?.percent == nil {
 			setProgress(1)
 			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
 		} else {
-			setProgress(CGFloat(self.servingCount * (self.nutrition?.percent)!) / 100)
-			percLayer.strokeColor = tintColor!.CGColor
+			setProgress(CGFloat(servingCount * (nutrition?.percent)!) / 100)
+			percLayer.strokeColor = UIColor(red: 0, green: 0.478431, blue: 1, alpha: 1).CGColor
 		}
 		updateDisplayText()
 	}
@@ -103,7 +103,7 @@ class CircleDisplay: UIButton {
 	func setProgress(progress: CGFloat) {
 		self.progress = min(progress, 1)
 		
-		let startAngle = CGFloat(3*M_PI_2)
+		let startAngle = CGFloat(-1*M_PI_2)
 		let endAngle = startAngle + (2 * CGFloat(M_PI) * self.progress)
 		let radius = (bounds.width - (3 * lineWidth)) / 2
 		
@@ -124,10 +124,10 @@ class CircleDisplay: UIButton {
 	}
 	
 	func updateDisplayText() {
-		let measure = "\(self.servingCount * NSString(string: (self.nutrition?.measure)!).integerValue)"
-		let unit = (self.nutrition?.unit)!
-		let percOpt = self.nutrition?.percent
-		let perc = percOpt == nil ? 100 : (percOpt! * self.servingCount)
+		let measure = "\(servingCount * NSString(string: (nutrition?.measure)!).integerValue)"
+		let unit = (nutrition?.unit)!
+		let percOpt = nutrition?.percent
+		let perc = percOpt == nil ? 100 : (percOpt! * servingCount)
 		
 		let tooLong = countElements(measure + unit) > 4
 		let inbetweenText = tooLong ? "\n" : ""

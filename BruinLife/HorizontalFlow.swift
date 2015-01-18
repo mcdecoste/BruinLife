@@ -9,7 +9,7 @@
 import UIKit
 
 class HorizontalFlow: UICollectionViewFlowLayout {
-	var headerWidths: Array<CGFloat> = []
+	var headerWidths = [CGFloat]()
 	var collectionContentSize: CGSize = CGSizeZero
 	
 	override init() {
@@ -24,7 +24,7 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	
 	override func prepareLayout() {
 		var numSections: Int = (self.collectionView?.numberOfSections())!
-		var rowsPerSection: Array<Int> = []
+		var rowsPerSection = [Int]()
 		for sectNum in 0..<numSections {
 			rowsPerSection.append((self.collectionView?.numberOfItemsInSection(sectNum))!)
 		}
@@ -48,7 +48,7 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
 		var answer = super.layoutAttributesForElementsInRect(rect)! as Array<UICollectionViewLayoutAttributes>
 		
-		var sectNoSupp: Array<Int> = []
+		var sectNoSupp = [Int]()
 		
 		// count the section headers
 		for layout in answer {

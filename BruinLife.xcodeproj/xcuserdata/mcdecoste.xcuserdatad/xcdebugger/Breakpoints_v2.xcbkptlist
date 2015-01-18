@@ -74,43 +74,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "BruinLife/Food.swift"
-            timestampString = "443261012.103632"
+            timestampString = "443301811.344518"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
-            landmarkName = "checkDate()"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
+            landmarkName = "foodFromInfo(_:food:)"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "BruinLife.Food.checkDate (BruinLife.Food)() -&gt; ()"
-                  moduleName = "BruinLife"
-                  urlString = "file:///Users/mcdecoste/Documents/Development/iOS/Bruin%20Life/BruinLife/Food.swift"
-                  timestampString = "443261012.124714"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "53"
-                  endingLineNumber = "53"
-                  offsetFromSymbolStart = "636">
-               </Location>
-               <Location
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "BruinLife.Food.checkDate (BruinLife.Food)() -&gt; ()"
-                  moduleName = "BruinLife"
-                  urlString = "file:///Users/mcdecoste/Documents/Development/iOS/Bruin%20Life/BruinLife/Food.swift"
-                  timestampString = "443261012.124884"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "53"
-                  endingLineNumber = "53"
-                  offsetFromSymbolStart = "952">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

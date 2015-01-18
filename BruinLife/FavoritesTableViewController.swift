@@ -17,7 +17,7 @@ class FavoritesTableViewController: UITableViewController {
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 	}()
-	var foodItems: Array<Food> = []
+	var foodItems = [Food]()
 	
     override func viewDidLoad() {
         super.viewDidLoad()

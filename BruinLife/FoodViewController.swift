@@ -430,7 +430,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		// Core Data
 		if let moc = managedObjectContext {
-			var theFood = Food.foodFromInformation(moc, name: food.name, recipe: food.recipe).entity
+			var theFood = Food.foodFromInfo(moc, food: food)
 			theFood.favorite = favorited
 			save()
 		}
@@ -456,7 +456,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		// Core Data
 		if let moc = managedObjectContext {
-			var theFood = Food.foodFromInformation(moc, name: food.name, recipe: food.recipe).entity
+			var theFood = Food.foodFromInfo(moc, food: food)
 			theFood.servings = Int16(numberOfServings)
 			save()
 		}

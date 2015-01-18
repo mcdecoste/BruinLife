@@ -19,7 +19,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
 	var information = DayInfo()
-	var dateMeals: Array<MealType> = []
+	var dateMeals = [MealType]()
 	
 	var pageIndex = 0
 	var isHall = true

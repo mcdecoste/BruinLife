@@ -50,7 +50,7 @@ func daysInFuture(date: NSDate) -> Double {
 func orderedMeals(meals: Array<MealType>) -> Array<MealType> {
 	var mealByValue: Dictionary<MealType, Int> = [.Breakfast : 1, .Lunch : 2, .Brunch : 2, .Dinner : 3, .LateNight : 4]
 	var remainingMeals = meals
-	var orderedMeals: Array<MealType> = []
+	var orderedMeals = [MealType]()
 	
 	while remainingMeals.count > 0 {
 		var nextMeal = remainingMeals[0]

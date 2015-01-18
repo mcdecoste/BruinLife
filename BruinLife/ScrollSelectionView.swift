@@ -10,8 +10,8 @@ import UIKit
 
 class ScrollSelectionView: UIView {
 	var scrollView = UIScrollView()
-	var entries: Array<String> = []
-	var labels: Array<UILabel> = []
+	var entries = [String]()
+	var labels = [UILabel]()
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)

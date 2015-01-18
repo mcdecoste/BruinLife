@@ -158,7 +158,7 @@ class RestaurantInfo {
 
 class SectionInfo {
 	var name: String = ""
-	var foods: Array<MainFoodInfo> = []
+	var foods = [MainFoodInfo]()
 	
 	init(name: String) {
 		self.name = name
@@ -187,7 +187,7 @@ class FoodInfo {
 	var name: String
 	var recipe: String
 	var type: FoodType
-	var nutrition: Array<NutritionListing> = []
+	var nutrition = [NutritionListing]()
 	var ingredients: String = ""
 	var description: String = ""
 	var countryCode: String = ""
@@ -198,6 +198,27 @@ class FoodInfo {
 		self.type = type
 		
 		for nutrient in Nutrient.allValues { nutrition.append(NutritionListing(type: nutrient, measure: "0")) }
+	}
+	
+	func typeString() -> String { return type.rawValue }
+	func setType(string: String) { type = FoodType(rawValue: string)! }
+	
+	func nutritionString() -> String {
+		var nutritionStrings = [String]() // other array initialization strategy
+		for nutr in nutrition {
+			nutritionStrings.append(nutr.measure)
+		}
+		
+		return "•".join(nutritionStrings)
+	}
+	
+	func setNutrition(string: String) {
+		var parts = split(string, { $0 == "•" } )
+		nutrition = []
+		
+		for (index, nutr) in enumerate(Nutrient.allValues) {
+			nutrition.append(NutritionListing(type: nutr, measure: parts[index]))
+		}
 	}
 }
 

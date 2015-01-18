@@ -10,7 +10,7 @@ import UIKit
 
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 0.0]) // good default is 32.0, tight is 0.0
-	var pageInfo: Array<DayInfo> = []
+	var pageInfo = [DayInfo]()
 	var currIndex = 0
 	let pageStoryboardID = "dormTableView"
 	
@@ -72,7 +72,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func nextWeek() -> Array<DayInfo> {
-		var week: Array<DayInfo> = []
+		var week = [DayInfo]()
 		for index in 0...6 {
 			var daysDate = NSDate(timeIntervalSinceNow: Double(index * Int(timeInDay)))
 			week.append(exampleDay(daysDate))

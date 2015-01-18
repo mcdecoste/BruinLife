@@ -18,7 +18,19 @@ class Food: NSManagedObject {
 	@NSManaged var date: NSDate // for servings
 	@NSManaged var servings: Int16
 	
-	class func foodFromInformation(moc: NSManagedObjectContext, name: String, recipe: String) -> (created: Bool, entity: Food) {
+	@NSManaged var nutrition: String
+	@NSManaged var type: String
+	
+	class func foodFromInfo(moc: NSManagedObjectContext, food: FoodInfo) -> Food {
+		var coreFood = foodFromInformation(moc, name: food.name, recipe: food.recipe).entity
+		
+		coreFood.nutrition = food.nutritionString()
+		coreFood.type = food.typeString()
+		
+		return coreFood
+	}
+	
+	private class func foodFromInformation(moc: NSManagedObjectContext, name: String, recipe: String) -> (created: Bool, entity: Food) {
 		if let fetchResults = moc.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
 			for result in fetchResults {
 				if result.recipe == recipe {
@@ -54,5 +66,14 @@ class Food: NSManagedObject {
 			date = comparisonDate
 			servings = 0
 		}
+	}
+	
+	func info() -> FoodInfo {
+		var food = FoodInfo(name: name, recipe: recipe, type: .Regular) // type reset later
+		
+		food.setNutrition(nutrition)
+		food.setType(type)
+		
+		return food
 	}
 }
