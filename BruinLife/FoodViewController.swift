@@ -280,7 +280,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 		switch indexPath.section {
 		case nutritionSection:
-			return Nutrient.rowPairs[indexPath.row].0 == .oneSub ? smallCellHeight : cellHeight
+			return Nutrient.rowPairs[indexPath.row].type == .oneSub ? smallCellHeight : cellHeight
 		case ingredientSection:
 			return ingredientsLabel.frame.maxY + 4
 		case descriptionSection:
@@ -363,20 +363,16 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case nutritionSection:
 			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as NutritionTableViewCell
 			
-			var cellType: NutrientDisplayType = .empty
-			var nutrientLeft: Nutrient = .Cal
-			var nutrientRight: Nutrient = .FatCal
-			(cellType, nutrientLeft, nutrientRight) = Nutrient.rowPairs[indexPath.row]
+			let allRaw = Nutrient.allRawValues as NSArray
+			let cellInfo = Nutrient.rowPairs[indexPath.row]
 			
-			var leftIndex = (Nutrient.allRawValues as NSArray).indexOfObject(nutrientLeft.rawValue)
-			var rightIndex = (Nutrient.allRawValues as NSArray).indexOfObject(nutrientRight.rawValue)
-			var nutrientListingLeft = food.nutrition[leftIndex]
-			var nutrientListingRight = food.nutrition[rightIndex]
+			var nutrientListingLeft = food.nutrition[allRaw.indexOfObject(cellInfo.left.rawValue)]
+			var nutrientListingRight = food.nutrition[allRaw.indexOfObject(cellInfo.right.rawValue)]
 			
-			cell.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForRowAtIndexPath: indexPath))
+			cell.frame.size.width = nutriTable!.frame.width
 			cell.backgroundColor = .clearColor()
 			cell.selectionStyle = .None
-			cell.setInformation((type: cellType, left: nutrientListingLeft, right: nutrientListingRight))
+			cell.setInformation((type: cellInfo.type, left: nutrientListingLeft, right: nutrientListingRight))
 			cell.setServingCount(numberOfServings)
 			
 			return cell
@@ -399,7 +395,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		if indexPath.section == personalSection && indexPath.row == reminderRow {
 			showNotificationActionSheet()
-			
 		}
 	}
 	

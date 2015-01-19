@@ -12,7 +12,6 @@ import CoreData
 class ServingsTableViewController: UITableViewController {
 	let nutritionID = "nutrition"
 	let foodID = "serving"
-	let emptyID = "empty"
 	
 	let nutritionSection = 0
 	let foodSection = 1
@@ -31,7 +30,6 @@ class ServingsTableViewController: UITableViewController {
 		self.navigationItem.title = "Nutrition"
 		tableView.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutritionID)
 		tableView.registerClass(ServingsDisplayTableViewCell.self, forCellReuseIdentifier: foodID)
-		tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: emptyID)
     }
 	
 	override func viewWillAppear(animated: Bool) {
@@ -50,26 +48,21 @@ class ServingsTableViewController: UITableViewController {
 	
 	func calculateNutritionData() -> Array<NutritionListing> {
 		var measures = [Int]()
-		for index in 0..<Nutrient.allValues.count {
-			measures.append(0)
-		}
+		for index in 0..<Nutrient.allValues.count { measures.append(0) }
 		
 		// add in the various foods
 		for food in foodItems {
 			for (index, nutr) in enumerate(food.info().nutrition) {
-				let existingInt = measures[index]
-				let additional = nutr.measure.toInt()! * Int(food.servings)
-				
-				measures[index] = existingInt + additional
+				measures[index] += nutr.measure.toInt()! * Int(food.servings)
 			}
 		}
 		
-		var newInfo = [NutritionListing]()
+		var info = [NutritionListing]()
 		for (index, nutrient) in enumerate(Nutrient.allValues) {
-			newInfo.append(NutritionListing(type: nutrient, measure: "\(measures[index])"))
+			info.append(NutritionListing(type: nutrient, measure: "\(measures[index])"))
 		}
 		
-		return newInfo
+		return info
 	}
 	
 	// MARK: - Core Data
@@ -96,19 +89,22 @@ class ServingsTableViewController: UITableViewController {
 	}
 	
 	func removeServing(path: NSIndexPath) {
-		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].recipe)!
+		var request = NSFetchRequest(entityName: "Food")
+		request.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].recipe)!
 		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			fetchResults[0].servings = 0
+		if let result = managedObjectContext!.executeFetchRequest(request, error: nil) as? [Food] {
+			result[0].servings = 0
 		}
 		save()
 		
 		tableView.beginUpdates()
 		tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Left)
-		
 		foodItems.removeAtIndex(path.row)
 		tableView.endUpdates()
+		
+		if !hasFood() {
+			tableView.reloadSections(NSIndexSet(index: foodSection), withRowAnimation: .Automatic)
+		}
 	}
 	
 	func changeServing(row: ServingsDisplayTableViewCell, count: Int) {
@@ -121,6 +117,17 @@ class ServingsTableViewController: UITableViewController {
 			fetchResults[0].servings = Int16(count)
 		}
 		save()
+		
+		// update the nutrition side
+		nutritionValues = calculateNutritionData()
+		for cell in (tableView.visibleCells() as [UITableViewCell]) {
+			if let cellPath = tableView.indexPathForCell(cell) {
+				// update nutritional cells
+				if cellPath.section == nutritionSection {
+					updateNutritionCell(cell as NutritionTableViewCell, path: cellPath)
+				}
+			}
+		}
 	}
 	
     // MARK: - Table view data source
@@ -132,7 +139,7 @@ class ServingsTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 		switch section {
 		case nutritionSection:
-			return hasFood() ? Nutrient.rowPairs.count : 1
+			return Nutrient.rowPairs.count //hasFood() ? Nutrient.rowPairs.count : 1
 		case foodSection:
 			return foodItems.count
 		default:
@@ -152,35 +159,33 @@ class ServingsTableViewController: UITableViewController {
 			
 			return cell
 		default:
-			if hasFood() {
-				var cell = tableView.dequeueReusableCellWithIdentifier(nutritionID) as NutritionTableViewCell
-				
-				let cellInfo = Nutrient.rowPairs[indexPath.row] as (type: NutrientDisplayType, left: Nutrient, right: Nutrient) // more readable
-				
-				var leftIndex = (Nutrient.allRawValues as NSArray).indexOfObject(cellInfo.left.rawValue)
-				var rightIndex = (Nutrient.allRawValues as NSArray).indexOfObject(cellInfo.right.rawValue)
-				
-				cell.frame.size.width = tableView.frame.width
-				cell.selectionStyle = .None
-				cell.setInformation((type: cellInfo.type, left: nutritionValues[leftIndex], right: nutritionValues[rightIndex]))
-				cell.setServingCount(0)
-				
-				return cell
-			} else {
-				var cell = tableView.dequeueReusableCellWithIdentifier(emptyID, forIndexPath: indexPath) as UITableViewCell
-				
-				cell.selectionStyle = .None
-				cell.textLabel?.text = "You haven't eaten today!"
-				
-				return cell
-			}
+			var cell = tableView.dequeueReusableCellWithIdentifier(nutritionID) as NutritionTableViewCell
+			
+			updateNutritionCell(cell, path: indexPath)
+			
+			cell.frame.size.width = tableView.frame.width
+			cell.selectionStyle = .None
+			
+			return cell
 		}
+	}
+	
+	func updateNutritionCell(cell: NutritionTableViewCell, path: NSIndexPath) {
+		let cellInfo = Nutrient.rowPairs[path.row]
+		
+		let nutrArray = Nutrient.allRawValues as NSArray
+		
+		var leftIndex = nutrArray.indexOfObject(cellInfo.left.rawValue)
+		var rightIndex = nutrArray.indexOfObject(cellInfo.right.rawValue)
+		
+		cell.setInformation((type: cellInfo.type, left: nutritionValues[leftIndex], right: nutritionValues[rightIndex]))
+		cell.setServingCount(0)
 	}
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		switch section {
 		case nutritionSection:
-			return hasFood() ? "Today's Nutrition Facts" : ""
+			return "Today's Nutrition Facts"
 		case foodSection:
 			return hasFood() ? "Today's Foods" : ""
 		default:
@@ -191,13 +196,30 @@ class ServingsTableViewController: UITableViewController {
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
 		switch section {
 		case nutritionSection:
-			return hasFood() ? "" : "You can add servings in the Dorm and Quick sections."
+			return hasFood() ? "" : "You can add foods in the Dorm and Quick sections."
 		default:
 			return ""
 		}
 	}
 	
+	override func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String! {
+		return "Didn't\nEat"
+	}
+	
 	// MARK: Table view delegate
+	
+	override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		return hasFood() && indexPath.section == foodSection
+	}
+	
+	override func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+		switch indexPath.section {
+		case foodSection:
+			return hasFood() ? .Delete : .None
+		default:
+			return .None
+		}
+	}
 	
 	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
 		if editingStyle == .Delete {
