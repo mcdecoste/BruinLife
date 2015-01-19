@@ -13,28 +13,11 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	var controller: ServingsTableViewController?
 	
 	var nameLabel = UILabel()
-	var rightView = UIView(frame: CGRectZero)
-		var stepper = UIStepper()
-		var servingLabel = UILabel()
-	
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-
-    override func setSelected(selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
+	var stepper = UIStepper()
+	var servingLabel = UILabel()
 	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: .Value1, reuseIdentifier: reuseIdentifier)
-		layout()
-	}
-	
-	override init(frame: CGRect) {
-		super.init(frame: frame)
 		layout()
 	}
 	
@@ -76,7 +59,7 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-16-[name]-(>=5)-[serving]-(>=16)-|", options: .allZeros, metrics: nil, views: views))
 		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-16-[name]-5-[stepper]-16-|", options: .allZeros, metrics: nil, views: views))
 		
-		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(>=5)-[serving]-3-[stepper]-(>=5)-|", options: .AlignAllCenterX, metrics: nil, views: views))
+		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(>=10)-[serving]-3-[stepper]-(>=10)-|", options: .AlignAllCenterX, metrics: nil, views: views))
 		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(>=15)-[name]-(>=15)-|", options: .allZeros, metrics: nil, views: views))
 	}
 	

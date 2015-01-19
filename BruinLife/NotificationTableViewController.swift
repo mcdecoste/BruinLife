@@ -19,7 +19,7 @@ class NotificationTableViewController: UITableViewController {
 	
     override func viewDidLoad() {
         super.viewDidLoad()
-		tableView.registerClass(FoodNotificationTableViewCell.self, forCellReuseIdentifier: cellID)
+		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
 		navigationItem.title = "Notifications"
     }
 	
@@ -60,13 +60,18 @@ class NotificationTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return notifications[sectionFromSection(section)].count
     }
+	
+//	override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+//		let footer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
+//		footer.backgroundColor = .clearColor()
+//		
+//		return footer
+//	}
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as FoodNotificationTableViewCell
+		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as NotificationTableViewCell
 		let userInfo = notificationForPath(indexPath).userInfo as [String : String]
-		cell.textLabel?.text = userInfo[notificationFoodID]
-		cell.textLabel?.numberOfLines = 0
-		cell.detailTextLabel?.text = userInfo[notificationTimeID]
+		cell.setLabels(userInfo[notificationFoodID]!, time: userInfo[notificationTimeID]!)
         return cell
     }
 	

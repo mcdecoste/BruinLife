@@ -23,7 +23,7 @@ class FavoritesTableViewController: UITableViewController {
         super.viewDidLoad()
 		
 		self.navigationItem.title = "Favorites"
-		tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: cellID)
+		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
     }
 	
 	override func viewWillAppear(animated: Bool) {
@@ -71,7 +71,6 @@ class FavoritesTableViewController: UITableViewController {
 		
 		tableView.beginUpdates()
 		tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Left)
-		
 		foodItems.removeAtIndex(path.row)
 		tableView.endUpdates()
 	}
@@ -87,13 +86,18 @@ class FavoritesTableViewController: UITableViewController {
     }
 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as UITableViewCell
-		cell.textLabel?.text = foodItems[indexPath.row].name
-		cell.textLabel?.numberOfLines = 0
-		
+		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as NotificationTableViewCell
+		cell.setLabels(foodItems[indexPath.row].name)
 		return cell
 	}
-
+	
+//	override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+//		let footer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
+//		footer.backgroundColor = .clearColor()
+//		
+//		return footer
+//	}
+	
 	// Override to support editing the table view.
 	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
 		if editingStyle == .Delete {
