@@ -11,18 +11,21 @@ import CoreData
 
 class FavoritesTableViewController: UITableViewController {
 	let cellID = "favorite"
+	let notifySection = 0
+	let dontSection = 1
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 	}()
-	var foodItems = [Food]()
+	var favorites: Array<Array<Food>> = [[], []]
 	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		self.navigationItem.title = "Favorites"
+		navigationItem.title = "Favorites"
+		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editTable")
 		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
     }
 	
@@ -43,11 +46,13 @@ class FavoritesTableViewController: UITableViewController {
 	/// Can either grab the food or delete something
 	func fetchFoods() {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "recipe", ascending: true)] // was name
 		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			foodItems = fetchResults
+			favorites = [[], []]
+			for result in fetchResults {
+				favorites[result.notify ? notifySection : dontSection].append(result)
+			}
 		}
 	}
 	
@@ -61,7 +66,7 @@ class FavoritesTableViewController: UITableViewController {
 	func removeFavorite(path: NSIndexPath) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
 		let pred1 = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
-		let pred2 = NSPredicate(format: "recipe == %@", foodItems[path.row].info().recipe)!
+		let pred2 = NSPredicate(format: "recipe == %@", favorites[path.section][path.row].info().recipe)!
 		fetchRequest.predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [pred1, pred2])
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
@@ -71,37 +76,80 @@ class FavoritesTableViewController: UITableViewController {
 		
 		tableView.beginUpdates()
 		tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Left)
-		foodItems.removeAtIndex(path.row)
+		favorites[path.section].removeAtIndex(path.row)
 		tableView.endUpdates()
+	}
+	
+	func changeFoodNotify(food: Food, notify: Bool) {
+		var fetchRequest = NSFetchRequest(entityName: "Food")
+		let pred1 = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
+		let pred2 = NSPredicate(format: "recipe == %@", food.info().recipe)!
+		fetchRequest.predicate = NSCompoundPredicate(type: .AndPredicateType, subpredicates: [pred1, pred2])
+		
+		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
+			fetchResults[0].notify = notify
+		}
+		save()
 	}
 	
     // MARK: - Table view data source
 
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		return 1 // TODO: split them by which are showing up in the next week and which aren't?
+		return favorites.count // foods that will send reminders and foods taht won't
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return foodItems.count
+        return favorites[section].count
     }
+	
+	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+		switch section {
+		case notifySection:
+			return "Tell me when this food is coming up"
+		case dontSection:
+			return "Don't tell me"
+		default:
+			return ""
+		}
+	}
 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as NotificationTableViewCell
-		cell.setLabels(foodItems[indexPath.row].info().name)
+		cell.setLabels(favorites[indexPath.section][indexPath.row].info().name)
 		return cell
 	}
 	
-//	override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//		let footer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
-//		footer.backgroundColor = .clearColor()
-//		
-//		return footer
-//	}
+	override func tableView(tableView: UITableView, shouldIndentWhileEditingRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		return false
+	}
+	
+	override func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+		return .None
+	}
 	
 	// Override to support editing the table view.
 	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
 		if editingStyle == .Delete {
 			removeFavorite(indexPath)
 		}
+	}
+	
+	func editTable() {
+		setEditing(!editing, animated: true)
+		navigationItem.rightBarButtonItem?.style = !editing ? .Plain : .Done
+		navigationItem.rightBarButtonItem?.title = !editing ? "Edit" : "Done"
+	}
+	
+	override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+		return true
+	}
+	
+	override func tableView(tableView: UITableView, moveRowAtIndexPath sourceIndexPath: NSIndexPath, toIndexPath destinationIndexPath: NSIndexPath) {
+		let movedFood = favorites[sourceIndexPath.section][sourceIndexPath.row]
+		
+		favorites[sourceIndexPath.section].removeAtIndex(sourceIndexPath.row)
+		favorites[destinationIndexPath.section].insert(movedFood, atIndex: destinationIndexPath.row)
+		
+		changeFoodNotify(movedFood, notify: destinationIndexPath.section == notifySection)
 	}
 }
