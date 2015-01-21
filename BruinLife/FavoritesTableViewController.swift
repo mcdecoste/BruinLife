@@ -65,12 +65,15 @@ class FavoritesTableViewController: UITableViewController {
 	
 	func removeFavorite(path: NSIndexPath) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		let pred1 = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
-		let pred2 = NSPredicate(format: "recipe == %@", favorites[path.section][path.row].info().recipe)!
-		fetchRequest.predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [pred1, pred2])
+		let recipe = favorites[path.section][path.row].info().recipe
+		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			fetchResults[0].favorite = false
+			for result in fetchResults {
+				if result.info().recipe == recipe {
+					result.favorite = false
+				}
+			}
 		}
 		save()
 		
@@ -82,12 +85,15 @@ class FavoritesTableViewController: UITableViewController {
 	
 	func changeFoodNotify(food: Food, notify: Bool) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		let pred1 = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
-		let pred2 = NSPredicate(format: "recipe == %@", food.info().recipe)!
-		fetchRequest.predicate = NSCompoundPredicate(type: .AndPredicateType, subpredicates: [pred1, pred2])
+		let recipe = food.info().recipe
+		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			fetchResults[0].notify = notify
+			for result in fetchResults {
+				if result.info().recipe == recipe {
+					result.notify = notify
+				}
+			}
 		}
 		save()
 	}
@@ -105,11 +111,22 @@ class FavoritesTableViewController: UITableViewController {
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		switch section {
 		case notifySection:
-			return "Tell me when this food is coming up"
+			return "Tell me when available"
 		case dontSection:
 			return "Don't tell me"
 		default:
-			return ""
+			return nil
+		}
+	}
+	
+	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		switch section {
+		case notifySection:
+			return nil
+		case dontSection:
+			return "Favorites will be shown in Today View Extension regardless of this setting"
+		default:
+			return nil
 		}
 	}
 

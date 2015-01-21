@@ -70,7 +70,6 @@ class ServingsTableViewController: UITableViewController {
 	/// Can either grab the food or delete something
 	func fetchFoods() {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "recipe", ascending: true)] // name
 		fetchRequest.predicate = NSPredicate(format: "servings > 0")
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
@@ -90,10 +89,14 @@ class ServingsTableViewController: UITableViewController {
 	
 	func removeServing(path: NSIndexPath) {
 		var request = NSFetchRequest(entityName: "Food")
-		request.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].info().recipe)!
+		let recipe = foodItems[path.row].info().recipe
 		
-		if let result = managedObjectContext!.executeFetchRequest(request, error: nil) as? [Food] {
-			result[0].servings = 0
+		if let results = managedObjectContext!.executeFetchRequest(request, error: nil) as? [Food] {
+			for result in results {
+				if result.info().recipe == recipe {
+					result.servings = 0
+				}
+			}
 		}
 		save()
 		
@@ -109,12 +112,15 @@ class ServingsTableViewController: UITableViewController {
 	
 	func changeServing(row: ServingsDisplayTableViewCell, count: Int) {
 		let path = tableView.indexPathForCell(row)!
-		
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].info().recipe)!
+		let recipe = foodItems[path.row].info().recipe
 		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			fetchResults[0].servings = Int16(count)
+		if let results = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
+			for result in results {
+				if result.info().recipe == recipe {
+					result.servings = Int16(count)
+				}
+			}
 		}
 		save()
 		
@@ -185,9 +191,9 @@ class ServingsTableViewController: UITableViewController {
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
 		switch section {
 		case nutritionSection:
-			return "Today's Nutrition Facts"
+			return "Nutrition Facts"
 		case foodSection:
-			return hasFood() ? "Today's Foods" : ""
+			return hasFood() ? "Foods" : ""
 		default:
 			return ""
 		}

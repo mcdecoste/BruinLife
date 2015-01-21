@@ -5,10 +5,9 @@
         <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="foodString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="notify" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="recipe" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="servings" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Food" positionX="-63" positionY="-18" width="128" height="135"/>
+        <element name="Food" positionX="-63" positionY="-18" width="128" height="120"/>
     </elements>
 </model>

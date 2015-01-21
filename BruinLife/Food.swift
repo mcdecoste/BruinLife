@@ -12,8 +12,6 @@ import CoreData
 class Food: NSManagedObject {
 	/// All the information for the entire food
 	@NSManaged var foodString: String
-	/// Maybe needed for better filtering? Could remove it later.
-	@NSManaged var recipe: String
 	
 	@NSManaged var favorite: Bool
 	/// Notify at start of day if seen
@@ -24,18 +22,18 @@ class Food: NSManagedObject {
 	
 	class func foodFromInfo(moc: NSManagedObjectContext, food: FoodInfo) -> Food {
 		var request = NSFetchRequest(entityName: "Food")
-		request.predicate = NSPredicate(format: "recipe == %@", food.recipe)
 		
 		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [Food] {
 			for result in fetchResults {
-				result.checkDate()
-				return result
+				if result.info().recipe == food.recipe {
+					result.checkDate()
+					return result
+				}
 			}
 		}
 		
 		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as Food
 		newItem.foodString = food.foodString()
-		newItem.recipe = food.recipe
 		
 		newItem.favorite = false
 		newItem.notify = false

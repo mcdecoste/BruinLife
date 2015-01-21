@@ -402,13 +402,14 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func fetchFoods() {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.predicate = NSPredicate(format: "recipe == %@", food.recipe)
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			if fetchResults.count == 1 {
-				var theFood = fetchResults[0]
-				numberOfServings = Int(theFood.servings)
-				favorited = theFood.favorite
+			for result in fetchResults {
+				if result.info().recipe == food.recipe {
+					var theFood = fetchResults[0]
+					numberOfServings = Int(theFood.servings)
+					favorited = theFood.favorite
+				}
 			}
 		}
 	}
