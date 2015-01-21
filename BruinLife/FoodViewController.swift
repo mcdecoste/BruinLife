@@ -508,8 +508,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	// Remove any existing notification
 	func removeNotification() {
-		// using if assumes there's only one
-		// using while should remove all possible conflicts
+		// using while should remove all possible matches
 		while let notification = getNotification() {
 			UIApplication.sharedApplication().cancelLocalNotification(notification)
 		}

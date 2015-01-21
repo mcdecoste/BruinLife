@@ -43,7 +43,7 @@ class FavoritesTableViewController: UITableViewController {
 	/// Can either grab the food or delete something
 	func fetchFoods() {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "recipe", ascending: true)] // was name
 		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
@@ -61,7 +61,7 @@ class FavoritesTableViewController: UITableViewController {
 	func removeFavorite(path: NSIndexPath) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
 		let pred1 = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
-		let pred2 = NSPredicate(format: "recipe == %@", foodItems[path.row].recipe)!
+		let pred2 = NSPredicate(format: "recipe == %@", foodItems[path.row].info().recipe)!
 		fetchRequest.predicate = NSCompoundPredicate(type: NSCompoundPredicateType.AndPredicateType, subpredicates: [pred1, pred2])
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
@@ -87,7 +87,7 @@ class FavoritesTableViewController: UITableViewController {
 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as NotificationTableViewCell
-		cell.setLabels(foodItems[indexPath.row].name)
+		cell.setLabels(foodItems[indexPath.row].info().name)
 		return cell
 	}
 	

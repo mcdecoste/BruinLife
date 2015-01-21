@@ -26,10 +26,10 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 		layout()
 	}
 	
-	func changeFood(name: String, count: Int) {
-		nameLabel.text = name
-		stepper.value = Double(count)
-		servingLabel.text = servingText(count)
+	func changeFood(food: Food) {
+		nameLabel.text = food.info().name
+		stepper.value = Double(food.servings)
+		servingLabel.text = servingText(Int(food.servings))
 	}
 	
 	func layout() {
@@ -51,16 +51,17 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 		contentView.addSubview(servingLabel)
 		
 		// Auto Layout
-		let views: Dictionary<NSObject, AnyObject> = ["name" : nameLabel, "stepper" : stepper, "serving" : servingLabel]
-		
 		contentView.addConstraint(NSLayoutConstraint(item: nameLabel, attribute: .CenterY, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: 0))
 		contentView.addConstraint(NSLayoutConstraint(item: stepper, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: -4))
 		
-		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-16-[name]-(>=5)-[serving]-(>=16)-|", options: .allZeros, metrics: nil, views: views))
-		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-16-[name]-5-[stepper]-16-|", options: .allZeros, metrics: nil, views: views))
-		
-		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(>=10)-[serving]-3-[stepper]-(>=10)-|", options: .AlignAllCenterX, metrics: nil, views: views))
-		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(>=15)-[name]-(>=15)-|", options: .allZeros, metrics: nil, views: views))
+		addConstraint("H:|-16-[name]-(>=5)-[serving]-(>=16)-|")
+		addConstraint("H:|-16-[name]-5-[stepper]-16-|")
+		addConstraint("V:|-(>=10)-[serving]-3-[stepper]-(>=10)-|", option: .AlignAllCenterX)
+		addConstraint("V:|-(>=15)-[name]-(>=15)-|")
+	}
+	
+	func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {
+		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: ["name" : nameLabel, "stepper" : stepper, "serving" : servingLabel]))
 	}
 	
 	func servingText(count: Int) -> String {

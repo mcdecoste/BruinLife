@@ -70,7 +70,7 @@ class ServingsTableViewController: UITableViewController {
 	/// Can either grab the food or delete something
 	func fetchFoods() {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "recipe", ascending: true)] // name
 		fetchRequest.predicate = NSPredicate(format: "servings > 0")
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
@@ -90,7 +90,7 @@ class ServingsTableViewController: UITableViewController {
 	
 	func removeServing(path: NSIndexPath) {
 		var request = NSFetchRequest(entityName: "Food")
-		request.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].recipe)!
+		request.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].info().recipe)!
 		
 		if let result = managedObjectContext!.executeFetchRequest(request, error: nil) as? [Food] {
 			result[0].servings = 0
@@ -111,7 +111,7 @@ class ServingsTableViewController: UITableViewController {
 		let path = tableView.indexPathForCell(row)!
 		
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].recipe)!
+		fetchRequest.predicate = NSPredicate(format: "recipe == %@", foodItems[path.row].info().recipe)!
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
 			fetchResults[0].servings = Int16(count)
@@ -155,7 +155,7 @@ class ServingsTableViewController: UITableViewController {
 			let cell = tableView.dequeueReusableCellWithIdentifier(foodID, forIndexPath: indexPath) as ServingsDisplayTableViewCell
 			cell.selectionStyle = .None
 			cell.controller = self
-			cell.changeFood(food.name, count: Int(food.servings))
+			cell.changeFood(food)
 			
 			return cell
 		default:

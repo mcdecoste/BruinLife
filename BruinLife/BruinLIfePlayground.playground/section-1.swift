@@ -65,3 +65,6 @@ NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: NSDate()).da
 NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: NSDate(timeIntervalSinceNow: 23*3600)).day
 
 NSCalendar.currentCalendar().components(.CalendarUnitWeekday, fromDate: NSDate()).weekday
+
+var parts = split("a||||b", { $0 == "|" } )
+parts

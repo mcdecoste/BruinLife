@@ -200,6 +200,19 @@ class FoodInfo {
 		for nutrient in Nutrient.allValues { nutrition.append(NutritionListing(type: nutrient, measure: "0")) }
 	}
 	
+	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
+	init(formattedString: String) {
+		var parts = split(formattedString, { $0 == "°" }, allowEmptySlices: true)
+		
+		name = parts[0]
+		recipe = parts[1]
+		type = FoodType(rawValue: parts[2])!
+		setNutrition(parts[3])
+		ingredients = parts[4]
+		description = parts[5]
+		countryCode = parts[6]
+	}
+	
 	func typeString() -> String { return type.rawValue }
 	func setType(string: String) { type = FoodType(rawValue: string)! }
 	
@@ -213,17 +226,47 @@ class FoodInfo {
 	}
 	
 	func setNutrition(string: String) {
-		var parts = split(string, { $0 == "•" } )
+		var parts = split(string, { $0 == "•" }, allowEmptySlices: true)
 		nutrition = []
 		
 		for (index, nutr) in enumerate(Nutrient.allValues) {
 			nutrition.append(NutritionListing(type: nutr, measure: parts[index]))
 		}
 	}
+	
+	func foodString() -> String {
+		return "\(name)°\(recipe)°\(type.rawValue)°\(nutritionString())°\(ingredients)°\(description)°\(countryCode)"
+	}
 }
 
 class MainFoodInfo: FoodInfo {
 	var withFood: SubFoodInfo?
+	
+	override init(name: String, recipe: String, type: FoodType) {
+		super.init(name: name, recipe: recipe, type: type)
+	}
+	
+	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
+	override init(formattedString: String) {
+		var parts = split(formattedString, { $0 == "|" } )
+		
+		super.init(formattedString: parts[0])
+		withFood = parts.count == 2 ? SubFoodInfo(formattedString: parts[1]) : nil
+	}
+	
+	override func foodString() -> String {
+		if let with = withFood {
+			let parts: Array<String> = [super.foodString(), with.foodString()]
+			return "|".join(parts)
+		} else {
+			return super.foodString()
+		}
+	}
+	
+	class func isMain(formattedString: String) -> Bool {
+		var parts = split(formattedString, { $0 == "|" } )
+		return parts.count == 2
+	}
 }
 
 class SubFoodInfo: FoodInfo {

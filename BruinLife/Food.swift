@@ -10,45 +10,39 @@ import UIKit
 import CoreData
 
 class Food: NSManagedObject {
-	@NSManaged var name: String
+	/// All the information for the entire food
+	@NSManaged var foodString: String
+	/// Maybe needed for better filtering? Could remove it later.
 	@NSManaged var recipe: String
 	
 	@NSManaged var favorite: Bool
+	/// Notify at start of day if seen
+		@NSManaged var notify: Bool
 	
 	@NSManaged var date: NSDate // for servings
 	@NSManaged var servings: Int16
 	
-	@NSManaged var nutrition: String
-	@NSManaged var type: String
-	
 	class func foodFromInfo(moc: NSManagedObjectContext, food: FoodInfo) -> Food {
-		var coreFood = foodFromInformation(moc, name: food.name, recipe: food.recipe).entity
+		var request = NSFetchRequest(entityName: "Food")
+		request.predicate = NSPredicate(format: "recipe == %@", food.recipe)
 		
-		coreFood.nutrition = food.nutritionString()
-		coreFood.type = food.typeString()
-		
-		return coreFood
-	}
-	
-	private class func foodFromInformation(moc: NSManagedObjectContext, name: String, recipe: String) -> (created: Bool, entity: Food) {
-		if let fetchResults = moc.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
+		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [Food] {
 			for result in fetchResults {
-				if result.recipe == recipe {
-					result.checkDate()
-					return (created: false, entity: result)
-				}
+				result.checkDate()
+				return result
 			}
 		}
 		
-		let newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as Food
-		newItem.name = name
-		newItem.recipe = recipe
+		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as Food
+		newItem.foodString = food.foodString()
+		newItem.recipe = food.recipe
 		
 		newItem.favorite = false
+		newItem.notify = false
 		newItem.date = Food.comparisonDate(NSDate())
 		newItem.servings = 0
 		
-		return (created: true, entity: newItem)
+		return newItem
 	}
 	
 	class func comparisonDate(date: NSDate) -> NSDate {
@@ -56,11 +50,10 @@ class Food: NSManagedObject {
 	}
 	
 	func checkDate() {
-		let currentCalendar = NSCalendar.currentCalendar()
 		let comparisonDate = Food.comparisonDate(NSDate())
 		
-		let dateComponents = currentCalendar.components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: comparisonDate)
-		let resultComponents = currentCalendar.components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: date)
+		let dateComponents = components(comparisonDate)
+		let resultComponents = components(date)
 		
 		if !(dateComponents.weekOfYear == resultComponents.weekOfYear && dateComponents.weekday == resultComponents.weekday) {
 			date = comparisonDate
@@ -68,12 +61,11 @@ class Food: NSManagedObject {
 		}
 	}
 	
+	private func components(date: NSDate) -> NSDateComponents {
+		return NSCalendar.currentCalendar().components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: date)
+	}
+	
 	func info() -> FoodInfo {
-		var food = FoodInfo(name: name, recipe: recipe, type: .Regular) // type reset later
-		
-		food.setNutrition(nutrition)
-		food.setType(type)
-		
-		return food
+		return MainFoodInfo.isMain(foodString) ? MainFoodInfo(formattedString: foodString) : FoodInfo(formattedString: foodString)
 	}
 }
