@@ -10,7 +10,13 @@ import UIKit
 import CoreGraphics
 
 class ClockView: UIView {
-	var percLayer: CAShapeLayer = CAShapeLayer()
+	let edge: CGFloat = 36
+	var mainLayer: CAShapeLayer = CAShapeLayer()
+	
+	override init() {
+		super.init()
+		establish()
+	}
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -23,30 +29,27 @@ class ClockView: UIView {
 	}
 	
 	func establish() {
-		let lineWidth = max(0.025 * frame.width, 1.0) // 0.025 | 0.0375
 		var contentsScale: CGFloat = UIScreen.mainScreen().scale
 		
-		percLayer.frame = bounds
-		percLayer.contentsScale = contentsScale
-		percLayer.strokeColor = tintColor!.CGColor
-		percLayer.fillColor = UIColor.grayColor().CGColor
-		percLayer.lineCap = kCALineCapSquare
-		percLayer.lineWidth = lineWidth
-		
-		
+		mainLayer.frame = CGRect(x: 0, y: 0, width: edge, height: edge)
+		mainLayer.contentsScale = contentsScale
+//		percLayer.strokeColor = tintColor!.CGColor
+		mainLayer.fillColor = UIColor(white: 0.85, alpha: 1).CGColor
+		mainLayer.lineCap = kCALineCapSquare
+		mainLayer.lineWidth = 1
 		
 		let startAngle = CGFloat(-1*M_PI_2)
 		let endAngle = startAngle + (2 * CGFloat(M_PI))
-		let radius = (bounds.width - (3 * lineWidth)) / 2
+		let radius = (bounds.width - (3 * mainLayer.lineWidth)) / 2
 		
 		var processPath = UIBezierPath()
 		processPath.lineCapStyle = kCGLineCapButt
-		processPath.lineWidth = lineWidth
+		processPath.lineWidth = mainLayer.lineWidth
 		processPath.addArcWithCenter(CGPoint(x: frame.size.width/2, y: frame.size.height/2), radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
 		
-		percLayer.path = processPath.CGPath
+		mainLayer.path = processPath.CGPath
 		
-		layer.addSublayer(percLayer)
+		layer.addSublayer(mainLayer)
 		
 		setNeedsDisplay()
 		

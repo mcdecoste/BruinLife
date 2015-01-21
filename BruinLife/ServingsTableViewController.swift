@@ -161,10 +161,10 @@ class ServingsTableViewController: UITableViewController {
 		default:
 			var cell = tableView.dequeueReusableCellWithIdentifier(nutritionID) as NutritionTableViewCell
 			
-			updateNutritionCell(cell, path: indexPath)
-			
 			cell.frame.size.width = tableView.frame.width
 			cell.selectionStyle = .None
+			
+			updateNutritionCell(cell, path: indexPath)
 			
 			return cell
 		}

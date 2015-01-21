@@ -107,13 +107,13 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 				
 				switch indexPath.row {
 				case 0:
-					var vc = vc as NotificationTableViewController
+					vc = vc as NotificationTableViewController
 				case 1:
-					var vc = vc as FavoritesTableViewController
+					vc = vc as FavoritesTableViewController
 				case 2:
-					var vc = vc as ServingsTableViewController
+					vc = vc as ServingsTableViewController
 				default:
-					var vc = vc as UITableViewController
+					vc = vc as UITableViewController
 				}
 				
 				self.showViewController(vc, sender: self)

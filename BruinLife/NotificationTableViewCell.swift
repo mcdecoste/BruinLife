@@ -9,7 +9,6 @@
 import UIKit
 
 class NotificationTableViewCell: UITableViewCell {
-//	var clock: ClockView?
 	var nameLabel = UILabel()
 	var timeLabel = UILabel()
 	
