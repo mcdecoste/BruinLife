@@ -113,24 +113,70 @@ enum Halls: String {
 
 class DayInfo {
 	var date = NSDate()
-	var meals: Dictionary<MealType, MealInfo> = Dictionary()
-	var allHours: Dictionary<MealType, Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>> = Dictionary()
-	
+	var meals: Dictionary<MealType, MealInfo> = [:]
 	init() {
 		
+	}
+	
+	init(date: NSDate = NSDate(), formattedString: String) {
+		self.date = date
+		self.meals = [:]
+		let parts = split(formattedString, { $0 == "ﬂ" })
+		for part in parts {
+			let dictParts = split(part, { $0 == "Ø" })
+			
+			let meal = MealType(rawValue: dictParts[0])!
+			let information = MealInfo(formattedString: dictParts[1])
+			meals[meal] = information
+		}
 	}
 	
 	init(date: NSDate, meals: Dictionary<MealType, MealInfo>) {
 		self.date = date
 		self.meals = meals
 	}
+	
+	func formattedString() -> String {
+		var string = ""
+		for key in meals.keys {
+			if string != "" {
+				string = string + "ﬂ"
+			}
+			
+			string = string + "\(key.rawValue)Ø\(meals[key]!.formattedString())"
+		}
+		return string
+	}
 }
 
 class MealInfo {
 	var halls: Dictionary<Halls, RestaurantInfo>
 	
-	init (halls: Dictionary<Halls, RestaurantInfo>) {
+	init(halls: Dictionary<Halls, RestaurantInfo>) {
 		self.halls = halls
+	}
+	
+	init(formattedString: String) {
+		halls = [:]
+		let parts = split(formattedString, { $0 == "‡" })
+		for part in parts {
+			let dictParts = split(part, { $0 == "¨" })
+			let hall = Halls(rawValue: dictParts[0])!
+			let information = RestaurantInfo(formattedString: dictParts[1])
+			halls[hall] = information
+		}
+	}
+	
+	func formattedString() -> String {
+		var string = ""
+		for key in halls.keys {
+			if string != "" {
+				string = string + "‡"
+			}
+			
+			string = string + "\(key.rawValue)¨\(halls[key]!.formattedString())"
+		}
+		return string
 	}
 }
 
@@ -147,12 +193,37 @@ class RestaurantInfo {
 		self.sections = []
 	}
 	
+	init(formattedString: String) {
+		let parts = split(formattedString, { $0 == "·" })
+		
+		hall = Halls(rawValue: parts[0])!
+		
+		let openParts = split(parts[1], { $0 == "-" })
+		openTime = Time(hour: openParts[0].toInt()!, minute: openParts[1].toInt()!)
+		
+		let closeParts = split(parts[2], { $0 == "-" })
+		closeTime = Time(hour: closeParts[0].toInt()!, minute: closeParts[1].toInt()!)
+		
+		sections = []
+		for section in parts[3..<parts.count] {
+			sections.append(SectionInfo(formattedString: section))
+		}
+	}
+	
 	func name(isHall: Bool) -> String {
 		return hall.displayName(isHall)
 	}
 	
 	func imageName(open: Bool) -> String {
 		return hall.imageName(open)
+	}
+	
+	func formattedString() -> String {
+		var string = "\(hall.rawValue)·\(openTime.hour)-\(openTime.minute)·\(closeTime.hour)-\(closeTime.minute)"
+		for section in sections {
+			string = string + "·\(section.formattedString())"
+		}
+		return string
 	}
 }
 
@@ -162,6 +233,24 @@ class SectionInfo {
 	
 	init(name: String) {
 		self.name = name
+	}
+	
+	init(formattedString: String) {
+		let parts = split(formattedString, { $0 == "ª" }, allowEmptySlices: true)
+		
+		name = parts[0]
+		foods = []
+		for part in parts[1..<parts.count] {
+			foods.append(MainFoodInfo(formattedString: part))
+		}
+	}
+	
+	func formattedString() -> String {
+		var foodStrings = [String]()
+		for food in foods { foodStrings.append(food.foodString()) }
+		
+		let foodsString = "ª".join(foodStrings)
+		return "\(name)ª\(foodsString)"
 	}
 }
 
@@ -227,10 +316,19 @@ class FoodInfo {
 	
 	func setNutrition(string: String) {
 		var parts = split(string, { $0 == "•" }, allowEmptySlices: true)
-		nutrition = []
 		
-		for (index, nutr) in enumerate(Nutrient.allValues) {
-			nutrition.append(NutritionListing(type: nutr, measure: parts[index]))
+		if parts.count == 1 && parts[0] == "" {
+			nutrition = []
+			
+			for (index, nutr) in enumerate(Nutrient.allValues) {
+				nutrition.append(NutritionListing(type: nutr, measure: "0"))
+			}
+		} else {
+			nutrition = []
+			
+			for (index, nutr) in enumerate(Nutrient.allValues) {
+				nutrition.append(NutritionListing(type: nutr, measure: parts[index]))
+			}
 		}
 	}
 	

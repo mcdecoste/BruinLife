@@ -222,6 +222,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		
+//		println((food?.name)! + " " + (food?.type.rawValue)!)
 		foodVC.setFood(food!, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.information)!)
 	}
 	
