@@ -121,9 +121,11 @@ class DayInfo {
 	init(date: NSDate = NSDate(), formattedString: String) {
 		self.date = date
 		self.meals = [:]
-		let parts = split(formattedString, { $0 == "ﬂ" })
+		let parts = formattedString.componentsSeparatedByString("ﬂ")
+//		let parts = split(formattedString, { $0 == "ﬂ" })
 		for part in parts {
-			let dictParts = split(part, { $0 == "Ø" })
+			let dictParts = part.componentsSeparatedByString("Ø")
+//			let dictParts = split(part, { $0 == "Ø" })
 			
 			let meal = MealType(rawValue: dictParts[0])!
 			let information = MealInfo(formattedString: dictParts[1])
@@ -158,9 +160,11 @@ class MealInfo {
 	
 	init(formattedString: String) {
 		halls = [:]
-		let parts = split(formattedString, { $0 == "‡" })
+		let parts = formattedString.componentsSeparatedByString("‡")
+//		let parts = split(formattedString, { $0 == "‡" })
 		for part in parts {
-			let dictParts = split(part, { $0 == "¨" })
+			let dictParts = part.componentsSeparatedByString("¨")
+//			let dictParts = split(part, { $0 == "¨" })
 			let hall = Halls(rawValue: dictParts[0])!
 			let information = RestaurantInfo(formattedString: dictParts[1])
 			halls[hall] = information
@@ -194,14 +198,17 @@ class RestaurantInfo {
 	}
 	
 	init(formattedString: String) {
-		let parts = split(formattedString, { $0 == "·" })
+		let parts = formattedString.componentsSeparatedByString("·")
+//		let parts = split(formattedString, { $0 == "·" })
 		
 		hall = Halls(rawValue: parts[0])!
 		
-		let openParts = split(parts[1], { $0 == "-" })
+		let openParts = parts[1].componentsSeparatedByString("-")
+//		let openParts = split(parts[1], { $0 == "-" })
 		openTime = Time(hour: openParts[0].toInt()!, minute: openParts[1].toInt()!)
 		
-		let closeParts = split(parts[2], { $0 == "-" })
+		let closeParts = parts[2].componentsSeparatedByString("-")
+//		let closeParts = split(parts[2], { $0 == "-" })
 		closeTime = Time(hour: closeParts[0].toInt()!, minute: closeParts[1].toInt()!)
 		
 		sections = []
@@ -236,7 +243,8 @@ class SectionInfo {
 	}
 	
 	init(formattedString: String) {
-		let parts = split(formattedString, { $0 == "ª" }, allowEmptySlices: true)
+		let parts = formattedString.componentsSeparatedByString("ª")
+//		let parts = split(formattedString, { $0 == "ª" }, allowEmptySlices: true)
 		
 		name = parts[0]
 		foods = []
@@ -291,7 +299,8 @@ class FoodInfo {
 	
 	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
 	init(formattedString: String) {
-		var parts = split(formattedString, { $0 == "°" }, allowEmptySlices: true)
+		let parts = formattedString.componentsSeparatedByString("°")
+//		var parts = split(formattedString, { $0 == "°" }, allowEmptySlices: true)
 		
 		name = parts[0]
 		recipe = parts[1]
@@ -315,7 +324,8 @@ class FoodInfo {
 	}
 	
 	func setNutrition(string: String) {
-		var parts = split(string, { $0 == "•" }, allowEmptySlices: true)
+		let parts = string.componentsSeparatedByString("•")
+//		var parts = split(string, { $0 == "•" }, allowEmptySlices: true)
 		
 		if parts.count == 1 && parts[0] == "" {
 			nutrition = []
@@ -346,7 +356,8 @@ class MainFoodInfo: FoodInfo {
 	
 	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
 	override init(formattedString: String) {
-		var parts = split(formattedString, { $0 == "|" } )
+		let parts = formattedString.componentsSeparatedByString("|")
+//		var parts = split(formattedString, { $0 == "|" } )
 		
 		super.init(formattedString: parts[0])
 		withFood = parts.count == 2 ? SubFoodInfo(formattedString: parts[1]) : nil
@@ -362,7 +373,8 @@ class MainFoodInfo: FoodInfo {
 	}
 	
 	class func isMain(formattedString: String) -> Bool {
-		var parts = split(formattedString, { $0 == "|" } )
+		let parts = formattedString.componentsSeparatedByString("|")
+//		var parts = split(formattedString, { $0 == "|" } )
 		return parts.count == 2
 	}
 }

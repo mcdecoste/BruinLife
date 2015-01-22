@@ -53,7 +53,9 @@ class ServingsTableViewController: UITableViewController {
 		// add in the various foods
 		for food in foodItems {
 			for (index, nutr) in enumerate(food.info().nutrition) {
-				measures[index] += nutr.measure.toInt()! * Int(food.servings)
+				if let measure = nutr.measure.toInt() {
+					measures[index] += measure * Int(food.servings)
+				}
 			}
 		}
 		

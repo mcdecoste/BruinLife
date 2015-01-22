@@ -76,13 +76,13 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		
 		// temp to speed things up
 		let day = exampleDay(NSDate())
-		week = [day]
+		week = [day, day, day, day, day, day, day]
 		
 //		for index in 0...6 {
 //			var daysDate = NSDate(timeIntervalSinceNow: Double(index * Int(timeInDay)))
-////			week.append(exampleDay(daysDate))
+//			week.append(exampleDay(daysDate))
 //			
-//			week.append(changeDateOfDay(day, toDate: daysDate))
+////			week.append(changeDateOfDay(day, toDate: daysDate))
 //		}
 		
 		return week
