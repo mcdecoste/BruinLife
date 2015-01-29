@@ -10,9 +10,7 @@ import UIKit
 
 class MenuTableViewCell: FoodTableViewCell {
 	var collectionView: UICollectionView?
-	
 	var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Light))
-//	var vibrancyView = UIVisualEffectView(effect: UIVibrancyEffect(forBlurEffect: UIBlurEffect(style: .Light)))
 	
 	override func updateDisplay() {
 		// do things to update the display for the new information
@@ -25,9 +23,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		collectionView?.reloadData()
 		
 		blurView.frame = bounds
-//		vibrancyView.frame = (collectionView?.bounds)!
 	}
-	
 	
 	/// Preferred method for setting information and date, as this also changes the display
 	override func changeInfo(info: RestaurantInfo, andDate date: NSDate, isHall: Bool) {
@@ -59,16 +55,13 @@ class MenuTableViewCell: FoodTableViewCell {
 		clipsToBounds = true
 		
 		collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: HorizontalFlow())
-		collectionView?.registerClass(FoodCollectionViewCell.self, forCellWithReuseIdentifier: "foodDisplay") // is this right?
+		collectionView?.registerClass(FoodCollectionViewCell.self, forCellWithReuseIdentifier: "foodDisplay")
 		collectionView?.registerClass(SectionCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "headerCell")
 		collectionView?.backgroundView = blurView
 		collectionView?.backgroundColor = .clearColor()
 		collectionView?.alwaysBounceHorizontal = true
 		collectionView?.alwaysBounceVertical = false
 		
-//		addSubview(blurView)
-//		blurView.contentView.addSubview(vibrancyView)
-//		vibrancyView.contentView.addSubview(collectionView!)
 		addSubview(collectionView!)
     }
 }

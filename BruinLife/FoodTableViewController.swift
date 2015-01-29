@@ -36,11 +36,20 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 //		}
 //	}()
 	
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		
+		tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "EmptyCell")
+	}
+	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		tableView.separatorStyle = .None
-		for cell in tableView.visibleCells() as Array<FoodTableViewCell> {
-			cell.updateDisplay()
+		
+		if hasData() {
+			for cell in tableView.visibleCells() as Array<FoodTableViewCell> {
+				cell.updateDisplay()
+			}
 		}
 	}
 	
@@ -61,30 +70,48 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	
+	func hasData() -> Bool {
+		return information.meals.count != 0
+	}
+	
 	// MARK: - Table view data source
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 		return indexPathHasFoodDisplay(indexPath) ? CGFloat(kFoodDisplayHeight) : CGFloat(kRestCellHeight)
 	}
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		return information.meals.count // Return the number of sections.
+		return hasData() ? information.meals.count : 1
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+		if !hasData() { return 1 }
+		
 		var currDate = information.date
 		var sectionMeal = dateMeals[section]
 		var mealInfo = (information.meals[sectionMeal])!
 		
 		var rowCount = mealInfo.halls.count
 		if (hasInlineFoodDisplay() && displayIndexPath.section == section) { rowCount++ }
+		
 		return rowCount
 	}
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		return dateMeals[section].rawValue
+		return hasData() ? dateMeals[section].rawValue : ""
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+		if !hasData() {
+			var cell = tableView.dequeueReusableCellWithIdentifier("EmptyCell")! as UITableViewCell
+			
+			cell.textLabel?.text = "Loading, please hold"
+			cell.accessoryView = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+			(cell.accessoryView as UIActivityIndicatorView).startAnimating()
+			
+			return cell
+		}
+		
+		
 		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row && displayIndexPath.section == indexPath.section
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
 		
@@ -134,6 +161,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				var restaurant = (allHalls[hallForRow])!
 				
 				displayCell?.changeInfo(restaurant, andDate: information.date, isHall: isHall)
+				displayCell!.collectionView?.invalidateIntrinsicContentSize()
+				displayCell!.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), atScrollPosition: .Left, animated: true)
 			}
 		}
 	}
@@ -194,7 +223,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: ScrollViewDelegate
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
-		if scrollView == tableView {
+		if scrollView == tableView && hasData() {
 			for cell in (tableView.visibleCells() as Array<FoodTableViewCell>) {
 				var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
 				cell.parallaxImageWithScrollPercent(percent)
@@ -222,7 +251,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		
-//		println((food?.name)! + " " + (food?.type.rawValue)!)
 		foodVC.setFood(food!, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.information)!)
 	}
 	
@@ -245,7 +273,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-		return (displayCell?.information?.sections.count)!
+		return displayCell!.information!.sections.count
 	}
 	
 	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
@@ -253,8 +281,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		header.setTitle((displayCell?.information?.sections[indexPath.section].name)!)
 		
 		var flow = collectionView.collectionViewLayout as HorizontalFlow
-		while (flow.headerWidths.count) - indexPath.section < 1 {
-			flow.headerWidths.append(240.0)
+		while flow.headerWidths.count - indexPath.section < 1 {
+			flow.headerWidths.append(240)
 		}
 		flow.headerWidths[indexPath.section] = header.title.frame.width
 		

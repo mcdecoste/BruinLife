@@ -9,79 +9,71 @@
 import UIKit
 
 class FoodCollectionViewCell: UICollectionViewCell {
-	var food: MainFoodInfo
-	var nameLabel: UILabel
-	var typeLabel: UILabel
-	var extraLabel: UILabel
+	var food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
+	var nameLabel = UILabel()
+	var typeLabel = UILabel()
+	var extraLabel = UILabel()
 	
 	override init(frame: CGRect) {
-		food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
-		nameLabel = UILabel(frame: frame)
-		typeLabel = UILabel(frame: frame)
-		extraLabel = UILabel(frame: frame)
-		
 		super.init(frame: frame)
 		
 		// establish views
 		nameLabel.font = .systemFontOfSize(18) // 43 points for two rows (17 leftover)
-//		nameLabel.minimumScaleFactor = 0.8
 		nameLabel.textAlignment = .Center
 		nameLabel.numberOfLines = 0
 		nameLabel.lineBreakMode = .ByWordWrapping
 		nameLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
-//		nameLabel.lineBreakMode = .ByTruncatingTail
+		nameLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
 		
 		typeLabel.font = .systemFontOfSize(12)
 		typeLabel.textAlignment = .Left
 		typeLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
+		typeLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
 		
 		extraLabel.font = .systemFontOfSize(12)
 		extraLabel.textAlignment = .Right
 		extraLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
+		extraLabel.numberOfLines = 0
+		extraLabel.lineBreakMode = .ByWordWrapping
+		extraLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
 		
-		addSubview(nameLabel)
-		addSubview(typeLabel)
-		addSubview(extraLabel)
-//		backgroundColor = UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 0.4)
+		contentView.addSubview(nameLabel)
+		contentView.addSubview(typeLabel)
+		contentView.addSubview(extraLabel)
+		
+		contentView.addConstraint(NSLayoutConstraint(item: nameLabel, attribute: .CenterX, relatedBy: .Equal, toItem: contentView, attribute: .CenterX, multiplier: 1, constant: 0))
+		
+		addConstraint("H:|-(>=4)-[name]-(>=4)-|")
+		addConstraint("H:|-4-[type]-(>=4)-[extra]-4-|")
+		addConstraint("V:|-0-[name]-0-[type]-(>=0)-|")
+		addConstraint("V:|-0-[name]-0-[extra]-(>=0)-|")
 	}
 	
 	func setFood(food: MainFoodInfo) {
 		self.food = food
-		let sideInset: CGFloat = 4.0
-		let bottomInset: CGFloat = 2.0
 		let subDisplayAlpha: CGFloat = 1.0
-		let prefSize = preferredSize()
 		
-		// arrange view
+		// update information
 		nameLabel.text = food.name
-		nameLabel.frame.size = nameLabel.textRectForBounds(bounds, limitedToNumberOfLines: 2).size
-		nameLabel.center = CGPoint(x: prefSize.width / 2.0, y: 21.5)
 		
 		typeLabel.text = food.type.rawValue
-		typeLabel.frame.size = typeLabel.textRectForBounds(bounds, limitedToNumberOfLines: typeLabel.numberOfLines).size
-//		typeLabel.frame.origin = CGPoint(x: sideInset, y: prefSize.height - typeLabel.frame.size.height - bottomInset)
-		typeLabel.frame.origin = CGPoint(x: sideInset, y: nameLabel.frame.maxY + 0.0)
 		typeLabel.textColor = food.type.displayColor(subDisplayAlpha)
 		
-		if food.withFood != nil {
-			extraLabel.text = "With " + (food.withFood?.name)!
-			extraLabel.textColor = (food.withFood?.type.displayColor(subDisplayAlpha))!
+		if let withFood = food.withFood {
+			extraLabel.text = "With " + withFood.name
+			extraLabel.textColor = withFood.type.displayColor(subDisplayAlpha)
 		} else {
 			extraLabel.text = ""
-			extraLabel.textColor = FoodType.Regular.displayColor(subDisplayAlpha)
 		}
-		extraLabel.frame.size = extraLabel.textRectForBounds(bounds, limitedToNumberOfLines: extraLabel.numberOfLines).size
-//		extraLabel.frame.origin = CGPoint(x: prefSize.width - extraLabel.frame.size.width - sideInset, y: prefSize.height - extraLabel.frame.size.height - bottomInset)
-		extraLabel.frame.origin = CGPoint(x: prefSize.width - extraLabel.frame.size.width - sideInset, y: nameLabel.frame.maxY + 0.0)
 	}
 	
-	func preferredSize() -> CGSize { return CGSize(width: 240, height: 60) }
-	
 	required init(coder aDecoder: NSCoder) {
-		food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
-		nameLabel = UILabel(frame: CGRectZero)
-		typeLabel = UILabel(frame: CGRectZero)
-		extraLabel = UILabel(frame: CGRectZero)
 		super.init()
+	}
+	
+	/// Helper method for Auto Layout
+	func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {
+		let views = ["name" : nameLabel, "type" : typeLabel, "extra" : extraLabel]
+		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: views))
 	}
 }

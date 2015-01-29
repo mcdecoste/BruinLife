@@ -12,6 +12,8 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	var headerWidths = [CGFloat]()
 	var collectionContentSize: CGSize = CGSizeZero
 	
+	let rowsPerCol: CGFloat = 3
+	
 	override init() {
 		super.init()
 		setupHelper()
@@ -23,22 +25,20 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	}
 	
 	override func prepareLayout() {
-		var numSections: Int = (self.collectionView?.numberOfSections())!
-		var rowsPerSection = [Int]()
-		for sectNum in 0..<numSections {
-			rowsPerSection.append((self.collectionView?.numberOfItemsInSection(sectNum))!)
+		let numSections = collectionView!.numberOfSections()
+		var sectionCount = [Int]()
+		for section in 0 ..< numSections {
+			sectionCount.append(collectionView!.numberOfItemsInSection(section))
 		}
 		
 		var width: CGFloat = 0
-		
-		for section in 0..<numSections {
-			var numCol: Int = Int(rowsPerSection[section] / 3) + ((rowsPerSection[section] % 3 == 0) ? 0 : 1)
-			width += (CGFloat(numCol) * itemSize.width) + (sectionInset.left + sectionInset.right)
-			width += CGFloat((numCol == 0) ? 0 : numCol - 1) * minimumLineSpacing
-			
+		for section in 0 ..< numSections {
+			var numCol = ceil(CGFloat(sectionCount[section]) / rowsPerCol)
+			width += numCol * itemSize.width + sectionInset.left + sectionInset.right
+			width += numCol * minimumLineSpacing
 		}
 		
-		collectionContentSize = CGSize(width: width, height: 220.0)
+		collectionContentSize = CGSize(width: width, height: 220)
 	}
 	
 	override func collectionViewContentSize() -> CGSize {
@@ -47,7 +47,6 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	
 	override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
 		var answer = super.layoutAttributesForElementsInRect(rect)! as Array<UICollectionViewLayoutAttributes>
-		
 		var sectNoSupp = [Int]()
 		
 		// count the section headers
@@ -91,26 +90,22 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	func setupHelper() {
 		scrollDirection = .Horizontal
 		headerReferenceSize = CGSize(width: 10, height: 26)
-		itemSize = CGSize(width: 240, height: 60)
-		minimumInteritemSpacing = 4.0
-		minimumLineSpacing = 10.0 // not super set clean yet
-		sectionInset = UIEdgeInsets(top: 30.0, left: 0.0, bottom: 2.0, right: 40.0)
+		itemSize = CGSize(width: 200, height: 60)
+		minimumInteritemSpacing = 4
+		minimumLineSpacing = 10 // not super set clean yet
+		sectionInset = UIEdgeInsets(top: 30, left: 0, bottom: 0, right: 10)
 	}
 	
 	func frameForHeaderLayout(layout: UICollectionViewLayoutAttributes) -> CGRect {
-		var indexPath = layout.indexPath
-		var frame = layout.frame
+		let indexPath = layout.indexPath
+		let itemIndex = max(0, collectionView!.numberOfItemsInSection(indexPath.section) - 1)
 		
-		let numItemsInSection = self.collectionView?.numberOfItemsInSection(indexPath.section)
+		let firstAttr = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: indexPath.section))
+		let lastAttr = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: itemIndex, inSection: indexPath.section))
 		
-		var firstCellAttributes = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: 0, inSection: indexPath.section))
-		var lastCellAttributes = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: max(0, (numItemsInSection! - 1)), inSection: indexPath.section))
+		let width = headerWidths.count - 1 >= indexPath.section ? headerWidths[indexPath.section] : 240
+		let x = min(max(collectionView!.contentOffset.x + 4, firstAttr.frame.minX), lastAttr.frame.maxX - width)
 		
-		var width = (headerWidths.count - 1 >= indexPath.section) ? headerWidths[indexPath.section] : 240
-		var minSpacingX: CGFloat = 4.0
-		var xOne = max((self.collectionView?.contentOffset.x)! + minSpacingX, (firstCellAttributes.frame.minX))
-		var x = min(xOne, lastCellAttributes.frame.maxX - frame.size.width)
-		
-		return CGRect(x: x, y: frame.origin.y, width: width, height: frame.size.height)
+		return CGRect(x: x, y: layout.frame.origin.y, width: width, height: layout.frame.height)
 	}
 }

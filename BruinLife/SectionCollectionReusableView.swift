@@ -17,7 +17,6 @@ class SectionCollectionReusableView: UICollectionReusableView {
 		title.font = .systemFontOfSize(18)
 		title.textColor = UIColor(white: 1.0, alpha: 0.7)
 		addSubview(title)
-//		backgroundColor = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 0.4)
 	}
 	
 	required init(coder aDecoder: NSCoder) {

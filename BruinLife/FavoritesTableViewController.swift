@@ -25,7 +25,7 @@ class FavoritesTableViewController: UITableViewController {
         super.viewDidLoad()
 		
 		navigationItem.title = "Favorites"
-		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editTable")
+		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editTable") // editButtonItem()
 		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
     }
 	

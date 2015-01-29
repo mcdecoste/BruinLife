@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CloudKit
 
 class Time {
 	var hour: Int
@@ -19,16 +20,20 @@ class Time {
 	}
 	
 	init(hoursString: String) {
-		// before	: = hour	|	after	: = minute	|	last two characters = am/pm
-		var colonRange = hoursString.rangeOfString(":")
-		var remainder = hoursString.substringFromIndex((colonRange?.endIndex)!)
-		var isPM = remainder.substringFromIndex((remainder.rangeOfString("m")?.startIndex.predecessor())!) == "pm"
+		var formatter = NSDateFormatter()
+		formatter.dateFormat = "h:mm a"
+		let comps = NSCalendar.currentCalendar().components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: formatter.dateFromString(hoursString)!)
+		self.hour = comps.hour + comps.hour < 7 ? 24 : 0
+		self.minute = comps.minute
+	}
+	
+	init(hoursString: String, date: NSDate) {
+		var formatter = NSDateFormatter()
+		formatter.dateFormat = "h:mm a"
+		let interval = formatter.dateFromString(hoursString)!.timeIntervalSinceDate(date)
 		
-		self.hour = (hoursString.substringToIndex((colonRange?.startIndex)!) as NSString).integerValue + (isPM ? 12 : 0)
-		self.minute = (remainder.substringToIndex((colonRange?.startIndex.predecessor())!) as NSString).integerValue
-		
-		if self.hour % 12 == 0 { self.hour -= 12 }
-		if self.hour < 7 { self.hour += 24 }
+		self.hour = Int(interval) / 3600
+		self.minute = Int(interval % 3600) / 60
 	}
 	
 	func timeDateForDate(dayDate: NSDate?) -> NSDate? {
@@ -36,19 +41,10 @@ class Time {
 		return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())?.dateByAddingTimeInterval(interval)
 	}
 	
-	// TODO: reimplement with dateformatter
 	func displayString() -> String {
-		let AMPM = ((hour/12) == 0 || (hour/12) == 2) ? "AM" : "PM"
-		var displayHour = hour % 12
-		if displayHour == 0 {
-			displayHour = 12
-		}
-		
-		if minute < 10 {
-			return "\(displayHour):0\(minute) \(AMPM)"
-		} else {
-			return "\(displayHour):\(minute) \(AMPM)"
-		}
+		var formatter = NSDateFormatter()
+		formatter.dateFormat = "h:mm a"
+		return formatter.stringFromDate(timeDateForDate(NSDate())!)
 	}
 }
 
@@ -114,19 +110,29 @@ enum Halls: String {
 class DayInfo {
 	var date = NSDate()
 	var meals: Dictionary<MealType, MealInfo> = [:]
+	
 	init() {
 		
+	}
+	
+	init(record: CKRecord) {
+		date = record.objectForKey("Day") as NSDate
+		let formString = NSString(data: record.objectForKey("Data") as NSData, encoding: NSUTF8StringEncoding) as String
+		let parts = formString.componentsSeparatedByString("ﬂ")
+		for part in parts {
+			let dictParts = part.componentsSeparatedByString("Ø")
+			let meal = MealType(rawValue: dictParts[0])!
+			let information = MealInfo(formattedString: dictParts[1])
+			meals[meal] = information
+		}
 	}
 	
 	init(date: NSDate = NSDate(), formattedString: String) {
 		self.date = date
 		self.meals = [:]
 		let parts = formattedString.componentsSeparatedByString("ﬂ")
-//		let parts = split(formattedString, { $0 == "ﬂ" })
 		for part in parts {
 			let dictParts = part.componentsSeparatedByString("Ø")
-//			let dictParts = split(part, { $0 == "Ø" })
-			
 			let meal = MealType(rawValue: dictParts[0])!
 			let information = MealInfo(formattedString: dictParts[1])
 			meals[meal] = information
@@ -161,10 +167,8 @@ class MealInfo {
 	init(formattedString: String) {
 		halls = [:]
 		let parts = formattedString.componentsSeparatedByString("‡")
-//		let parts = split(formattedString, { $0 == "‡" })
 		for part in parts {
 			let dictParts = part.componentsSeparatedByString("¨")
-//			let dictParts = split(part, { $0 == "¨" })
 			let hall = Halls(rawValue: dictParts[0])!
 			let information = RestaurantInfo(formattedString: dictParts[1])
 			halls[hall] = information
@@ -199,16 +203,12 @@ class RestaurantInfo {
 	
 	init(formattedString: String) {
 		let parts = formattedString.componentsSeparatedByString("·")
-//		let parts = split(formattedString, { $0 == "·" })
-		
 		hall = Halls(rawValue: parts[0])!
 		
 		let openParts = parts[1].componentsSeparatedByString("-")
-//		let openParts = split(parts[1], { $0 == "-" })
 		openTime = Time(hour: openParts[0].toInt()!, minute: openParts[1].toInt()!)
 		
 		let closeParts = parts[2].componentsSeparatedByString("-")
-//		let closeParts = split(parts[2], { $0 == "-" })
 		closeTime = Time(hour: closeParts[0].toInt()!, minute: closeParts[1].toInt()!)
 		
 		sections = []
@@ -244,8 +244,6 @@ class SectionInfo {
 	
 	init(formattedString: String) {
 		let parts = formattedString.componentsSeparatedByString("ª")
-//		let parts = split(formattedString, { $0 == "ª" }, allowEmptySlices: true)
-		
 		name = parts[0]
 		foods = []
 		for part in parts[1..<parts.count] {
@@ -300,8 +298,7 @@ class FoodInfo {
 	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
 	init(formattedString: String) {
 		let parts = formattedString.componentsSeparatedByString("°")
-//		var parts = split(formattedString, { $0 == "°" }, allowEmptySlices: true)
-		
+
 		name = parts[0]
 		recipe = parts[1]
 		type = FoodType(rawValue: parts[2])!
@@ -325,7 +322,6 @@ class FoodInfo {
 	
 	func setNutrition(string: String) {
 		let parts = string.componentsSeparatedByString("•")
-//		var parts = split(string, { $0 == "•" }, allowEmptySlices: true)
 		
 		if parts.count == 1 && parts[0] == "" {
 			nutrition = []
@@ -357,8 +353,6 @@ class MainFoodInfo: FoodInfo {
 	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
 	override init(formattedString: String) {
 		let parts = formattedString.componentsSeparatedByString("|")
-//		var parts = split(formattedString, { $0 == "|" } )
-		
 		super.init(formattedString: parts[0])
 		withFood = parts.count == 2 ? SubFoodInfo(formattedString: parts[1]) : nil
 	}
@@ -374,7 +368,6 @@ class MainFoodInfo: FoodInfo {
 	
 	class func isMain(formattedString: String) -> Bool {
 		let parts = formattedString.componentsSeparatedByString("|")
-//		var parts = split(formattedString, { $0 == "|" } )
 		return parts.count == 2
 	}
 }
