@@ -2,6 +2,14 @@
 
 import UIKit
 
+let string = "B70Item"
+let char = string[string.startIndex]
+char == "B"
+
+if string.rangeOfString("Item") != nil {
+	println("yes")
+}
+
 //var format1 = "M/d"
 //var format2 = "MMM d"
 //var formatter = NSDateFormatter()

@@ -140,9 +140,9 @@ class FavoritesTableViewController: UITableViewController {
 		return false
 	}
 	
-	override func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-		return .None
-	}
+//	override func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
+//		return .None
+//	}
 	
 	// Override to support editing the table view.
 	override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
