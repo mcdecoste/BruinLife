@@ -247,7 +247,9 @@ class SectionInfo {
 		name = parts[0]
 		foods = []
 		for part in parts[1..<parts.count] {
-			foods.append(MainFoodInfo(formattedString: part))
+			if part != "" {
+				foods.append(MainFoodInfo(formattedString: part))
+			}
 		}
 	}
 	
@@ -353,14 +355,18 @@ class MainFoodInfo: FoodInfo {
 	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
 	override init(formattedString: String) {
 		let parts = formattedString.componentsSeparatedByString("|")
-		super.init(formattedString: parts[0])
+		if parts[0] == "" {
+			super.init(formattedString: formattedString)
+		} else {
+			super.init(formattedString: parts[0])
+		}
+		
 		withFood = parts.count == 2 ? SubFoodInfo(formattedString: parts[1]) : nil
 	}
 	
 	override func foodString() -> String {
 		if let with = withFood {
-			let parts: Array<String> = [super.foodString(), with.foodString()]
-			return "|".join(parts)
+			return "\(super.foodString())|\(with.foodString())"
 		} else {
 			return super.foodString()
 		}

@@ -268,7 +268,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var restaurant = displayCell?.information
 		var food = restaurant?.sections[indexPath.section].foods[indexPath.row]
 		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as FoodCollectionViewCell
-		cell.setFood(restaurant!.sections[indexPath.section].foods[indexPath.row])
+		cell.setFood(restaurant!.sections[indexPath.section].foods[indexPath.row], isHall: isHall)
 		return cell
 	}
 	

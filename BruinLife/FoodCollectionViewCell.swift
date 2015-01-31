@@ -49,7 +49,7 @@ class FoodCollectionViewCell: UICollectionViewCell {
 		addConstraint("V:|-0-[name]-0-[extra]-(>=0)-|")
 	}
 	
-	func setFood(food: MainFoodInfo) {
+	func setFood(food: MainFoodInfo, isHall: Bool) {
 		self.food = food
 		let subDisplayAlpha: CGFloat = 1.0
 		
@@ -60,7 +60,7 @@ class FoodCollectionViewCell: UICollectionViewCell {
 		typeLabel.textColor = food.type.displayColor(subDisplayAlpha)
 		
 		if let withFood = food.withFood {
-			extraLabel.text = "With " + withFood.name
+			extraLabel.text = (isHall ? "With " : "") + withFood.name
 			extraLabel.textColor = withFood.type.displayColor(subDisplayAlpha)
 		} else {
 			extraLabel.text = ""
