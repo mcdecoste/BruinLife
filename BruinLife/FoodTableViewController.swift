@@ -7,7 +7,13 @@
 //
 
 import UIKit
-//import CoreData
+import CoreData
+import CloudKit
+
+enum FoodControllerLoadState: Int {
+	case Loading = 0
+	case Failed = 1
+}
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 	let kRestCellID = "FoodCell"
@@ -24,17 +30,19 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var pageIndex = 0
 	var isHall = true
 	
+	var loadState: FoodControllerLoadState = .Loading
+	
 	// Core Data
 	
-//	lazy var managedObjectContext : NSManagedObjectContext? = {
-//		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-//		if let managedObjectContext = appDelegate.managedObjectContext {
-//			return managedObjectContext
-//		}
-//		else {
-//			return nil
-//		}
-//	}()
+	lazy var managedObjectContext : NSManagedObjectContext? = {
+		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		if let managedObjectContext = appDelegate.managedObjectContext {
+			return managedObjectContext
+		}
+		else {
+			return nil
+		}
+	}()
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -51,6 +59,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				cell.updateDisplay()
 			}
 		}
+		
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: NSManagedObjectContextObjectsDidChangeNotification, object: managedObjectContext!)
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -60,7 +70,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			var currMeal = currentMeal()
 			var sectionToShow = 0
 			
-			for (index, meal) in enumerate(orderedMeals(Array(information.meals.keys))) {
+			for (index, meal) in enumerate(orderedMeals(information.meals.keys.array)) {
 				if meal.equalTo(currMeal) {
 					sectionToShow = index
 					break
@@ -68,6 +78,56 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			}
 			tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 		}
+	}
+	
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		
+		NSNotificationCenter.defaultCenter().removeObserver(self, name: NSManagedObjectContextObjectsDidChangeNotification, object: self.managedObjectContext!)
+	}
+	
+	// MARK: - Core Data
+	
+	func handleDataChange(notification: NSNotification) {
+		let updated = notification.userInfo![NSUpdatedObjectsKey] as NSSet
+		//		let deleted = notification.userInfo![NSDeletedObjectsKey] as NSSet
+		let inserted = notification.userInfo![NSInsertedObjectsKey] as NSSet
+		
+		let changed: Array<AnyObject> = inserted.allObjects + updated.allObjects
+		
+		//		let displayedInfoDate = dormVCfromNavVC(pageController.viewControllers[0] as UINavigationController).information.date
+		// check created and updated objects
+		for info in changed {
+			// if the changed object is for the shown index, update the display
+			println()
+			
+			// if load succeeded, hide the refresh control
+			refreshControl = nil
+		}
+	}
+	
+	
+	// MARK: - Helpers
+	
+	func loadFailed() {
+		loadState = .Failed
+		tableView.reloadData()
+		
+		if let refresher = refreshControl {
+			refresher.endRefreshing()
+		} else {
+			refreshControl = UIRefreshControl()
+			refreshControl!.addTarget(self, action: "retryLoad", forControlEvents: .ValueChanged)
+		}
+	}
+	
+	func retryLoad() {
+		CloudManager.sharedInstance.fetchRecords("DiningDay", completion: { (records: Array<CKRecord>) -> Void in
+			if records == [] {
+				// handle error case
+				self.loadFailed()
+			}
+		})
 	}
 	
 	func hasData() -> Bool {
@@ -104,10 +164,11 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		if !hasData() {
 			var cell = tableView.dequeueReusableCellWithIdentifier("EmptyCell")! as UITableViewCell
 			
-			cell.textLabel?.text = "Loading, please hold"
-			cell.accessoryView = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-			(cell.accessoryView as UIActivityIndicatorView).startAnimating()
-			
+			cell.textLabel?.text = loadState == .Loading ? "Loading menu information" : "Load failed. Pull down to retry."
+			if loadState == .Loading {
+				cell.accessoryView = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+				(cell.accessoryView as UIActivityIndicatorView).startAnimating()
+			}
 			return cell
 		}
 		
@@ -116,8 +177,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
 		
 		var allHalls = (information.meals[dateMeals[Int(indexPath.section)]]?.halls)!
-		var hallForRow = Array(allHalls.keys)[modelRow]
-		var restaurant = (allHalls[hallForRow])!
+		var restaurant = (allHalls[allHalls.keys.array[modelRow]])!
 		
 		var cellID = kRestCellID
 		var selectionStyle: UITableViewCellSelectionStyle = .None
@@ -157,7 +217,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				var displayRow = displayIndexPath.row - 1
 				
 				var allHalls = (information.meals[dateMeals[Int(displayIndexPath.section)]]?.halls)!
-				var hallForRow = Array(allHalls.keys)[displayRow]
+				var hallForRow = allHalls.keys.array[displayRow]
 				var restaurant = (allHalls[hallForRow])!
 				
 				displayCell?.changeInfo(restaurant, andDate: information.date, isHall: isHall)

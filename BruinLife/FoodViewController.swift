@@ -127,8 +127,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		
 		fetchFoods()
 	}
-
-    override func didReceiveMemoryWarning() {
+	
+	override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }

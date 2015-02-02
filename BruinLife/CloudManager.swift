@@ -10,13 +10,28 @@ import UIKit
 import Foundation
 import CloudKit
 
+import CoreData
+
+private let _CouldManagerSharedInstance = CloudManager()
+
 class CloudManager: NSObject {
 	let HallRecordType = "DiningDay"
 	let DateField = "Day"
 	let DataField = "Data"
+	let HoursField = "Hours"
 	
 	private var container: CKContainer
 	private var publicDB: CKDatabase
+	
+	lazy var managedObjectContext : NSManagedObjectContext? = {
+		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		if let moc = appDelegate.managedObjectContext { return moc }
+		else { return nil }
+		}()
+	
+	class var sharedInstance: CloudManager {
+		return _CouldManagerSharedInstance
+	}
 	
 	override init() {
 		container = CKContainer.defaultContainer()
@@ -132,25 +147,59 @@ class CloudManager: NSObject {
 		query.sortDescriptors = [NSSortDescriptor(key: DateField, ascending: true)]
 		
 		var operation = CKQueryOperation(query: query)
-		operation.desiredKeys = [DateField, DataField]
+		operation.desiredKeys = [DateField, DataField, HoursField]
 		
 		var results = [CKRecord]()
 		
-		operation.recordFetchedBlock = { (record) -> Void in // CKRecord!
+		operation.recordFetchedBlock = { (record) -> Void in
 			results.append(record)
 		}
-		operation.queryCompletionBlock = { (cursor, error) in // (cursor: CKQueryCursor!, error: NSError!)
+		operation.queryCompletionBlock = { (cursor, error) in
 			if error != nil {
 				println("Fetching record failed")
-				abort()
+				// TODO: handle this and all other errors better
+				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+					completion(records: [])
+				})
 			} else {
 				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+					self.saveDiningDay(results)
 					completion(records: results)
 				})
 			}
 		}
 		
 		publicDB.addOperation(operation)
+	}
+	
+	// MARK: - Core Data
+	func saveDiningDay(records: [CKRecord]) {
+		if let moc = managedObjectContext {
+			for record in records {
+				DiningDay.dataFromInfo(moc, record: record)
+			}
+		}
+	}
+	
+	/// Can either grab the food or delete something
+	func fetchDiningDay(date: NSDate) -> String {
+		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
+		fetchRequest.predicate = NSPredicate(format: "day == %@", comparisonDate(date))
+		
+		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
+			for result in fetchResults {
+				return result.data
+			}
+		}
+		
+		return ""
+	}
+	
+	func save() {
+		var error: NSError?
+		if managedObjectContext!.save(&error) {
+			if error != nil { println(error?.localizedDescription) }
+		}
 	}
 	
 //	func queryForRecord(referenceName: String, completion: (records: Array<CKRecord>) -> Void) {

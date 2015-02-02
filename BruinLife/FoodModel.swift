@@ -107,6 +107,82 @@ enum Halls: String {
 	}
 }
 
+class HoursInfo {
+	var hours: Dictionary<MealType, MealHoursInfo>
+	
+	init(dictionary: Dictionary<MealType, Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>>) {
+		hours = [:]
+		for meal in dictionary.keys.array {
+			hours[meal] = MealHoursInfo(dictionary: dictionary[meal]!)
+		}
+	}
+	
+	init(formattedString: String) {
+		hours = [:]
+		
+		for mealStr in formattedString.componentsSeparatedByString("‰") {
+			var mealStrParts = mealStr.componentsSeparatedByString("Ø")
+			hours[MealType(rawValue: mealStrParts[0])!] = MealHoursInfo(formattedString: mealStrParts[1])
+		}
+	}
+	
+	func formattedString() -> String {
+		var string = ""
+		for key in hours.keys.array {
+			if string != "" { string += "‰" }
+			string += "\(key.rawValue)Ø\(hours[key]!.formattedString())"
+		}
+		return string
+	}
+}
+
+class MealHoursInfo {
+	var hours: Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>
+	
+	init(dictionary: Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>) {
+		hours = dictionary
+	}
+	
+	init(formattedString: String) {
+		hours = [:]
+		
+		for hallStr in formattedString.componentsSeparatedByString("Í") {
+			let hallStrParts = hallStr.componentsSeparatedByString("ˆ")
+			
+			let hallName = hallStrParts[0]
+			if hallStrParts[1] == "C" {
+				hours[Halls(rawValue: hallName)!] = (false, nil, nil)
+			} else {
+				let hourParts = hallStrParts[1].componentsSeparatedByString("~")
+				
+				let openParts = hourParts[0].componentsSeparatedByString("-")
+				let openTime = Time(hour: openParts[0].toInt()!, minute: openParts[1].toInt()!)
+				
+				let closeParts = hourParts[1].componentsSeparatedByString("-")
+				let closeTime = Time(hour: closeParts[0].toInt()!, minute: closeParts[1].toInt()!)
+				
+				hours[Halls(rawValue: hallName)!] = (true, openTime, closeTime)
+			}
+		}
+	}
+	
+	func formattedString() -> String {
+		var string = ""
+		for key in hours.keys.array {
+			if string != "" { string += "Í" }
+			
+			let (open, openT, closeT) = hours[key]!
+			var form = "C"
+			if open {
+				form = "\(openT!.hour)-\(openT!.minute)~\(closeT!.hour)-\(closeT!.minute)"
+			}
+			
+			string += "\(key.rawValue)ˆ\(form)"
+		}
+		return string
+	}
+}
+
 class DayInfo {
 	var date = NSDate()
 	var meals: Dictionary<MealType, MealInfo> = [:]
@@ -133,9 +209,11 @@ class DayInfo {
 		let parts = formattedString.componentsSeparatedByString("ﬂ")
 		for part in parts {
 			let dictParts = part.componentsSeparatedByString("Ø")
-			let meal = MealType(rawValue: dictParts[0])!
-			let information = MealInfo(formattedString: dictParts[1])
-			meals[meal] = information
+			if dictParts.count == 2 {
+				let meal = MealType(rawValue: dictParts[0])!
+				let information = MealInfo(formattedString: dictParts[1])
+				meals[meal] = information
+			}
 		}
 	}
 	
@@ -379,7 +457,21 @@ class MainFoodInfo: FoodInfo {
 }
 
 class SubFoodInfo: FoodInfo {
+	override init(name: String, recipe: String, type: FoodType) {
+		super.init(name: name, recipe: recipe, type: type)
+	}
 	
+	override init(formattedString: String) {
+		if formattedString.rangeOfString("°") == nil {
+			super.init(name: formattedString, recipe: "", type: .Regular)
+		} else {
+			super.init(formattedString: formattedString)
+		}
+	}
+	
+	override func foodString() -> String {
+		return recipe == "" ? name : super.foodString()
+	}
 }
 
 enum Nutrient: String { // , Equatable

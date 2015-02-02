@@ -7,29 +7,38 @@
 //
 
 import UIKit
+import CloudKit
 import CoreData
 
 func comparisonDate(date: NSDate) -> NSDate {
 	return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: nil)!
 }
 
-class Day: NSManagedObject {
-	@NSManaged var date: NSDate
-	@NSManaged var string: String
+func comparisonDate(daysInFuture: Int = 0) -> NSDate {
+	return NSCalendar.currentCalendar().dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
+}
+
+class DiningDay: NSManagedObject {
+	@NSManaged var day: NSDate
+	@NSManaged var data: String
+	@NSManaged var hours: String
 	
-	class func foodFromInfo(moc: NSManagedObjectContext, day: DayInfo) -> Day {
-		var request = NSFetchRequest(entityName: "Day")
-		request.predicate = NSPredicate(format: "date == %@", day.date)
+	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> DiningDay {
+		var request = NSFetchRequest(entityName: "DiningDay")
 		
-		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [Day] {
+		let recordDay = comparisonDate(record.objectForKey("Day") as NSDate)
+		request.predicate = NSPredicate(format: "day == %@", recordDay)
+		
+		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [DiningDay] {
 			for result in fetchResults {
 				return result
 			}
 		}
 		
-		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Day", inManagedObjectContext: moc) as Day
-		newItem.string = day.formattedString()
-		newItem.date = comparisonDate(NSDate())
+		var newItem = NSEntityDescription.insertNewObjectForEntityForName("DiningDay", inManagedObjectContext: moc) as DiningDay
+		newItem.hours = NSString(data: record.objectForKey("Hours") as NSData, encoding: NSUTF8StringEncoding) as String
+		newItem.data = NSString(data: record.objectForKey("Data") as NSData, encoding: NSUTF8StringEncoding) as String
+		newItem.day = recordDay
 		
 		return newItem
 	}

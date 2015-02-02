@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "BruinLife/FoodModel.swift"
-            timestampString = "444380134.542136"
+            timestampString = "444542950.519112"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "359"
-            endingLineNumber = "359"
+            startingLineNumber = "435"
+            endingLineNumber = "435"
             landmarkName = "init(formattedString:)"
             landmarkType = "5">
          </BreakpointContent>

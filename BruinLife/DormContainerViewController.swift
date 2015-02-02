@@ -8,14 +8,11 @@
 
 import UIKit
 import CloudKit
+import CoreData
 
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
 	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 0.0]) // good default is 32.0, tight is 0.0
-	var pageInfo = [DayInfo]()
-	var currIndex = 0
 	let pageStoryboardID = "dormTableView"
-	
-	var cloudManager = CloudManager()
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -24,18 +21,14 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		pageController.delegate = self
 		pageController.view.frame = view.bounds
 		
-		pageInfo = nextWeek()
-		
-		cloudManager.fetchRecords("DiningDay", completion: { (records: Array<CKRecord>) -> Void in
-			self.pageInfo = []
-			for record in records {
-				self.pageInfo.append(DayInfo(record: record))
+		CloudManager.sharedInstance.fetchRecords("DiningDay", completion: { (records: Array<CKRecord>) -> Void in
+			if records == [] {
+				// handle error case
+				self.dormVCfromNavVC(self.pageController.viewControllers[0] as UINavigationController).loadFailed()
 			}
-			
-			self.pageController.setViewControllers([self.vcForIndex(self.currIndex)], direction: .Forward, animated: false, completion: nil)
 		})
 		
-		pageController.setViewControllers([vcForIndex(currIndex)], direction: .Forward, animated: false, completion: nil)
+		pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
 		
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)
@@ -47,16 +40,14 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
 		viewController.navigationItem.leftBarButtonItem = nil
 		viewController.navigationItem.rightBarButtonItem = nil
-		var pageVC = dormVCfromNavVC(viewController as UINavigationController)
-		var index = pageVC.pageIndex
+		let index = dormVCfromNavVC(viewController as UINavigationController).pageIndex
 		if index == 0 { return nil }
 		return vcForIndex(index - 1)
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-		var pageVC = dormVCfromNavVC(viewController as UINavigationController)
-		var index = pageVC.pageIndex
-		if index == pageInfo.count - 1 { return nil }
+		let index = dormVCfromNavVC(viewController as UINavigationController).pageIndex
+		if index == 6 { return nil }
 		return vcForIndex(index + 1)
 	}
 	
@@ -67,38 +58,22 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	// UIPageViewControllerDelegate
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
 		if completed {
-			// update the index
-			currIndex = (dormVCfromNavVC(pageViewController.viewControllers[0] as UINavigationController)).pageIndex
+			
 		}
 	}
 	
-	func vcForIndex(index: Int) -> UINavigationController { // DormTableViewController
+	func vcForIndex(index: Int) -> UINavigationController {
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as DormTableViewController
 		vc.pageIndex = index
-		vc.information = pageInfo[index]
-		vc.dateMeals = orderedMeals(Array(vc.information.meals.keys))
+		
+		let date = comparisonDate(daysInFuture: index)
+		let infoStr = CloudManager.sharedInstance.fetchDiningDay(date)
+		vc.information = DayInfo(date: date, formattedString: infoStr)
+		vc.dateMeals = orderedMeals(vc.information.meals.keys.array)
 		vc.dormCVC = self
 		
 		var navVC = UINavigationController(rootViewController: vc)
 		return navVC
-	}
-	
-	func nextWeek() -> Array<DayInfo> {
-		var week: Array<DayInfo> = []
-		
-		for index in 0...6 {
-//			week.append(dayInfo(comparisonDate(NSDate(timeIntervalSinceNow: Double(index * Int(timeInDay))))))
-			week.append(DayInfo()) // TODO: pull in any existing cache in Core Data?
-		}
-		
-//		for index in 0...6 {
-//			var daysDate = NSDate(timeIntervalSinceNow: Double(index * Int(timeInDay)))
-//			week.append(exampleDay(daysDate))
-//			
-////			week.append(changeDateOfDay(day, toDate: daysDate))
-//		}
-		
-		return week
 	}
 	
 	func jumpToFirst() {
