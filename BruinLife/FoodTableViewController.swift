@@ -13,6 +13,7 @@ import CloudKit
 enum FoodControllerLoadState: Int {
 	case Loading = 0
 	case Failed = 1
+	case Expanding = 2
 }
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -24,6 +25,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
+	var informationStr = ""
 	var information = DayInfo()
 	var dateMeals = [MealType]()
 	
@@ -67,6 +69,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		super.viewDidAppear(animated)
 		
 		// Check how much to do this
+		information = DayInfo(date: information.date, formattedString: informationStr)
+		dateMeals = orderedMeals(information.meals.keys.array)
+		tableView.reloadData()
 		refreshParallax()
 		scrollToMeal()
 		refreshParallax()
@@ -78,12 +83,20 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		NSNotificationCenter.defaultCenter().removeObserver(self, name: "NewDayInfoAdded", object: nil)
 	}
 	
+	func setInformationString(string: String) {
+		informationStr = string
+		loadState = .Expanding
+	}
+	
 	// MARK: - Core Data
 	
 	func handleDataChange(notification: NSNotification) {
 		let dDay = notification.userInfo!["newItem"] as DiningDay
 		
 		if dDay.day == comparisonDate() {
+			loadState = .Expanding
+			tableView.reloadData()
+			
 			information = DayInfo(date: dDay.day, formattedString: dDay.data)
 			dateMeals = orderedMeals(information.meals.keys.array)
 			dispatch_async(dispatch_get_main_queue()) {
@@ -176,8 +189,16 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		if !hasData() {
 			var cell = tableView.dequeueReusableCellWithIdentifier("EmptyCell")! as UITableViewCell
 			
-			cell.textLabel?.text = loadState == .Loading ? "Loading menu information" : "Load failed. Pull down to retry."
-			if loadState == .Loading {
+			switch loadState {
+			case .Loading:
+				cell.textLabel?.text = "Loading menu information"
+			case .Failed:
+				cell.textLabel?.text = "Load failed. Pull down to retry."
+			default:
+				cell.textLabel?.text = "Building menu."
+			}
+			
+			if loadState != .Failed {
 				cell.accessoryView = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
 				(cell.accessoryView as UIActivityIndicatorView).startAnimating()
 			}

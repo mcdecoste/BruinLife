@@ -34,7 +34,8 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 			loadMoreDays()
 		}
 		
-		pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
+		// TODO: create empty shell to show for before loading
+		pageController.setViewControllers([UINavigationController()], direction: .Forward, animated: false, completion: nil)
 		
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)
@@ -48,6 +49,12 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		if CloudManager.sharedInstance.findFirstGap() <= 10 {
 			loadMoreDays()
 		}
+	}
+	
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
+		
+		pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: true, completion: nil)
 	}
 	
 	func loadMoreDays() {
@@ -88,9 +95,8 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as DormTableViewController
 		vc.pageIndex = index
 		
-		let date = comparisonDate(daysInFuture: index)
-		let infoStr = CloudManager.sharedInstance.fetchDiningDay(date)
-		vc.information = DayInfo(date: date, formattedString: infoStr)
+		vc.setInformationString(CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index)))
+		vc.information.date = comparisonDate(daysInFuture: index)
 		vc.dateMeals = orderedMeals(vc.information.meals.keys.array)
 		vc.dormCVC = self
 		
