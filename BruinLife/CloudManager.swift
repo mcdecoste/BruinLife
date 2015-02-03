@@ -12,7 +12,7 @@ import CloudKit
 
 import CoreData
 
-private let _CouldManagerSharedInstance = CloudManager()
+private let _CloudManagerSharedInstance = CloudManager()
 
 class CloudManager: NSObject {
 	let HallRecordType = "DiningDay"
@@ -32,7 +32,7 @@ class CloudManager: NSObject {
 		}()
 	
 	class var sharedInstance: CloudManager {
-		return _CouldManagerSharedInstance
+		return _CloudManagerSharedInstance
 	}
 	
 	override init() {
