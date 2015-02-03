@@ -16,9 +16,11 @@ private let _CouldManagerSharedInstance = CloudManager()
 
 class CloudManager: NSObject {
 	let HallRecordType = "DiningDay"
-	let DateField = "Day"
-	let DataField = "Data"
-	let HoursField = "Hours"
+	let CKDateField = "Day"
+	let CKDataField = "Data"
+	let CKHoursField = "Hours"
+	
+	let CDDateField = "day"
 	
 	private var container: CKContainer
 	private var publicDB: CKDatabase
@@ -71,14 +73,14 @@ class CloudManager: NSObject {
 		}
 	}
 	
-	func fetchNewRecords(type: String, completion: (error: NSError!) -> Void) {
+	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
 		fetchRecords(type, completion: completion, startDaysInAdvance: findFirstGap())
 	}
 	
 	func findFirstGap(daysInAdvance: Int = 13) -> Int {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
-		fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "day", ascending: false)] // DateField
+		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) >= %@", comparisonDate())
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: false)] // DateField
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			if fetchResults.count != 0 {
@@ -88,27 +90,30 @@ class CloudManager: NSObject {
 		return 0
 	}
 	
-	func fetchRecords(type: String, completion: (error: NSError!) -> Void, startDaysInAdvance: Int = 0) {
+	private func fetchRecords(type: String, completion: (error: NSError!) -> Void, startDaysInAdvance: Int = 0) {
+		println(startDaysInAdvance)
 		if startDaysInAdvance == 13 {
+			completion(error: NSError())
 			return // don't bother loading further
 		}
 		
 		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
 		let endDate = comparisonDate(daysInFuture: min(13, max(startDaysInAdvance + 3, 6)))
 		
-		var query = CKQuery(recordType: type, predicate: NSPredicate(format: "(\(DateField) >= %@) AND (\(DateField) <= %@)", startDate, endDate))
-		query.sortDescriptors = [NSSortDescriptor(key: DateField, ascending: true)] // important?
+		var query = CKQuery(recordType: type, predicate: NSPredicate(format: "(\(CKDateField) >= %@) AND (\(CKDateField) <= %@)", startDate, endDate))
+		query.sortDescriptors = [NSSortDescriptor(key: CKDateField, ascending: true)] // important?
+		
+		var numResults = 0
 		
 		let operation = CKQueryOperation(query: query)
-		var results = [CKRecord]()
-		
 		operation.recordFetchedBlock = { (record) -> Void in
+			numResults++
 			self.newDiningDay(record)
 		}
 		operation.queryCompletionBlock = { (cursor, error) in
 			dispatch_async(dispatch_get_main_queue(), { () -> Void in
 				self.save()
-				completion(error: error)
+				completion(error: numResults == 0 ? NSError() : error)
 			})
 		}
 		
@@ -116,7 +121,7 @@ class CloudManager: NSObject {
 	}
 	
 	// MARK: - Core Data
-	func newDiningDay(record: CKRecord) {
+	private func newDiningDay(record: CKRecord) {
 		if let moc = managedObjectContext {
 			DiningDay.dataFromInfo(moc, record: record)
 		}
@@ -125,7 +130,7 @@ class CloudManager: NSObject {
 	/// Can either grab the food or delete something
 	func fetchDiningDay(date: NSDate) -> String {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
-		fetchRequest.predicate = NSPredicate(format: "day == %@", comparisonDate(date))
+		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			for result in fetchResults {

@@ -21,15 +21,17 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		pageController.delegate = self
 		pageController.view.frame = view.bounds
 		
-		let firstDayInfo = CloudManager.sharedInstance.fetchDiningDay(comparisonDate())
-		
-		if firstDayInfo == "" {
-			CloudManager.sharedInstance.fetchNewRecords("DiningDay", completion: { (error: NSError!) -> Void in
+		if CloudManager.sharedInstance.fetchDiningDay(comparisonDate()) == "" {
+			CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
 				if error != nil {
 					// handle error case
 					self.dormVCfromIndex(0).loadFailed(error)
+				} else {
+					self.loadMoreDays() // load more days?
 				}
 			})
+		} else {
+			loadMoreDays()
 		}
 		
 		pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
@@ -38,6 +40,18 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		view.addSubview(pageController.view)
 		
 		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		
+		if CloudManager.sharedInstance.findFirstGap() <= 10 {
+			loadMoreDays()
+		}
+	}
+	
+	func loadMoreDays() {
+		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in })
 	}
 	
 	// UIPageViewControllerDataSource

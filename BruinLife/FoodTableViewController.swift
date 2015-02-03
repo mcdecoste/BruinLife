@@ -111,7 +111,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func retryLoad() {
-		CloudManager.sharedInstance.fetchRecords("DiningDay", completion: { (error: NSError!) -> Void in
+		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
 			if error != nil { // handle error case
 				self.loadFailed(error)
 			}
