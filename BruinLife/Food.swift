@@ -40,6 +40,8 @@ class DiningDay: NSManagedObject {
 		newItem.data = NSString(data: record.objectForKey("Data") as NSData, encoding: NSUTF8StringEncoding) as String
 		newItem.day = recordDay
 		
+		NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newItem])
+		
 		return newItem
 	}
 }

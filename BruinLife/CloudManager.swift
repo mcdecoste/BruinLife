@@ -71,113 +71,54 @@ class CloudManager: NSObject {
 		}
 	}
 	
-	func uploadAsset(assetURL: NSURL, completion: (record: CKRecord) -> Void) {
-		var assetRecord = CKRecord(recordType: HallRecordType)
-		assetRecord.setObject(comparisonDate(NSDate()), forKey: DateField)
-		assetRecord.setObject(CKAsset(fileURL: assetURL), forKey: DataField)
+	func fetchNewRecords(type: String, completion: (error: NSError!) -> Void) {
+		fetchRecords(type, completion: completion, startDaysInAdvance: findFirstGap())
+	}
+	
+	func findFirstGap(daysInAdvance: Int = 13) -> Int {
+		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
+		fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "day", ascending: false)] // DateField
 		
-		publicDB.saveRecord(assetRecord, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-			if error != nil {
-				println("Error with uploading an asset")
-				abort()
-			} else {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					completion(record: record)
-				})
+		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
+			if fetchResults.count != 0 {
+				return Int(daysInFuture(fetchResults[0].day))
 			}
-		})
+		}
+		return 0
 	}
 	
-	func addRecord(date: NSDate, formattedString: String, completion: (record: CKRecord) -> Void) {
-		var record = CKRecord(recordType: HallRecordType)
-		record.setObject(comparisonDate(date), forKey: DateField)
-		record.setObject(formattedString.dataUsingEncoding(NSUTF8StringEncoding), forKey: DataField)
+	func fetchRecords(type: String, completion: (error: NSError!) -> Void, startDaysInAdvance: Int = 0) {
+		if startDaysInAdvance == 13 {
+			return // don't bother loading further
+		}
 		
-		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-			if error != nil {
-				println("Error with uploading an asset")
-				abort()
-			} else {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					completion(record: record)
-				})
-			}
-		})
-	}
-	
-	func fetchRecord(recordID: String, completion: (record: CKRecord, error: NSError) -> Void) {
-		publicDB.fetchRecordWithID(CKRecordID(recordName: recordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-			if error != nil {
-				println("Error in fetching")
-				abort()
-			} else {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					completion(record: record, error: error)
-				})
-			}
-		})
-	}
-	
-	func saveRecord(record: CKRecord) {
-		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-			if error != nil {
-				println("Error while saving")
-				abort()
-			} else {
-				println("Save succeeded!")
-			}
-		})
-	}
-	
-	func deleteRecord(record: CKRecord) {
-		publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID: CKRecordID!, error: NSError!) -> Void in
-			if error != nil {
-				println("Error while deleting")
-				abort()
-			} else {
-				println("Delete succeeded")
-			}
-		})
-	}
-	
-	func fetchRecords(type: String, completion: (records: Array<CKRecord>) -> Void, daysInAdvance: Int = 6) {
-		let startDate = comparisonDate(NSDate())
-		let endDate = startDate.dateByAddingTimeInterval(timeInDay * Double(daysInAdvance))
+		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
+		let endDate = comparisonDate(daysInFuture: min(13, max(startDaysInAdvance + 3, 6)))
+		
 		var query = CKQuery(recordType: type, predicate: NSPredicate(format: "(\(DateField) >= %@) AND (\(DateField) <= %@)", startDate, endDate))
-		query.sortDescriptors = [NSSortDescriptor(key: DateField, ascending: true)]
+		query.sortDescriptors = [NSSortDescriptor(key: DateField, ascending: true)] // important?
 		
-		var operation = CKQueryOperation(query: query)
-		operation.desiredKeys = [DateField, DataField, HoursField]
-		
+		let operation = CKQueryOperation(query: query)
 		var results = [CKRecord]()
 		
 		operation.recordFetchedBlock = { (record) -> Void in
-			results.append(record)
+			self.newDiningDay(record)
 		}
 		operation.queryCompletionBlock = { (cursor, error) in
-			if error != nil {
-				println("Fetching record failed")
-				// TODO: handle this and all other errors better
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					completion(records: [])
-				})
-			} else {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					self.saveDiningDay(results)
-					completion(records: results)
-				})
-			}
+			dispatch_async(dispatch_get_main_queue(), { () -> Void in
+				self.save()
+				completion(error: error)
+			})
 		}
 		
 		publicDB.addOperation(operation)
 	}
 	
 	// MARK: - Core Data
-	func saveDiningDay(records: [CKRecord]) {
+	func newDiningDay(record: CKRecord) {
 		if let moc = managedObjectContext {
-			for record in records {
-				DiningDay.dataFromInfo(moc, record: record)
-			}
+			DiningDay.dataFromInfo(moc, record: record)
 		}
 	}
 	
@@ -188,7 +129,9 @@ class CloudManager: NSObject {
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			for result in fetchResults {
-				return result.data
+				if countElements(result.data) > 0 {
+					return result.data
+				}
 			}
 		}
 		
@@ -201,6 +144,76 @@ class CloudManager: NSObject {
 			if error != nil { println(error?.localizedDescription) }
 		}
 	}
+	
+//	func uploadAsset(assetURL: NSURL, completion: (record: CKRecord) -> Void) {
+//		var assetRecord = CKRecord(recordType: HallRecordType)
+//		assetRecord.setObject(comparisonDate(NSDate()), forKey: DateField)
+//		assetRecord.setObject(CKAsset(fileURL: assetURL), forKey: DataField)
+//		
+//		publicDB.saveRecord(assetRecord, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("Error with uploading an asset")
+//				abort()
+//			} else {
+//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//					completion(record: record)
+//				})
+//			}
+//		})
+//	}
+	
+//	func addRecord(date: NSDate, formattedString: String, completion: (record: CKRecord) -> Void) {
+//		var record = CKRecord(recordType: HallRecordType)
+//		record.setObject(comparisonDate(date), forKey: DateField)
+//		record.setObject(formattedString.dataUsingEncoding(NSUTF8StringEncoding), forKey: DataField)
+//		
+//		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("Error with uploading an asset")
+//				abort()
+//			} else {
+//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//					completion(record: record)
+//				})
+//			}
+//		})
+//	}
+	
+//	func fetchRecord(recordID: String, completion: (record: CKRecord, error: NSError) -> Void) {
+//		publicDB.fetchRecordWithID(CKRecordID(recordName: recordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("Error in fetching")
+//				abort()
+//			} else {
+//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//					completion(record: record, error: error)
+//				})
+//			}
+//		})
+//	}
+	
+//	func saveRecord(record: CKRecord) {
+//		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("Error while saving")
+//				abort()
+//			} else {
+//				println("Save succeeded!")
+//			}
+//		})
+//	}
+//	
+//	func deleteRecord(record: CKRecord) {
+//		publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID: CKRecordID!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("Error while deleting")
+//				abort()
+//			} else {
+//				println("Delete succeeded")
+//			}
+//		})
+//	}
+	
 	
 //	func queryForRecord(referenceName: String, completion: (records: Array<CKRecord>) -> Void) {
 //		var parent = CKReference(recordID: CKRecordID(recordName: referenceName), action: .None)

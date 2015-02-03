@@ -60,12 +60,69 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			}
 		}
 		
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: NSManagedObjectContextObjectsDidChangeNotification, object: managedObjectContext!)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)
 	}
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
+		// Check how much to do this
+		refreshParallax()
+		scrollToMeal()
+		refreshParallax()
+	}
+	
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		
+		NSNotificationCenter.defaultCenter().removeObserver(self, name: "NewDayInfoAdded", object: nil)
+	}
+	
+	// MARK: - Core Data
+	
+	func handleDataChange(notification: NSNotification) {
+		let dDay = notification.userInfo!["newItem"] as DiningDay
+		
+		if dDay.day == comparisonDate() {
+			information = DayInfo(date: dDay.day, formattedString: dDay.data)
+			dateMeals = orderedMeals(information.meals.keys.array)
+			dispatch_async(dispatch_get_main_queue()) {
+				self.tableView.reloadData()
+				self.refreshControl = nil
+				self.scrollToMeal()
+			}
+		}
+	}
+	
+	// MARK: - Helpers
+	
+	func loadFailed(error: NSError!) {
+		dispatch_async(dispatch_get_main_queue()) {
+			self.loadState = .Failed
+			self.tableView.reloadData()
+			
+			if let refresher = self.refreshControl {
+				refresher.endRefreshing()
+			} else {
+				self.refreshControl = UIRefreshControl()
+				self.refreshControl!.addTarget(self, action: "retryLoad", forControlEvents: .ValueChanged)
+			}
+		}
+	}
+	
+	func retryLoad() {
+		CloudManager.sharedInstance.fetchRecords("DiningDay", completion: { (error: NSError!) -> Void in
+			if error != nil { // handle error case
+				self.loadFailed(error)
+			}
+		})
+	}
+	
+	func hasData() -> Bool {
+		return information.meals.count != 0
+	}
+	
+	func scrollToMeal() {
 		if representsToday(information.date) {
 			var currMeal = currentMeal()
 			var sectionToShow = 0
@@ -80,58 +137,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	
-	override func viewWillDisappear(animated: Bool) {
-		super.viewWillDisappear(animated)
-		
-		NSNotificationCenter.defaultCenter().removeObserver(self, name: NSManagedObjectContextObjectsDidChangeNotification, object: self.managedObjectContext!)
-	}
-	
-	// MARK: - Core Data
-	
-	func handleDataChange(notification: NSNotification) {
-		let updated = notification.userInfo![NSUpdatedObjectsKey] as NSSet
-		//		let deleted = notification.userInfo![NSDeletedObjectsKey] as NSSet
-		let inserted = notification.userInfo![NSInsertedObjectsKey] as NSSet
-		
-		let changed: Array<AnyObject> = inserted.allObjects + updated.allObjects
-		
-		//		let displayedInfoDate = dormVCfromNavVC(pageController.viewControllers[0] as UINavigationController).information.date
-		// check created and updated objects
-		for info in changed {
-			// if the changed object is for the shown index, update the display
-			println()
-			
-			// if load succeeded, hide the refresh control
-			refreshControl = nil
-		}
-	}
-	
-	
-	// MARK: - Helpers
-	
-	func loadFailed() {
-		loadState = .Failed
-		tableView.reloadData()
-		
-		if let refresher = refreshControl {
-			refresher.endRefreshing()
-		} else {
-			refreshControl = UIRefreshControl()
-			refreshControl!.addTarget(self, action: "retryLoad", forControlEvents: .ValueChanged)
-		}
-	}
-	
-	func retryLoad() {
-		CloudManager.sharedInstance.fetchRecords("DiningDay", completion: { (records: Array<CKRecord>) -> Void in
-			if records == [] {
-				// handle error case
-				self.loadFailed()
+	func refreshParallax() {
+		if hasData() {
+			for cell in (tableView.visibleCells() as Array<FoodTableViewCell>) {
+				var percent = (cell.frame.origin.y - tableView.contentOffset.y) / tableView.frame.height
+				cell.parallaxImageWithScrollPercent(percent)
 			}
-		})
-	}
-	
-	func hasData() -> Bool {
-		return information.meals.count != 0
+		}
 	}
 	
 	// MARK: - Table view data source
@@ -283,11 +295,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: ScrollViewDelegate
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
-		if scrollView == tableView && hasData() {
-			for cell in (tableView.visibleCells() as Array<FoodTableViewCell>) {
-				var percent = (cell.frame.origin.y - scrollView.contentOffset.y) / scrollView.frame.height
-				cell.parallaxImageWithScrollPercent(percent)
-			}
+		if scrollView == tableView {
+			refreshParallax()
 		}
 	}
 	

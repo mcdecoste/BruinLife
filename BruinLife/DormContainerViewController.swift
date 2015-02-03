@@ -21,12 +21,16 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		pageController.delegate = self
 		pageController.view.frame = view.bounds
 		
-		CloudManager.sharedInstance.fetchRecords("DiningDay", completion: { (records: Array<CKRecord>) -> Void in
-			if records == [] {
-				// handle error case
-				self.dormVCfromNavVC(self.pageController.viewControllers[0] as UINavigationController).loadFailed()
-			}
-		})
+		let firstDayInfo = CloudManager.sharedInstance.fetchDiningDay(comparisonDate())
+		
+		if firstDayInfo == "" {
+			CloudManager.sharedInstance.fetchNewRecords("DiningDay", completion: { (error: NSError!) -> Void in
+				if error != nil {
+					// handle error case
+					self.dormVCfromIndex(0).loadFailed(error)
+				}
+			})
+		}
 		
 		pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
 		
@@ -49,6 +53,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		let index = dormVCfromNavVC(viewController as UINavigationController).pageIndex
 		if index == 6 { return nil }
 		return vcForIndex(index + 1)
+	}
+	
+	func dormVCfromIndex(index: Int) -> DormTableViewController {
+		return dormVCfromNavVC(pageController.viewControllers[index] as UINavigationController)
 	}
 	
 	func dormVCfromNavVC(navVC: UINavigationController) -> DormTableViewController {
