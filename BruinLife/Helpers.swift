@@ -26,6 +26,8 @@ let notificationTimeID: String = "NotificationTimeID"
 /// Used to describe when the hall is open
 let notificationHoursID: String = "NotificationHoursID"
 
+let tableBackgroundColor = UIColor(red: 239.0/255, green: 239.0/255, blue: 244.0/255, alpha: 1)
+
 /// Returns the most likely Meal given the time
 func currentMeal() -> MealType {
 	var hour = NSCalendar.currentCalendar().component(.CalendarUnitHour, fromDate: NSDate())

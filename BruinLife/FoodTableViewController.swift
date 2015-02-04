@@ -14,6 +14,7 @@ enum FoodControllerLoadState: Int {
 	case Loading = 0
 	case Failed = 1
 	case Expanding = 2
+	case Hiding = 3
 }
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -52,7 +53,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		tableView.registerClass(RestaurantTableViewCell.self, forCellReuseIdentifier: kRestCellID)
 		tableView.registerClass(MenuTableViewCell.self, forCellReuseIdentifier: kFoodDisplayID)
-		tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: EmptyCellID)
+		tableView.registerClass(EmptyTableViewCell.self, forCellReuseIdentifier: EmptyCellID)
+		tableView.backgroundColor = tableBackgroundColor
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -83,12 +85,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func setInformation() {
-		if information.meals.count == 0 {
+		if !hasData() {
 			setInformation(DayInfo(date: information.date, formattedString: informationStr))
 		}
 	}
 	
 	func setInformation(info: DayInfo) {
+		(tableView.visibleCells() as Array<EmptyTableViewCell>)[0].setType(.Expanding)
 		information = info
 		dateMeals = orderedMeals(information.meals.keys.array)
 		tableView.reloadData()
@@ -105,15 +108,12 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		let dDay = notification.userInfo!["newItem"] as DiningDay
 		
 		if dDay.day == comparisonDate() {
-			loadState = .Expanding
-			tableView.reloadData()
-			
-			information = DayInfo(date: dDay.day, formattedString: dDay.data)
-			dateMeals = orderedMeals(information.meals.keys.array)
+			setInformationString(dDay.data)
+			(self.tableView.visibleCells() as [EmptyTableViewCell])[0].setType(loadState)
 			dispatch_async(dispatch_get_main_queue()) {
-				self.tableView.reloadData()
+				self.setInformation()
+				self.refreshControl?.endRefreshing()
 				self.refreshControl = nil
-				self.scrollToMeal()
 			}
 		}
 	}
@@ -172,6 +172,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: - Table view data source
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+		if !hasData() {
+			return 100
+		}
 		return indexPathHasFoodDisplay(indexPath) ? CGFloat(kFoodDisplayHeight) : CGFloat(kRestCellHeight)
 	}
 	
@@ -198,21 +201,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if !hasData() {
-			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as UITableViewCell
-			
-			switch loadState {
-			case .Loading:
-				cell.textLabel?.text = "Loading menu information"
-			case .Failed:
-				cell.textLabel?.text = "Load failed. Pull down to retry."
-			default:
-				cell.textLabel?.text = "Building menu."
-			}
-			
-			if loadState != .Failed {
-				cell.accessoryView = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-				(cell.accessoryView as UIActivityIndicatorView).startAnimating()
-			}
+			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as EmptyTableViewCell
+			cell.setType(loadState)
 			return cell
 		}
 		
@@ -394,5 +384,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 		var restaurant = displayCell?.information
 		addFoodPopover(restaurant?.sections[indexPath.section].foods[indexPath.row])
+	}
+	
+	func compact() -> Bool {
+		return view.frame.width == 320
 	}
 }

@@ -91,7 +91,6 @@ class CloudManager: NSObject {
 	}
 	
 	private func fetchRecords(type: String, completion: (error: NSError!) -> Void, startDaysInAdvance: Int = 0) {
-//		println(startDaysInAdvance)
 		if startDaysInAdvance == 13 {
 			completion(error: NSError())
 			return // don't bother loading further

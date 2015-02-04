@@ -11,7 +11,7 @@ import CloudKit
 import CoreData
 
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 32.0]) // good default is 32.0, tight is 0.0
+	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 32.0])
 	let pageStoryboardID = "dormTableView"
 	
 	override func viewDidLoad() {
@@ -39,7 +39,13 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)
 		
-//		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
+		navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
+		navigationItem.leftBarButtonItem?.enabled = false
+		
+		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Days", style: .Plain, target: self, action: "showDays")
+		navigationItem.rightBarButtonItem?.enabled = false
+		
+		pageController.view.backgroundColor = tableBackgroundColor
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -58,11 +64,25 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		}
 	}
 	
+	// MARK: - Helpers
 	func loadMoreDays() {
 		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in })
 	}
 	
-	// UIPageViewControllerDataSource
+	func jumpToFirst() {
+		pageController.setViewControllers([vcForIndex(0)], direction: .Reverse, animated: true, completion: nil)
+	}
+	
+	func showDays() {
+		
+	}
+	
+	func updateNavItem(vc: DormTableViewController) {
+		navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
+		navigationItem.title = vc.preferredTitle()
+	}
+	
+	// MARK: - UIPageViewControllerDataSource
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
 		viewController.navigationItem.leftBarButtonItem = nil
 		viewController.navigationItem.rightBarButtonItem = nil
@@ -85,12 +105,20 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		return navVC.viewControllers[0] as DormTableViewController
 	}
 	
-	// UIPageViewControllerDelegate
-//	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-//		if completed {
-//			
-//		}
-//	}
+	// MARK: UIPageViewControllerDelegate
+	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
+		let vc = completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as UINavigationController)
+		navigationItem.leftBarButtonItem?.enabled = daysInFuture(vc.information.date) != 0
+		navigationItem.title = vc.preferredTitle()
+	}
+	
+	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [AnyObject]) {
+		if pendingViewControllers.count != 0 {
+			let vc = dormVCfromNavVC(pendingViewControllers[0] as UINavigationController)
+			navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
+			navigationItem.title = vc.preferredTitle()
+		}
+	}
 	
 	func vcForIndex(index: Int) -> UINavigationController {
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as DormTableViewController
@@ -100,9 +128,5 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		
 		var navVC = UINavigationController(rootViewController: vc)
 		return navVC
-	}
-	
-	func jumpToFirst() {
-		pageController.setViewControllers([vcForIndex(0)], direction: .Reverse, animated: true, completion: nil)
 	}
 }

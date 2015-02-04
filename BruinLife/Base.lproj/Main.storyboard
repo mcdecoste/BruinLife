@@ -181,6 +181,23 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iQF-Ff-CgB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="1570" y="-332"/>
+        </scene>
+        <!--Dorm-->
+        <scene sceneID="eyC-fR-fmQ">
+            <objects>
+                <navigationController id="Ckg-6e-Jpe" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Dorm" id="wvJ-RB-EMI"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Sgl-HZ-Tnb">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="EqH-C2-ubs" kind="relationship" relationship="rootViewController" id="xTI-iu-1wm"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sKH-fY-zdw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
             <point key="canvasLocation" x="750" y="-332"/>
         </scene>
         <!--Dorm Table View Controller-->
@@ -203,7 +220,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="CZJ-Zd-9Pj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1570" y="-332"/>
+            <point key="canvasLocation" x="2324" y="-332"/>
         </scene>
         <!--Food View Controller-->
         <scene sceneID="gtz-z2-FY8">
@@ -221,7 +238,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gmY-Kp-77h" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2248" y="-332"/>
+            <point key="canvasLocation" x="3002" y="-332"/>
         </scene>
         <!--Quick-->
         <scene sceneID="y5x-eO-8jq">
@@ -251,8 +268,8 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                     </tabBar>
                     <connections>
+                        <segue destination="Ckg-6e-Jpe" kind="relationship" relationship="viewControllers" id="wdN-4z-0Xx"/>
                         <segue destination="5yx-YR-Hpb" kind="relationship" relationship="viewControllers" id="PUQ-HY-KdX"/>
-                        <segue destination="EqH-C2-ubs" kind="relationship" relationship="viewControllers" id="Rzz-fs-pQT"/>
                         <segue destination="Kej-Wf-44n" kind="relationship" relationship="viewControllers" id="9Ui-ms-lCU"/>
                         <segue destination="Doc-2p-uUv" kind="relationship" relationship="viewControllers" id="qvQ-Ti-56q"/>
                     </connections>

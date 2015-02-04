@@ -13,41 +13,30 @@ class DormTableViewController: FoodTableViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		setTitle()
 		isHall = true
+	}
+	
+	override func viewDidAppear(animated: Bool) {
+		super.viewDidAppear(animated)
+		dormCVC?.updateNavItem(self)
 	}
 	
 	/// Returns the desired title for the page view controller's navbar
 	func preferredTitle() -> String {
 		var formatter = NSDateFormatter()
-		formatter.dateFormat = "EEEE, MMMM d"
-		let title = formatter.stringFromDate(information.date)
+		formatter.dateFormat = compact() ? "EEEE, MMM. d" : "EEEE, MMMM d"
+		var title = formatter.stringFromDate(information.date)
 		
 		switch NSCalendar.currentCalendar().component(.DayCalendarUnit, fromDate: information.date) {
 		case 1, 21, 31:
-			return title + "st"
+			title += "st"
 		case 2, 22:
-			return title + "nd"
+			title += "nd"
 		case 3, 23:
-			return title + "rd"
+			title += "rd"
 		default:
-			return title + "th"
+			title += "th"
 		}
-	}
-	
-	func setTitle() {
-		navigationItem.leftBarButtonItem = representsToday(information.date) ? nil : UIBarButtonItem(title: "Today", style: .Plain, target: dormCVC, action: "jumpToFirst")
-		navigationItem.rightBarButtonItem = nil
-		navigationItem.title = preferredTitle()
-	}
-	
-	override func setInformation() {
-		super.setInformation()
-		setTitle()
-	}
-	
-	override func setInformation(info: DayInfo) {
-		super.setInformation(info)
-		setTitle()
+		return title
 	}
 }
