@@ -84,14 +84,14 @@ class CloudManager: NSObject {
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			if fetchResults.count != 0 {
-				return Int(daysInFuture(fetchResults[0].day))
+				return daysInFuture(fetchResults[0].day)
 			}
 		}
 		return 0
 	}
 	
 	private func fetchRecords(type: String, completion: (error: NSError!) -> Void, startDaysInAdvance: Int = 0) {
-		println(startDaysInAdvance)
+//		println(startDaysInAdvance)
 		if startDaysInAdvance == 13 {
 			completion(error: NSError())
 			return // don't bother loading further

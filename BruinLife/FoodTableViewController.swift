@@ -29,7 +29,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var information = DayInfo()
 	var dateMeals = [MealType]()
 	
-	var pageIndex = 0
 	var isHall = true
 	
 	var loadState: FoodControllerLoadState = .Loading
@@ -69,9 +68,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		super.viewDidAppear(animated)
 		
 		// Check how much to do this
-		information = DayInfo(date: information.date, formattedString: informationStr)
-		dateMeals = orderedMeals(information.meals.keys.array)
-		tableView.reloadData()
+		setInformation()
 		refreshParallax()
 		scrollToMeal()
 		refreshParallax()
@@ -81,6 +78,18 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		super.viewWillDisappear(animated)
 		
 		NSNotificationCenter.defaultCenter().removeObserver(self, name: "NewDayInfoAdded", object: nil)
+	}
+	
+	func setInformation() {
+		if information.meals.count == 0 {
+			setInformation(DayInfo(date: information.date, formattedString: informationStr))
+		}
+	}
+	
+	func setInformation(info: DayInfo) {
+		information = info
+		dateMeals = orderedMeals(information.meals.keys.array)
+		tableView.reloadData()
 	}
 	
 	func setInformationString(string: String) {

@@ -36,13 +36,18 @@ class DormTableViewController: FoodTableViewController {
 	}
 	
 	func setTitle() {
-		navigationItem.leftBarButtonItem = pageIndex == 0 ? nil : UIBarButtonItem(title: "Today", style: .Plain, target: dormCVC, action: "jumpToFirst")
+		navigationItem.leftBarButtonItem = representsToday(information.date) ? nil : UIBarButtonItem(title: "Today", style: .Plain, target: dormCVC, action: "jumpToFirst")
 		navigationItem.rightBarButtonItem = nil
 		navigationItem.title = preferredTitle()
 	}
 	
-	func setInformation(info: DayInfo) {
-		information = info
+	override func setInformation() {
+		super.setInformation()
+		setTitle()
+	}
+	
+	override func setInformation(info: DayInfo) {
+		super.setInformation(info)
 		setTitle()
 	}
 }

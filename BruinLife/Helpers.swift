@@ -41,10 +41,10 @@ func representsToday(date: NSDate) -> Bool {
 	return daysInFuture(date) == 0
 }
 
-func daysInFuture(date: NSDate) -> Double {
+func daysInFuture(date: NSDate) -> Int {
 	let today = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: NSDate()).day
 	let selectedDay = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: date).day
-	return Double(abs(today - selectedDay))
+	return abs(today - selectedDay)
 }
 
 func orderedMeals(meals: Array<MealType>) -> Array<MealType> {

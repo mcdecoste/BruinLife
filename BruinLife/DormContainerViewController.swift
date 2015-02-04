@@ -11,7 +11,7 @@ import CloudKit
 import CoreData
 
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 0.0]) // good default is 32.0, tight is 0.0
+	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 32.0]) // good default is 32.0, tight is 0.0
 	let pageStoryboardID = "dormTableView"
 	
 	override func viewDidLoad() {
@@ -36,11 +36,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		
 		// TODO: create empty shell to show for before loading
 		pageController.setViewControllers([UINavigationController()], direction: .Forward, animated: false, completion: nil)
-		
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)
 		
-		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
+//		view.backgroundColor = UIColor(white: 247.0/255.0, alpha: 1.0)
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -54,7 +53,9 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: true, completion: nil)
+		if (pageController.viewControllers[0] as UINavigationController).viewControllers.count == 0 {
+			pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
+		}
 	}
 	
 	func loadMoreDays() {
@@ -65,13 +66,13 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
 		viewController.navigationItem.leftBarButtonItem = nil
 		viewController.navigationItem.rightBarButtonItem = nil
-		let index = dormVCfromNavVC(viewController as UINavigationController).pageIndex
+		let index = daysInFuture(dormVCfromNavVC(viewController as UINavigationController).information.date)
 		if index == 0 { return nil }
 		return vcForIndex(index - 1)
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-		let index = dormVCfromNavVC(viewController as UINavigationController).pageIndex
+		let index = daysInFuture(dormVCfromNavVC(viewController as UINavigationController).information.date)
 		if index == 6 { return nil }
 		return vcForIndex(index + 1)
 	}
@@ -85,19 +86,16 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	// UIPageViewControllerDelegate
-	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-		if completed {
-			
-		}
-	}
+//	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
+//		if completed {
+//			
+//		}
+//	}
 	
 	func vcForIndex(index: Int) -> UINavigationController {
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as DormTableViewController
-		vc.pageIndex = index
-		
 		vc.setInformationString(CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index)))
 		vc.information.date = comparisonDate(daysInFuture: index)
-		vc.dateMeals = orderedMeals(vc.information.meals.keys.array)
 		vc.dormCVC = self
 		
 		var navVC = UINavigationController(rootViewController: vc)
