@@ -58,11 +58,6 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		
 		var openTrunc = openTime
 		if shouldAbbreviate {
-			openTime.substringFromIndex(advance(openTime.endIndex, -2))
-			if openTime.substringFromIndex(advance(openTime.endIndex, -2)) == closeTime.substringFromIndex(advance(closeTime.endIndex, -2)) {
-				openTrunc = openTime.substringToIndex(openTime.rangeOfString(" ")!.startIndex)
-			}
-			
 			if let openZeros = openTrunc.rangeOfString(":00") {
 				openTrunc = stringByRemovingRange(openTrunc, range: openZeros)
 			}
