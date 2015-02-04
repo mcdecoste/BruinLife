@@ -184,7 +184,7 @@ class MealHoursInfo {
 }
 
 class DayInfo {
-	var date = NSDate()
+	var date = comparisonDate(NSDate())
 	var meals: Dictionary<MealType, MealInfo> = [:]
 	
 	init() {

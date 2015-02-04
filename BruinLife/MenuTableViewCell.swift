@@ -12,6 +12,21 @@ class MenuTableViewCell: FoodTableViewCell {
 	var collectionView: UICollectionView?
 	var blurView = UIVisualEffectView(effect: UIBlurEffect(style: .Light))
 	
+	override func finishSetup() {
+		// add the labels!
+		super.finishSetup()
+		
+		collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: HorizontalFlow())
+		collectionView?.registerClass(FoodCollectionViewCell.self, forCellWithReuseIdentifier: "foodDisplay")
+		collectionView?.registerClass(SectionCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "headerCell")
+		collectionView?.backgroundView = blurView
+		collectionView?.backgroundColor = .clearColor()
+		collectionView?.alwaysBounceHorizontal = true
+		collectionView?.alwaysBounceVertical = false
+		
+		addSubview(collectionView!)
+	}
+	
 	override func updateDisplay() {
 		// do things to update the display for the new information
 		backgroundImageView?.frame = bounds
@@ -46,22 +61,4 @@ class MenuTableViewCell: FoodTableViewCell {
 		
 		updateDisplay()
 	}
-	
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-		backgroundImageView = UIImageView(frame: CGRectZero)
-		addSubview(backgroundImageView!)
-		clipsToBounds = true
-		
-		collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: HorizontalFlow())
-		collectionView?.registerClass(FoodCollectionViewCell.self, forCellWithReuseIdentifier: "foodDisplay")
-		collectionView?.registerClass(SectionCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "headerCell")
-		collectionView?.backgroundView = blurView
-		collectionView?.backgroundColor = .clearColor()
-		collectionView?.alwaysBounceHorizontal = true
-		collectionView?.alwaysBounceVertical = false
-		
-		addSubview(collectionView!)
-    }
 }

@@ -13,11 +13,10 @@ class RestaurantTableViewCell: FoodTableViewCell {
 	var openLabel = UILabel() // big text: OPEN or CLOSED
 	var hoursLabel = UILabel() // "until [close time]" "[open] - [close]"
 	
-	override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-		
+	override func finishSetup() {
 		// add the labels!
+		super.finishSetup()
+		
 		nameLabel.font = .systemFontOfSize(30) // 22
 		nameLabel.textAlignment = .Left
 		nameLabel.textColor = UIColor(white: 1.0, alpha: 1.0)
@@ -35,51 +34,62 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		addSubview(nameLabel)
 		addSubview(openLabel)
 		addSubview(hoursLabel)
-    }
+	}
 	
 	override func updateDisplay() {
 		// fix the frames
 		updateLabelFrames()
-		
 		
 		var openDate: NSDate?
 		var closeDate: NSDate?
 		var open = true
 		(open, openDate, closeDate) = dateInfo()
 		
+		var aboutToday = comparisonDate() == comparisonDate(date!)
 		var formatter = NSDateFormatter()
 		formatter.timeZone = NSTimeZone(name: "Americas/Los_Angeles")
-		formatter.dateFormat = "M/d"
-		
-		var openToday = formatter.stringFromDate(NSDate()) == formatter.stringFromDate(date!)
-		formatter.dateFormat = "h:mm a"
+		formatter.timeStyle = .ShortStyle
+		formatter.dateStyle = .NoStyle
 		
 		var openTime = formatter.stringFromDate(openDate!)
 		var closeTime = formatter.stringFromDate(closeDate!)
 		
-		var openText = "until \(closeTime)"
-		var closedText = "until \(openTime)"
+		let shouldAbbreviate = true
 		
-		if openDate?.timeIntervalSinceNow >= 0 { // still to open
-			closedText = "\(openTime) — \(closeTime)" // gives more information this way
-		} else { // was open, now is closed
-			if openToday {
-				closedText = "as of \(closeTime)"
-			} else {
-				closedText = "\(openTime) — \(closeTime)" // should never happen
+		var openTrunc = openTime
+		if shouldAbbreviate {
+			openTime.substringFromIndex(advance(openTime.endIndex, -2))
+			if openTime.substringFromIndex(advance(openTime.endIndex, -2)) == closeTime.substringFromIndex(advance(closeTime.endIndex, -2)) {
+				openTrunc = openTime.substringToIndex(openTime.rangeOfString(" ")!.startIndex)
+			}
+			
+			if let openZeros = openTrunc.rangeOfString(":00") {
+				openTrunc = stringByRemovingRange(openTrunc, range: openZeros)
 			}
 		}
 		
+		var closeTrunc = closeTime
+		if shouldAbbreviate {
+			if let closeZeros = closeTrunc.rangeOfString(":00") {
+				closeTrunc = stringByRemovingRange(closeTrunc, range: closeZeros)
+			}
+		}
+		
+		var openText = "until \(closeTrunc)"
+		var closedText = aboutToday && openDate?.timeIntervalSinceNow >= 0 ? "as of \(closeTrunc)" : "\(openTrunc) — \(closeTrunc)"
+		
 		nameLabel.text = information?.name(isHall)
 		
-//		openLabel.textColor = UIColor(red: open ? 0.0 : 0.85, green: open ? 0.8 : 0.0, blue: 0.0, alpha: 1.0)
-		openLabel.textColor = open ? UIColor(red: 0.0, green: 0.8, blue: 0.0, alpha: 1.0) : .whiteColor()
-		
-		openLabel.font = .systemFontOfSize(open ? 20 : 18)
-		
+//		openLabel.textColor = open ? UIColor(red: 0.0, green: 0.8, blue: 0.0, alpha: 1.0) : .whiteColor()
+		openLabel.textColor = UIColor(red: open ? 0.0 : 0.85, green: open ? 0.8 : 0.0, blue: 0.0, alpha: 1.0)
+		openLabel.font = .systemFontOfSize(20) // .systemFontOfSize(open ? 20 : 18) // considered bold for a bit
 		openLabel.text = open ? "Open" : "Closed"
 		
 		hoursLabel.text = open ? openText : closedText
+	}
+	
+	func stringByRemovingRange(string: String, range: Range<String.Index>) -> String {
+		return "\(string.substringToIndex(range.startIndex))\(string.substringFromIndex(range.endIndex))"
 	}
 	
 	func updateLabelFrames() {

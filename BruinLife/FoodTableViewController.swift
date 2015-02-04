@@ -18,9 +18,11 @@ enum FoodControllerLoadState: Int {
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
 	let kRestCellID = "FoodCell"
-	let kRestCellHeight = 88
+	let kRestCellHeight: CGFloat = 88
 	let kFoodDisplayID = "DisplayCell"
-	let kFoodDisplayHeight = 220
+	let kFoodDisplayHeight: CGFloat = 220
+	let EmptyCellID = "EmptyCell"
+	
 	let foodVCid = "foodDescriptionViewController"
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
@@ -48,12 +50,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "EmptyCell")
+		tableView.registerClass(RestaurantTableViewCell.self, forCellReuseIdentifier: kRestCellID)
+		tableView.registerClass(MenuTableViewCell.self, forCellReuseIdentifier: kFoodDisplayID)
+		tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: EmptyCellID)
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		tableView.separatorStyle = .None
 		
 		if hasData() {
 			for cell in tableView.visibleCells() as Array<FoodTableViewCell> {
@@ -69,7 +72,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		// Check how much to do this
 		setInformation()
-		refreshParallax()
 		scrollToMeal()
 		refreshParallax()
 	}
@@ -196,7 +198,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if !hasData() {
-			var cell = tableView.dequeueReusableCellWithIdentifier("EmptyCell")! as UITableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as UITableViewCell
 			
 			switch loadState {
 			case .Loading:
@@ -214,31 +216,49 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			return cell
 		}
 		
-		
 		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row && displayIndexPath.section == indexPath.section
-		var modelRow = shouldDecr ? indexPath.row - 1 : indexPath.row
+		var modelRow = indexPath.row - (shouldDecr ? 1 : 0)
 		
-		var allHalls = (information.meals[dateMeals[Int(indexPath.section)]]?.halls)!
+		var allHalls = information.meals[dateMeals[indexPath.section]]!.halls
 		var restaurant = (allHalls[allHalls.keys.array[modelRow]])!
 		
-		var cellID = kRestCellID
-		var selectionStyle: UITableViewCellSelectionStyle = .None
 		if indexPathHasFoodDisplay(indexPath) {
-			cellID = kFoodDisplayID
-			selectionStyle = .Default
+			var cell = tableView.dequeueReusableCellWithIdentifier(kFoodDisplayID)! as MenuTableViewCell
+			
+			cell.selectionStyle = .None
+			cell.frame.size.height = kFoodDisplayHeight
+			cell.foodVC = self
+			cell.changeInfo(restaurant, andDate: information.date, isHall: isHall)
+			displayCell = cell
+			
+			return cell
+		} else {
+			var cell = tableView.dequeueReusableCellWithIdentifier(kRestCellID)! as RestaurantTableViewCell
+			
+//			cell.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
+			cell.frame.size.height = kRestCellHeight
+			cell.foodVC = self
+			cell.changeInfo(restaurant, andDate: information.date, isHall: isHall)
+			
+			return cell
 		}
 		
-		let cellFrame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
-		
-		var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as FoodTableViewCell
-		cell.selectionStyle = selectionStyle
-		cell.frame = cellFrame
-		cell.foodVC = self
-		cell.changeInfo(restaurant, andDate: information.date, isHall: isHall)
-		
-		if cellID == kFoodDisplayID { displayCell = cell as? MenuTableViewCell }
-		
-		return cell
+//		var cellID = kRestCellID
+//		var selectionStyle: UITableViewCellSelectionStyle = .None
+//		if indexPathHasFoodDisplay(indexPath) {
+//			cellID = kFoodDisplayID
+//			selectionStyle = .Default
+//		}
+//		
+//		var cell = tableView.dequeueReusableCellWithIdentifier(cellID)! as FoodTableViewCell
+//		cell.selectionStyle = selectionStyle
+//		cell.frame = CGRect(x: 0, y: 0, width: tableView.frame.width, height: self.tableView(tableView, heightForRowAtIndexPath: indexPath))
+//		cell.foodVC = self
+//		cell.changeInfo(restaurant, andDate: information.date, isHall: isHall)
+//		
+//		if cellID == kFoodDisplayID { displayCell = cell as? MenuTableViewCell }
+//		
+//		return cell
 	}
 	
 	// MARK: Delegate
