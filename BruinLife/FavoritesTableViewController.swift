@@ -15,7 +15,7 @@ class FavoritesTableViewController: UITableViewController {
 	let dontSection = 1
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
-		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 	}()
@@ -66,7 +66,7 @@ class FavoritesTableViewController: UITableViewController {
 	func removeFavorite(path: NSIndexPath) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
 		let recipe = favorites[path.section][path.row].info().recipe
-		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
+		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
 			for result in fetchResults {
@@ -86,7 +86,7 @@ class FavoritesTableViewController: UITableViewController {
 	func changeFoodNotify(food: Food, notify: Bool) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
 		let recipe = food.info().recipe
-		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))!
+		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
 			for result in fetchResults {
@@ -131,7 +131,7 @@ class FavoritesTableViewController: UITableViewController {
 	}
 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as NotificationTableViewCell
+		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell
 		cell.setLabels(favorites[indexPath.section][indexPath.row].info().name)
 		return cell
 	}

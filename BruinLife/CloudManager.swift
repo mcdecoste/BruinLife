@@ -26,7 +26,7 @@ class CloudManager: NSObject {
 	private var publicDB: CKDatabase
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
-		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 		}()
@@ -82,10 +82,8 @@ class CloudManager: NSObject {
 		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) >= %@", comparisonDate())
 		fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: false)] // DateField
 		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
-			if fetchResults.count != 0 {
-				return daysInFuture(fetchResults[0].day)
-			}
+		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
+			return daysInFuture(fetchResults[0].day)
 		}
 		return 0
 	}
@@ -133,7 +131,7 @@ class CloudManager: NSObject {
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			for result in fetchResults {
-				if countElements(result.data) > 0 {
+				if count(result.data) > 0 {
 					return result.data
 				}
 			}

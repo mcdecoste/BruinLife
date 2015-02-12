@@ -23,7 +23,7 @@ class SectionCollectionReusableView: UICollectionReusableView {
 	    super.init(coder: aDecoder)
 	}
 	
-	func setTitle(name: String) {
+	func changeTitle(name: String) {
 		title.text = name
 		title.sizeToFit()
 		

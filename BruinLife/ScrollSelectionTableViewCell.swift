@@ -19,7 +19,7 @@ class ScrollSelectionTableViewCell: UITableViewCell {
     }
 	
 	func setEntries(entries: Array<String>) {
-		clipView.setEntries(entries)
+		clipView.changeEntries(entries)
 	}
 	
 	override func layoutSubviews() {

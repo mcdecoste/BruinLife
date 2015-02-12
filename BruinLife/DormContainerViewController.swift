@@ -59,7 +59,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		if (pageController.viewControllers[0] as UINavigationController).viewControllers.count == 0 {
+		if (pageController.viewControllers[0] as! UINavigationController).viewControllers.count == 0 {
 			pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
 		}
 	}
@@ -86,42 +86,42 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
 		viewController.navigationItem.leftBarButtonItem = nil
 		viewController.navigationItem.rightBarButtonItem = nil
-		let index = daysInFuture(dormVCfromNavVC(viewController as UINavigationController).information.date)
+		let index = daysInFuture(dormVCfromNavVC(viewController as! UINavigationController).information.date)
 		if index == 0 { return nil }
 		return vcForIndex(index - 1)
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-		let index = daysInFuture(dormVCfromNavVC(viewController as UINavigationController).information.date)
+		let index = daysInFuture(dormVCfromNavVC(viewController as! UINavigationController).information.date)
 		if index == 6 { return nil }
 		return vcForIndex(index + 1)
 	}
 	
 	func dormVCfromIndex(index: Int) -> DormTableViewController {
-		return dormVCfromNavVC(pageController.viewControllers[index] as UINavigationController)
+		return dormVCfromNavVC(pageController.viewControllers[index] as! UINavigationController)
 	}
 	
 	func dormVCfromNavVC(navVC: UINavigationController) -> DormTableViewController {
-		return navVC.viewControllers[0] as DormTableViewController
+		return navVC.viewControllers[0] as! DormTableViewController
 	}
 	
 	// MARK: UIPageViewControllerDelegate
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-		let vc = completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as UINavigationController)
+		let vc = completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as! UINavigationController)
 		navigationItem.leftBarButtonItem?.enabled = daysInFuture(vc.information.date) != 0
 		navigationItem.title = vc.preferredTitle()
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [AnyObject]) {
 		if pendingViewControllers.count != 0 {
-			let vc = dormVCfromNavVC(pendingViewControllers[0] as UINavigationController)
+			let vc = dormVCfromNavVC(pendingViewControllers[0] as! UINavigationController)
 			navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
 			navigationItem.title = vc.preferredTitle()
 		}
 	}
 	
 	func vcForIndex(index: Int) -> UINavigationController {
-		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as DormTableViewController
+		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as! DormTableViewController
 		vc.setInformationString(CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index)))
 		vc.information.date = comparisonDate(daysInFuture: index)
 		vc.dormCVC = self

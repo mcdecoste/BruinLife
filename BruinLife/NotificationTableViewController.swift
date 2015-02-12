@@ -31,8 +31,8 @@ class NotificationTableViewController: UITableViewController {
 
 	func gatherNotifications() {
 		notifications = [[], [], [], [], [], [], []]
-		for note in (UIApplication.sharedApplication().scheduledLocalNotifications as Array<UILocalNotification>) {
-			var userInfo = note.userInfo as [String : String]
+		for note in (UIApplication.sharedApplication().scheduledLocalNotifications as! Array<UILocalNotification>) {
+			var userInfo = note.userInfo as! [String : String]
 			notifications[indexForWeekday(userInfo[notificationDateID]!)].append(note)
 		}
 	}
@@ -45,7 +45,7 @@ class NotificationTableViewController: UITableViewController {
 	}
 	
 	func indexForWeekday(string: String) -> Int {
-		return (weekdays as NSArray).indexOfObject(string)
+		return find(weekdays, string)!
 	}
 	
 	func notificationForPath(path: NSIndexPath) -> UILocalNotification {
@@ -69,8 +69,8 @@ class NotificationTableViewController: UITableViewController {
 //	}
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as NotificationTableViewCell
-		let userInfo = notificationForPath(indexPath).userInfo as [String : String]
+		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell
+		let userInfo = notificationForPath(indexPath).userInfo as! [String : String]
 		cell.setLabels(userInfo[notificationFoodID]!, time: userInfo[notificationTimeID]!)
         return cell
     }
@@ -93,7 +93,7 @@ class NotificationTableViewController: UITableViewController {
 	
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
 		let notification = notificationForPath(indexPath)
-		let userInfo = notification.userInfo as [String : String]
+		let userInfo = notification.userInfo as! [String : String]
 		
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 		

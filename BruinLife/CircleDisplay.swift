@@ -64,7 +64,6 @@ class CircleDisplay: UIButton {
 		
 		layer.addSublayer(percLayer)
 		addSubview(centralLabel)
-		
 		addTarget(self, action: "handleTap", forControlEvents: .TouchUpInside)
 	}
 	
@@ -76,18 +75,17 @@ class CircleDisplay: UIButton {
 		update()
 	}
 	
-	func setServingCount(count: Int) {
+	func changeServingCount(count: Int) {
 		servingCount = count
-		
 		update()
 	}
 	
 	func update() {
 		if nutrition?.percent == nil {
-			setProgress(1)
+			changeProgress(1)
 			percLayer.strokeColor = UIColor(white: 0.2, alpha: 0.25).CGColor
 		} else {
-			setProgress(CGFloat(servingCount * (nutrition?.percent)!) / 100)
+			changeProgress(CGFloat(servingCount * (nutrition?.percent)!) / 100)
 			percLayer.strokeColor = UIColor(red: 0, green: 0.478431, blue: 1, alpha: 1).CGColor
 		}
 		updateDisplayText()
@@ -100,7 +98,7 @@ class CircleDisplay: UIButton {
 		}
 	}
 	
-	func setProgress(progress: CGFloat) {
+	func changeProgress(progress: CGFloat) {
 		self.progress = min(progress, 1)
 		
 		let startAngle = CGFloat(-1*M_PI_2)
@@ -115,12 +113,12 @@ class CircleDisplay: UIButton {
 		percLayer.path = processPath.CGPath
 		
 		setNeedsDisplay()
+
 	}
 	
-	func setLineWidth(width: CGFloat) {
-		self.lineWidth = width
-		
-		percLayer.lineWidth = width * progressWidthRatio
+	func changeLineWidth(width: CGFloat) {
+		lineWidth = width
+		percLayer.lineWidth = lineWidth * progressWidthRatio
 	}
 	
 	func updateDisplayText() {
@@ -129,7 +127,7 @@ class CircleDisplay: UIButton {
 		let percOpt = nutrition?.percent
 		let perc = percOpt == nil ? 100 : (percOpt! * servingCount)
 		
-		let tooLong = countElements(measure + unit) > 4
+		let tooLong = count(measure + unit) > 4
 		let inbetweenText = tooLong ? "\n" : ""
 		centralLabel.numberOfLines = tooLong ? 2 : 1
 		

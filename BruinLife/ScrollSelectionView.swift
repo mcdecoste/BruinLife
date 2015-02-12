@@ -39,7 +39,7 @@ class ScrollSelectionView: UIView {
 		addSubview(scrollView)
 	}
 	
-	func setEntries(entries: Array<String>) {
+	func changeEntries(entries: Array<String>) {
 		if (entries != self.entries) {
 			self.entries = entries
 			labels = []

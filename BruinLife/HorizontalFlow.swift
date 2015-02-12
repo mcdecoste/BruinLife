@@ -46,8 +46,8 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 	}
 	
 	override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
-		var answer = super.layoutAttributesForElementsInRect(rect)! as Array<UICollectionViewLayoutAttributes>
-		var sectNoSupp = [Int]()
+		var answer = super.layoutAttributesForElementsInRect(rect)! as! Array<UICollectionViewLayoutAttributes>
+		var sectNoSupp: Array<Int> = []
 		
 		// count the section headers
 		for layout in answer {
@@ -58,8 +58,7 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 		
 		for layout in answer {
 			if layout.representedElementCategory == UICollectionElementCategory.SupplementaryView {
-				var section = (sectNoSupp as NSArray).indexOfObject(layout.indexPath.section)
-				sectNoSupp.removeAtIndex(section)
+				sectNoSupp.removeAtIndex(find(sectNoSupp, layout.indexPath.section)!)
 			}
 		}
 		

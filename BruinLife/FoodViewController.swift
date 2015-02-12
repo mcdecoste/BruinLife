@@ -96,7 +96,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	// CORE DATA
 	lazy var managedObjectContext: NSManagedObjectContext? = {
-		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 	}()
@@ -105,7 +105,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-		view.frame.size = preferredContentSize()
+		view.frame.size = prefContentSize()
 		nutriTable = UITableView(frame: view.frame, style: .Plain)
 		
 		view.addSubview(foodLabel)
@@ -192,7 +192,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.frame = CGRect(x: 0, y: ntY, width: realWidth, height: realHeight - ntY)
 	}
 	
-	func preferredContentSize() -> CGSize {
+	func prefContentSize() -> CGSize {
 		return CGSize(width: realWidth, height: realHeight) // 260 is a little too narrow
 	}
 	
@@ -294,7 +294,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		switch section {
 		case nutritionSection:
 			if nutritionHeader == nil {
-				nutritionHeader = nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(nutrientCellID) as NutritionHeaderView?
+				nutritionHeader = nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(nutrientCellID) as! NutritionHeaderView?
 			}
 			nutritionHeader?.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForHeaderInSection: section))
 			nutritionHeader?.setServingsCount(numberOfServings)
@@ -310,7 +310,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		switch indexPath.section {
 		case descriptionSection, ingredientSection:
-			var cell = tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as UITableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as! UITableViewCell
 			var label = indexPath.section == descriptionSection ? descriptionLabel : ingredientsLabel
 			
 			for subview in cell.subviews {
@@ -338,7 +338,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			} else {
 				let needsStepper = row == servingRow
 				
-				var cell = tableView.dequeueReusableCellWithIdentifier(personalCellID) as UITableViewCell
+				var cell = tableView.dequeueReusableCellWithIdentifier(personalCellID) as! UITableViewCell
 				cell.selectionStyle = .None
 				
 				if needsStepper {
@@ -361,7 +361,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 				return cell
 			}
 		case nutritionSection:
-			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as NutritionTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as! NutritionTableViewCell
 			
 			let allRaw = Nutrient.allRawValues as NSArray
 			let cellInfo = Nutrient.rowPairs[indexPath.row]
@@ -377,7 +377,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			
 			return cell
 		default:
-			return tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as UITableViewCell
+			return tableView.dequeueReusableCellWithIdentifier(ingredientCellID) as! UITableViewCell
 		}
 	}
 	
@@ -436,11 +436,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		numberOfServings = Int(sender.value)
 		
 		nutritionHeader?.setServingsCount(numberOfServings)
-		for cell in (nutriTable?.visibleCells() as [UITableViewCell]) {
+		for cell in (nutriTable?.visibleCells() as! [UITableViewCell]) {
 			if let cellPath = nutriTable?.indexPathForCell(cell) {
 				// update nutritional cells
 				if cellPath.section == nutritionSection {
-					(cell as NutritionTableViewCell).setServingCount(numberOfServings)
+					(cell as! NutritionTableViewCell).setServingCount(numberOfServings)
 				}
 				
 				// update the serving count cell
@@ -516,10 +516,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func getNotification() -> UILocalNotification? {
-		var notifications = UIApplication.sharedApplication().scheduledLocalNotifications as Array<UILocalNotification>
+		var notifications = UIApplication.sharedApplication().scheduledLocalNotifications as! Array<UILocalNotification>
 		for not in notifications {
-			if let value = (not.userInfo as [String : String])[notificationID] {
-				if value == identifierForFood() { return not }
+			if let value = (not.userInfo as! [String : String])[notificationID] where value == identifierForFood() {
+				return not
 			}
 		}
 		

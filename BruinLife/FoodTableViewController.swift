@@ -39,7 +39,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	// Core Data
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
-		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let managedObjectContext = appDelegate.managedObjectContext {
 			return managedObjectContext
 		}
@@ -61,7 +61,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		super.viewWillAppear(animated)
 		
 		if hasData() {
-			for cell in tableView.visibleCells() as Array<FoodTableViewCell> {
+			for cell in tableView.visibleCells() as! Array<FoodTableViewCell> {
 				cell.updateDisplay()
 			}
 		}
@@ -91,7 +91,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func setInformation(info: DayInfo) {
-		(tableView.visibleCells() as Array<EmptyTableViewCell>)[0].setType(.Expanding)
+		(tableView.visibleCells() as! Array<EmptyTableViewCell>)[0].setType(.Expanding)
 		information = info
 		dateMeals = orderedMeals(information.meals.keys.array)
 		tableView.reloadData()
@@ -105,11 +105,11 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	// MARK: - Core Data
 	
 	func handleDataChange(notification: NSNotification) {
-		let dDay = notification.userInfo!["newItem"] as DiningDay
+		let dDay = notification.userInfo!["newItem"] as! DiningDay
 		
 		if dDay.day == comparisonDate() {
 			setInformationString(dDay.data)
-			(self.tableView.visibleCells() as [EmptyTableViewCell])[0].setType(loadState)
+			(self.tableView.visibleCells() as! [EmptyTableViewCell])[0].setType(loadState)
 			dispatch_async(dispatch_get_main_queue()) {
 				self.setInformation()
 				self.refreshControl?.endRefreshing()
@@ -163,7 +163,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	func refreshParallax() {
 		if hasData() {
-			for cell in (tableView.visibleCells() as Array<FoodTableViewCell>) {
+			for cell in (tableView.visibleCells() as! Array<FoodTableViewCell>) {
 				var percent = (cell.frame.origin.y - tableView.contentOffset.y) / tableView.frame.height
 				cell.parallaxImageWithScrollPercent(percent)
 			}
@@ -201,7 +201,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if !hasData() {
-			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as EmptyTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as! EmptyTableViewCell
 			cell.setType(loadState)
 			return cell
 		}
@@ -213,7 +213,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var restaurant = (allHalls[allHalls.keys.array[modelRow]])!
 		
 		if indexPathHasFoodDisplay(indexPath) {
-			var cell = tableView.dequeueReusableCellWithIdentifier(kFoodDisplayID)! as MenuTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(kFoodDisplayID)! as! MenuTableViewCell
 			
 			cell.selectionStyle = .None
 			cell.frame.size = CGSize(width: tableView.frame.width, height: kFoodDisplayHeight)
@@ -223,7 +223,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			
 			return cell
 		} else {
-			var cell = tableView.dequeueReusableCellWithIdentifier(kRestCellID)! as RestaurantTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(kRestCellID)! as! RestaurantTableViewCell
 			
 			cell.frame.size = CGSize(width: tableView.frame.width, height: kRestCellHeight)
 			cell.foodVC = self
@@ -324,7 +324,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: - Popovers
 	func addFoodPopover(food: MainFoodInfo?){
-		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as FoodViewController
+		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as! FoodViewController
 		
 		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
 		foodVC.preferredContentSize = foodVC.preferredContentSize
@@ -346,7 +346,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
-	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController!) -> UIModalPresentationStyle{
+	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
 		return .None
 	}
 	
@@ -358,7 +358,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		var restaurant = displayCell?.information
 		var food = restaurant?.sections[indexPath.section].foods[indexPath.row]
-		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as FoodCollectionViewCell
+		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as! FoodCollectionViewCell
 		cell.setFood(restaurant!.sections[indexPath.section].foods[indexPath.row], isHall: isHall)
 		return cell
 	}
@@ -368,10 +368,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
-		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as SectionCollectionReusableView
-		header.setTitle((displayCell?.information?.sections[indexPath.section].name)!)
+		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as! SectionCollectionReusableView
+		header.changeTitle((displayCell?.information?.sections[indexPath.section].name)!)
 		
-		var flow = collectionView.collectionViewLayout as HorizontalFlow
+		var flow = collectionView.collectionViewLayout as! HorizontalFlow
 		while flow.headerWidths.count - indexPath.section < 1 {
 			flow.headerWidths.append(240)
 		}

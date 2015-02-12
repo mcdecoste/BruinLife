@@ -79,7 +79,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
     }
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as UITableViewCell
+		let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! UITableViewCell
 		
 		// Configure the cell...
 		let info = cells[indexPath.section][indexPath.row]
@@ -103,15 +103,15 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 			}
 		} else {
 			if let vcID = cells[indexPath.section][indexPath.row].vc {
-				var vc = storyboard?.instantiateViewControllerWithIdentifier(vcID) as UITableViewController
+				var vc = storyboard?.instantiateViewControllerWithIdentifier(vcID) as! UITableViewController
 				
 				switch indexPath.row {
 				case 0:
-					vc = vc as NotificationTableViewController
+					vc = vc as! NotificationTableViewController
 				case 1:
-					vc = vc as FavoritesTableViewController
+					vc = vc as! FavoritesTableViewController
 				case 2:
-					vc = vc as ServingsTableViewController
+					vc = vc as! ServingsTableViewController
 				default:
 					vc = vc as UITableViewController
 				}

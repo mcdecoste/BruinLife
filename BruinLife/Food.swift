@@ -26,7 +26,7 @@ class DiningDay: NSManagedObject {
 	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> DiningDay {
 		var request = NSFetchRequest(entityName: "DiningDay")
 		
-		let recordDay = comparisonDate(record.objectForKey("Day") as NSDate)
+		let recordDay = comparisonDate(record.objectForKey("Day") as! NSDate)
 		request.predicate = NSPredicate(format: "day == %@", recordDay)
 		
 		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [DiningDay] {
@@ -35,9 +35,9 @@ class DiningDay: NSManagedObject {
 			}
 		}
 		
-		var newItem = NSEntityDescription.insertNewObjectForEntityForName("DiningDay", inManagedObjectContext: moc) as DiningDay
-		newItem.hours = NSString(data: record.objectForKey("Hours") as NSData, encoding: NSUTF8StringEncoding) as String
-		newItem.data = NSString(data: record.objectForKey("Data") as NSData, encoding: NSUTF8StringEncoding) as String
+		var newItem = NSEntityDescription.insertNewObjectForEntityForName("DiningDay", inManagedObjectContext: moc) as! DiningDay
+		newItem.hours = NSString(data: record.objectForKey("Hours") as! NSData, encoding: NSUTF8StringEncoding) as! String
+		newItem.data = NSString(data: record.objectForKey("Data") as! NSData, encoding: NSUTF8StringEncoding) as! String
 		newItem.day = recordDay
 		
 		NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newItem])
@@ -69,7 +69,7 @@ class Food: NSManagedObject {
 			}
 		}
 		
-		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as Food
+		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as! Food
 		newItem.foodString = food.foodString()
 		
 		newItem.favorite = false

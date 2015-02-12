@@ -60,7 +60,7 @@ class SwipesTableViewController: UITableViewController {
 	
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if indexPath.section == 0 {
-			let cell = tableView.dequeueReusableCellWithIdentifier(scrollID, forIndexPath: indexPath) as ScrollSelectionTableViewCell
+			let cell = tableView.dequeueReusableCellWithIdentifier(scrollID, forIndexPath: indexPath) as! ScrollSelectionTableViewCell
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
@@ -86,7 +86,7 @@ class SwipesTableViewController: UITableViewController {
 			
 			return cell
 		} else {
-			let cell = tableView.dequeueReusableCellWithIdentifier(displayID, forIndexPath: indexPath) as UITableViewCell
+			let cell = tableView.dequeueReusableCellWithIdentifier(displayID, forIndexPath: indexPath) as! UITableViewCell
 			cell.selectionStyle = .None
 			
 			// Configure the cell...

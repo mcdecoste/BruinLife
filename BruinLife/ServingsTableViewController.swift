@@ -17,7 +17,7 @@ class ServingsTableViewController: UITableViewController {
 	let foodSection = 1
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
-		let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let moc = appDelegate.managedObjectContext { return moc }
 		else { return nil }
 	}()
@@ -128,11 +128,11 @@ class ServingsTableViewController: UITableViewController {
 		
 		// update the nutrition side
 		nutritionValues = calculateNutritionData()
-		for cell in (tableView.visibleCells() as [UITableViewCell]) {
+		for cell in (tableView.visibleCells() as! [UITableViewCell]) {
 			if let cellPath = tableView.indexPathForCell(cell) {
 				// update nutritional cells
 				if cellPath.section == nutritionSection {
-					updateNutritionCell(cell as NutritionTableViewCell, path: cellPath)
+					updateNutritionCell(cell as! NutritionTableViewCell, path: cellPath)
 				}
 			}
 		}
@@ -160,14 +160,14 @@ class ServingsTableViewController: UITableViewController {
 		case foodSection:
 			let food = foodItems[indexPath.row]
 			
-			let cell = tableView.dequeueReusableCellWithIdentifier(foodID, forIndexPath: indexPath) as ServingsDisplayTableViewCell
+			let cell = tableView.dequeueReusableCellWithIdentifier(foodID, forIndexPath: indexPath) as! ServingsDisplayTableViewCell
 			cell.selectionStyle = .None
 			cell.controller = self
 			cell.changeFood(food)
 			
 			return cell
 		default:
-			var cell = tableView.dequeueReusableCellWithIdentifier(nutritionID) as NutritionTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(nutritionID) as! NutritionTableViewCell
 			
 			cell.frame.size.width = tableView.frame.width
 			cell.selectionStyle = .None

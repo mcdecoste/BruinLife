@@ -2,6 +2,10 @@
 
 import UIKit
 
+find(["Hi", "Bye"], "By")
+
+
+
 //let string = "B70Item"
 //let char = string[string.startIndex]
 //char == "B"
@@ -9,16 +13,16 @@ import UIKit
 //if string.rangeOfString("Item") != nil {
 //	println("yes")
 //}
-
-func comparisonDate(date: NSDate) -> NSDate {
-	return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: nil)!
-}
-
-func comparisonDate(daysInFuture: Int = 0) -> NSDate {
-	return NSCalendar.currentCalendar().dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
-}
-
-comparisonDate(daysInFuture: 6)
+//
+//func comparisonDate(date: NSDate) -> NSDate {
+//	return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: nil)!
+//}
+//
+//func comparisonDate(daysInFuture: Int = 0) -> NSDate {
+//	return NSCalendar.currentCalendar().dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
+//}
+//
+//comparisonDate(daysInFuture: 6)
 
 //var format1 = "M/d"
 //var format2 = "MMM d"

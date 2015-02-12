@@ -192,8 +192,8 @@ class DayInfo {
 	}
 	
 	init(record: CKRecord) {
-		date = record.objectForKey("Day") as NSDate
-		let formString = NSString(data: record.objectForKey("Data") as NSData, encoding: NSUTF8StringEncoding) as String
+		date = record.objectForKey("Day") as! NSDate
+		let formString = NSString(data: record.objectForKey("Data") as! NSData, encoding: NSUTF8StringEncoding) as! String
 		let parts = formString.componentsSeparatedByString("ﬂ")
 		for part in parts {
 			let dictParts = part.componentsSeparatedByString("Ø")
@@ -522,8 +522,7 @@ enum Nutrient: String { // , Equatable
 	}
 	
 	func hasDVpercentage() -> Bool {
-		var index = (Nutrient.allRawValues as NSArray).indexOfObject(rawValue)
-		return Nutrient.allDailyValues[index] != nil
+		return Nutrient.allDailyValues[find(Nutrient.allRawValues, rawValue)!] != nil
 	}
 }
 
