@@ -13,13 +13,11 @@ class ScrollSelectionTableViewCell: UITableViewCell {
 	
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
-		
-		addSubview(clipView)
+        addSubview(clipView)
     }
 	
 	func setEntries(entries: Array<String>) {
-		clipView.changeEntries(entries)
+		clipView.entries = entries
 	}
 	
 	override func layoutSubviews() {

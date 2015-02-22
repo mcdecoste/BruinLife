@@ -9,21 +9,34 @@
 import UIKit
 
 class NutritionHeaderView: UITableViewHeaderFooterView {
-	private var mainLabel: UILabel
-	private var sideLabel: UILabel
+	private var mainLabel: UILabel, sideLabel: UILabel
 	private let headerGap: CGFloat = 8
-	private var servingsCount: Int = 0
+	var servingsCount: Int = 0 {
+		didSet {
+			switch servingsCount {
+			case 0:
+				sideLabel.text = ""
+			case 1:
+				sideLabel.text = "for 1 serving"
+			default:
+				sideLabel.text = "for \(servingsCount) servings"
+			}
+			sideLabel.sizeToFit()
+			sideLabel.frame.origin.x = frame.width - sideLabel.frame.width - 8
+			sideLabel.frame.origin.y = mainLabel.frame.maxY - sideLabel.frame.height - 2 // dunno why it's not lined up right
+			
+			setNeedsDisplay()
+		}
+	}
 	
 	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
-	private let baseWidth: CGFloat = 280 * 0.9
-	private let baseHeight: CGFloat = 460 * 0.5
+	private let baseWidth: CGFloat = 280 * 0.9, baseHeight: CGFloat = 460 * 0.5
 	
 	override init(frame: CGRect) {
 		mainLabel = UILabel(frame: frame)
 		sideLabel = UILabel(frame: frame)
 		
 		super.init(frame: frame)
-		
 		setup()
 	}
 	
@@ -32,7 +45,6 @@ class NutritionHeaderView: UITableViewHeaderFooterView {
 		sideLabel = UILabel(coder: aDecoder)
 		
 		super.init(coder: aDecoder)
-		
 		setup()
 	}
 	
@@ -41,7 +53,6 @@ class NutritionHeaderView: UITableViewHeaderFooterView {
 		sideLabel = UILabel()
 		
 		super.init(reuseIdentifier: reuseIdentifier)
-		
 		setup()
 	}
 	
@@ -60,37 +71,9 @@ class NutritionHeaderView: UITableViewHeaderFooterView {
 		sideLabel.textColor = darkGreyTextColor
 		sideLabel.textAlignment = .Right
 		
-		setServingsCount(0)
+		servingsCount = 0
 		
 		addSubview(sideLabel)
 		addSubview(mainLabel)
 	}
-	
-	func setServingsCount(count: Int) {
-		servingsCount = count
-		
-		switch servingsCount {
-		case 0:
-			sideLabel.text = ""
-		case 1:
-			sideLabel.text = "for 1 serving"
-		default:
-			sideLabel.text = "for \(servingsCount) servings"
-		}
-		sideLabel.sizeToFit()
-		sideLabel.frame.origin.x = frame.width - sideLabel.frame.width - 8
-		sideLabel.frame.origin.y = mainLabel.frame.maxY - sideLabel.frame.height - 2 // dunno why it's not lined up right
-		
-		setNeedsDisplay()
-	}
-	
-	
-    /*
-    // Only override drawRect: if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func drawRect(rect: CGRect) {
-        // Drawing code
-    }
-    */
-
 }

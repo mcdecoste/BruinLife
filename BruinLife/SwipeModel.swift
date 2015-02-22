@@ -99,10 +99,21 @@ class SwipeModel: NSObject {
 	let daysOfWeek = DaysOfWeekNames.allValues
 	
 	var mealPlan: MealPlanType = .BP19
-	var selectedWeek = 0
-	var selectedDay = 0
-	var selectedMeal = MealType.Lunch
+	var selectedWeek = 0, selectedDay = 0, selectedMeal: MealType = .Lunch
 	var currentQuarter: QuarterType? = nil
+	
+	var swipesForDay: Int {
+		get {
+			return mealPlan.swipesLeft(selectedWeek, day: selectedDay, meal: selectedMeal)
+		}
+	}
+	
+	var sameAsCurrent: Bool {
+		var sameWeek = selectedWeek == currentWeekAndQuarter().week
+		var sameDay = selectedDay == currentDayOfWeek()
+		var sameMeal = selectedMeal == currentMeal()
+		return sameWeek && sameDay && sameMeal
+	}
 	
 	override init() {
 		super.init()
@@ -128,24 +139,9 @@ class SwipeModel: NSObject {
 		return (regularDow + 5) % 7 // Monday = 0, Sunday = 6
 	}
 	
-	func swipesForSelectedDay() -> Int {
-		return mealPlan.swipesLeft(selectedWeek, day: selectedDay, meal: .Dinner)
-	}
-	
-	func swipesForSelectedDayAndTime() -> Int {
-		return mealPlan.swipesLeft(selectedWeek, day: selectedDay, meal: selectedMeal)
-	}
-	
 	func resetToCurrent() {
 		(selectedWeek, currentQuarter) = currentWeekAndQuarter()
 		selectedDay = currentDayOfWeek()
 		selectedMeal = currentMeal()
-	}
-	
-	func sameAsCurrent() -> Bool {
-		var sameWeek = selectedWeek == currentWeekAndQuarter().week
-		var sameDay = selectedDay == currentDayOfWeek()
-		var sameMeal = selectedMeal == currentMeal()
-		return sameWeek && sameDay && sameMeal
 	}
 }

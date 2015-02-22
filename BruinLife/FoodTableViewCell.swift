@@ -15,6 +15,12 @@ class FoodTableViewCell: UITableViewCell {
 	var backgroundImageView: UIImageView?
 	var isHall: Bool = true
 	
+	var open: Bool {
+		get {
+			return dateInfo().open
+		}
+	}
+	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		finishSetup()
@@ -41,7 +47,7 @@ class FoodTableViewCell: UITableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
+		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open))!))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		
@@ -62,10 +68,6 @@ class FoodTableViewCell: UITableViewCell {
 		var open2 = (openDate2?.timeIntervalSinceNow <= 0 && closeDate2?.timeIntervalSinceNow >= 0)
 		var open = open1 || open2
 		return (open, openDate1, closeDate1)
-	}
-	
-	func open() -> Bool {
-		return dateInfo().open
 	}
 	
 	func parallaxImageWithScrollPercent(perc: CGFloat) {

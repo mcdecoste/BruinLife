@@ -17,12 +17,35 @@ class CircleDisplay: UIButton {
 	var nutrition: NutritionListing?
 	var showingAmount: Bool = true
 	
-	var progress: CGFloat = 0.0
-	var lineWidth: CGFloat = 0.0
+	var progress: CGFloat = 0.0 {
+		didSet {
+			let startAngle = CGFloat(-1*M_PI_2)
+			let endAngle = startAngle + (2 * CGFloat(M_PI) * self.progress)
+			let radius = (bounds.width - (3 * lineWidth)) / 2
+			
+			var processPath = UIBezierPath()
+			processPath.lineCapStyle = kCGLineCapButt
+			processPath.lineWidth = lineWidth
+			processPath.addArcWithCenter(CGPoint(x: frame.size.width/2, y: frame.size.height/2), radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
+			
+			percLayer.path = processPath.CGPath
+			
+			setNeedsDisplay()
+		}
+	}
+	var lineWidth: CGFloat = 0.0 {
+		didSet {
+			percLayer.lineWidth = lineWidth * progressWidthRatio
+		}
+	}
 	
 	let progressWidthRatio: CGFloat = 2.0 // must be larger than 1
 	
-	var servingCount: Int = 1
+	var servingCount: Int = 1 {
+		didSet {
+			update()
+		}
+	}
 	
 	override init(frame: CGRect) {
 		centralLabel = UILabel(frame: frame)
@@ -71,13 +94,6 @@ class CircleDisplay: UIButton {
 	func setNutrition(nutrition: NutritionListing, servingCount: Int) {
 		self.nutrition = nutrition
 		self.servingCount = servingCount
-		
-		update()
-	}
-	
-	func changeServingCount(count: Int) {
-		servingCount = count
-		update()
 	}
 	
 	func update() {
@@ -100,32 +116,14 @@ class CircleDisplay: UIButton {
 	
 	func changeProgress(progress: CGFloat) {
 		self.progress = min(progress, 1)
-		
-		let startAngle = CGFloat(-1*M_PI_2)
-		let endAngle = startAngle + (2 * CGFloat(M_PI) * self.progress)
-		let radius = (bounds.width - (3 * lineWidth)) / 2
-		
-		var processPath = UIBezierPath()
-		processPath.lineCapStyle = kCGLineCapButt
-		processPath.lineWidth = lineWidth
-		processPath.addArcWithCenter(CGPoint(x: frame.size.width/2, y: frame.size.height/2), radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
-		
-		percLayer.path = processPath.CGPath
-		
-		setNeedsDisplay()
-
-	}
-	
-	func changeLineWidth(width: CGFloat) {
-		lineWidth = width
-		percLayer.lineWidth = lineWidth * progressWidthRatio
 	}
 	
 	func updateDisplayText() {
-		let measure = "\(servingCount * NSString(string: (nutrition?.measure)!).integerValue)"
+		let trueMeasure = CGFloat(NSNumberFormatter().numberFromString((nutrition?.measure)!)!)
+		let measure = "\(Int(CGFloat(servingCount) * trueMeasure))" // round it
 		let unit = (nutrition?.unit)!
 		let percOpt = nutrition?.percent
-		let perc = percOpt == nil ? 100 : (percOpt! * servingCount)
+		let perc = percOpt == nil ? 100 : percOpt! * servingCount
 		
 		let tooLong = count(measure + unit) > 4
 		let inbetweenText = tooLong ? "\n" : ""

@@ -9,8 +9,7 @@
 import UIKit
 
 class NotificationTableViewCell: UITableViewCell {
-	var nameLabel = UILabel()
-	var timeLabel = UILabel()
+	var nameLabel = UILabel(), timeLabel = UILabel()
 	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)

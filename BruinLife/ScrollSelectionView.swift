@@ -10,7 +10,20 @@ import UIKit
 
 class ScrollSelectionView: UIView {
 	var scrollView = UIScrollView()
-	var entries = [String]()
+	var entries: Array<String> = [] {
+		didSet {
+			labels = []
+			
+			for (index, entry) in enumerate(entries) {
+				var label = UILabel()
+				label.font = .systemFontOfSize(24)
+				label.text = entry
+				label.sizeToFit()
+				label.textAlignment = .Center
+				labels.append(label)
+			}
+		}
+	}
 	var labels = [UILabel]()
 	
 	override init(frame: CGRect) {
@@ -37,22 +50,6 @@ class ScrollSelectionView: UIView {
 		scrollView.scrollEnabled = true
 		scrollView.clipsToBounds = false
 		addSubview(scrollView)
-	}
-	
-	func changeEntries(entries: Array<String>) {
-		if (entries != self.entries) {
-			self.entries = entries
-			labels = []
-			
-			for (index, entry) in enumerate(entries) {
-				var label = UILabel()
-				label.font = .systemFontOfSize(24)
-				label.text = entry
-				label.sizeToFit()
-				label.textAlignment = .Center
-				labels.append(label)
-			}
-		}
 	}
 	
 	func scrollToPage(page: Int) {

@@ -12,9 +12,17 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	var expanded: Bool = false
 	var controller: ServingsTableViewController?
 	
-	var nameLabel = UILabel()
-	var stepper = UIStepper()
-	var servingLabel = UILabel()
+	var nameLabel = UILabel(), stepper = UIStepper(), servingLabel = UILabel()
+	var food: Food {
+		set {
+			nameLabel.text = food.info().name
+			stepper.value = Double(food.servings)
+			servingLabel.text = servingText(Int(food.servings))
+		}
+		get {
+			return Food()
+		}
+	}
 	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: .Value1, reuseIdentifier: reuseIdentifier)
@@ -24,12 +32,6 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	required init(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 		layout()
-	}
-	
-	func changeFood(food: Food) {
-		nameLabel.text = food.info().name
-		stepper.value = Double(food.servings)
-		servingLabel.text = servingText(Int(food.servings))
 	}
 	
 	func layout() {

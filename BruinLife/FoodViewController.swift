@@ -82,6 +82,12 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	var notificationCell: FoodNotificationTableViewCell?
 	
+	var prefContentSize: CGSize {
+		get {
+			return CGSize(width: realWidth, height: realHeight)
+		}
+	}
+	
 	// CORE DATA
 	lazy var managedObjectContext: NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -93,7 +99,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-		view.frame.size = prefContentSize()
+		view.frame.size = prefContentSize
 		nutriTable = UITableView(frame: view.frame, style: .Plain)
 		
 		view.addSubview(foodLabel)
@@ -178,10 +184,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		var ntY = typeLabel.frame.maxY + 2
 		
 		nutriTable?.frame = CGRect(x: 0, y: ntY, width: realWidth, height: realHeight - ntY)
-	}
-	
-	func prefContentSize() -> CGSize {
-		return CGSize(width: realWidth, height: realHeight) // 260 is a little too narrow
 	}
 	
 	// MARK: Label
@@ -285,7 +287,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 				nutritionHeader = nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(nutrientCellID) as! NutritionHeaderView?
 			}
 			nutritionHeader?.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForHeaderInSection: section))
-			nutritionHeader?.setServingsCount(numberOfServings)
+			nutritionHeader?.servingsCount = numberOfServings
 			return nutritionHeader
 		default:
 			var header = UIView(frame: CGRect(x: 0, y: 0, width: (nutriTable?.frame.width)!, height: self.tableView(tableView, heightForHeaderInSection: section)))
@@ -423,7 +425,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func stepperChanged(sender: UIStepper) {
 		numberOfServings = Int(sender.value)
 		
-		nutritionHeader?.setServingsCount(numberOfServings)
+		nutritionHeader?.servingsCount = numberOfServings
 		for cell in (nutriTable?.visibleCells() as! [UITableViewCell]) {
 			if let cellPath = nutriTable?.indexPathForCell(cell) {
 				// update nutritional cells

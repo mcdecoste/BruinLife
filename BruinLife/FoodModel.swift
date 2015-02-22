@@ -545,6 +545,14 @@ class NutritionListing {
 		}
 		return nil
 	}
+	
+	func percForMeasure(meas: CGFloat) -> Int? {
+		if let dailyValue = Nutrient.allDailyValues[(find(Nutrient.allValues, self.type))!] {
+			
+			return Int(100.0 * ((measure as NSString).floatValue) / Float(dailyValue))
+		}
+		return nil
+	}
 }
 
 enum MealType : String {

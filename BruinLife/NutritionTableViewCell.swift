@@ -40,8 +40,8 @@ class NutritionTableViewCell: UITableViewCell {
 	func setServingCount(count: Int) {
 		numberServings = count == 0 ? 1 : count
 		
-		leftDisplay.changeServingCount(numberServings)
-		rightDisplay.changeServingCount(numberServings)
+		leftDisplay.servingCount = numberServings
+		rightDisplay.servingCount = numberServings
 	}
 	
 	func setInformation(information: (type: NutrientDisplayType, left: NutritionListing?, right: NutritionListing?)) {

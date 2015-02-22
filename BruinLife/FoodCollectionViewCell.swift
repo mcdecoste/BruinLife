@@ -10,9 +10,7 @@ import UIKit
 
 class FoodCollectionViewCell: UICollectionViewCell {
 	var food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
-	var nameLabel = UILabel()
-	var typeLabel = UILabel()
-	var extraLabel = UILabel()
+	var nameLabel = UILabel(), typeLabel = UILabel(), extraLabel = UILabel()
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)

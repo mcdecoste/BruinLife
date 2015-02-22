@@ -87,7 +87,7 @@ class SwipesTableViewController: UITableViewController {
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
-			var swipes = model.swipesForSelectedDayAndTime()
+			let swipes = model.swipesForDay
 			cell.textLabel?.font = .systemFontOfSize(20)
 			
 			if cell.bounds.width <= 320 { // 4" screen or smaller
@@ -131,7 +131,7 @@ class SwipesTableViewController: UITableViewController {
 		}
 		
 		if reload { tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None) }
-		self.navigationItem.leftBarButtonItem?.enabled = !model.sameAsCurrent()
+		self.navigationItem.leftBarButtonItem?.enabled = !model.sameAsCurrent
 	}
 	
 	func revertToToday() {

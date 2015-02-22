@@ -167,7 +167,7 @@ class ServingsTableViewController: UITableViewController {
 			let cell = tableView.dequeueReusableCellWithIdentifier(foodID, forIndexPath: indexPath) as! ServingsDisplayTableViewCell
 			cell.selectionStyle = .None
 			cell.controller = self
-			cell.changeFood(food)
+			cell.food = food
 			
 			return cell
 		default:

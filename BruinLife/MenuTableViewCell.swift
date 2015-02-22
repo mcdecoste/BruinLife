@@ -53,7 +53,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open()))!))
+		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open))!))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		
