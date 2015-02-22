@@ -20,7 +20,7 @@ class QuickTableViewController: FoodTableViewController {
 	override func viewDidAppear(animated: Bool) {
 		// Check how much to do this
 		if information.meals.count == 0 {
-			setInformation()
+			setInformationIfNeeded()
 			// add in the information for the data
 			let hours = HoursInfo(formattedString: "DinnerØBruin Plateˆ17-0~20-0ÍCafe 1919ˆ17-0~21-0ÍBruin Cafeˆ17-0~21-0ÍRendezvousˆ17-0~21-0ÍFeastˆ17-0~20-0ÍCovelˆ17-0~21-0ÍDe Neveˆ17-0~20-0‰BreakfastØBruin Plateˆ7-0~9-0ÍCafe 1919ˆCÍBruin Cafeˆ7-0~11-0ÍRendezvousˆ7-0~11-0ÍFeastˆCÍCovelˆCÍDe Neveˆ7-0~10-0‰LunchØBruin Plateˆ11-0~14-0ÍCafe 1919ˆ11-0~15-0ÍBruin Cafeˆ11-0~17-0ÍRendezvousˆ12-0~16-0ÍFeastˆ11-0~14-0ÍCovelˆ11-0~14-0ÍDe Neveˆ11-0~14-0‰Late NightØBruin PlateˆCÍCafe 1919ˆ21-0~24-0ÍBruin Cafeˆ21-0~26-0ÍRendezvousˆ21-0~24-0ÍFeastˆCÍCovelˆCÍDe Neveˆ21-0~24-0")
 			for meal in information.meals.keys.array {

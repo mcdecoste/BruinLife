@@ -39,11 +39,13 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)
 		
-		navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
-		navigationItem.leftBarButtonItem?.enabled = false
+		var leftBar = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
+		leftBar.enabled = false
+		navigationItem.leftBarButtonItem = leftBar
 		
-		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Days", style: .Plain, target: self, action: "showDays")
-		navigationItem.rightBarButtonItem?.enabled = false
+		var rightBar = UIBarButtonItem(title: "Days", style: .Plain, target: self, action: "showDays")
+		rightBar.enabled = false
+		navigationItem.rightBarButtonItem = rightBar
 		
 		pageController.view.backgroundColor = tableBackgroundColor
 	}
@@ -79,7 +81,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	func updateNavItem(vc: DormTableViewController) {
 		navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
-		navigationItem.title = vc.preferredTitle()
+		navigationItem.title = vc.preferredTitle
 	}
 	
 	// MARK: - UIPageViewControllerDataSource
@@ -109,20 +111,20 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
 		let vc = completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as! UINavigationController)
 		navigationItem.leftBarButtonItem?.enabled = daysInFuture(vc.information.date) != 0
-		navigationItem.title = vc.preferredTitle()
+		navigationItem.title = vc.preferredTitle
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [AnyObject]) {
 		if pendingViewControllers.count != 0 {
 			let vc = dormVCfromNavVC(pendingViewControllers[0] as! UINavigationController)
 			navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
-			navigationItem.title = vc.preferredTitle()
+			navigationItem.title = vc.preferredTitle
 		}
 	}
 	
 	func vcForIndex(index: Int) -> UINavigationController {
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as! DormTableViewController
-		vc.setInformationString(CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index)))
+		vc.informationStr = CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index))
 		vc.information.date = comparisonDate(daysInFuture: index)
 		vc.dormCVC = self
 		

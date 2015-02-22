@@ -9,9 +9,35 @@
 import UIKit
 
 class EmptyTableViewCell: UITableViewCell {
-	var centralLabel = UILabel()
-	var detailLabel = UILabel()
+	var centralLabel = UILabel(), detailLabel = UILabel()
 	var activity = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+	
+	var loadState: FoodControllerLoadState = .Loading {
+		didSet {
+			switch loadState {
+			case .Loading:
+				centralLabel.text = "Loading menu..."
+				detailLabel.text = ""
+				activity.startAnimating()
+			case .Failed:
+				centralLabel.text = "Load failed."
+				detailLabel.text = "Pull down to retry."
+				activity.stopAnimating()
+			case .Expanding:
+				centralLabel.text = "Building menu..."
+				detailLabel.text = ""
+				activity.startAnimating()
+			case .Done:
+				centralLabel.text = ""
+				detailLabel.text = ""
+				activity.stopAnimating()
+			default:
+				centralLabel.text = ""
+				detailLabel.text = ""
+				activity.stopAnimating()
+			}
+		}
+	}
 	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -53,26 +79,5 @@ class EmptyTableViewCell: UITableViewCell {
 	/// Helper method for Auto Layout
 	func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {
 		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: ["central" : centralLabel, "act" : activity, "detail" : detailLabel]))
-	}
-	
-	func setType(loadState: FoodControllerLoadState) {
-		switch loadState {
-		case .Loading:
-			centralLabel.text = "Loading menu..."
-			detailLabel.text = ""
-			activity.startAnimating()
-		case .Failed:
-			centralLabel.text = "Load failed."
-			detailLabel.text = "Pull down to retry."
-			activity.stopAnimating()
-		case .Expanding:
-			centralLabel.text = "Building menu..."
-			detailLabel.text = ""
-			activity.startAnimating()
-		default:
-			centralLabel.text = ""
-			detailLabel.text = ""
-			activity.stopAnimating()
-		}
 	}
 }

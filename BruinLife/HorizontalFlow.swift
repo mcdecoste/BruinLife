@@ -51,7 +51,7 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 		
 		// count the section headers
 		for layout in answer {
-			if !(sectNoSupp as NSArray).containsObject(layout.indexPath.section) {
+			if find(sectNoSupp, layout.indexPath.section) == nil {
 				sectNoSupp.append(layout.indexPath.section)
 			}
 		}

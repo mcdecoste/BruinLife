@@ -49,7 +49,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		collectionView?.delegate = foodVC
 		collectionView?.dataSource = foodVC
 		
-		var imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
+		let imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
 		

@@ -15,29 +15,82 @@ enum FoodControllerLoadState: Int {
 	case Failed = 1
 	case Expanding = 2
 	case Hiding = 3
+	case Done = 4
+	
+	func showActivity() -> Bool {
+		switch self {
+		case Loading, Expanding:
+			return true
+		default:
+			return false
+		}
+	}
 }
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
-	let kRestCellID = "FoodCell"
-	let kRestCellHeight: CGFloat = 88
-	let kFoodDisplayID = "DisplayCell"
-	let kFoodDisplayHeight: CGFloat = 220
+	let kRestCellID = "FoodCell", kRestCellHeight: CGFloat = 88
+	let kFoodDisplayID = "DisplayCell", kFoodDisplayHeight: CGFloat = 220
 	let EmptyCellID = "EmptyCell"
 	
 	let foodVCid = "foodDescriptionViewController"
+	let refresh: Selector = "retryLoad"
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
-	var informationStr = ""
-	var information = DayInfo()
+	var informationStr: String = "" {
+		didSet {
+			loadState = .Expanding // will reload tableview
+//			setInformationIfNeeded()
+			dispatch_async(dispatch_get_main_queue()) {
+				self.setInformationIfNeeded()
+			}
+		}
+	}
+	var information: DayInfo = DayInfo() {
+		willSet {
+			loadState = .Expanding
+//			(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = .Expanding
+		}
+		didSet {
+			dateMeals = orderedMeals(information.meals.keys.array)
+			loadState = hasData ? .Done : .Failed
+		}
+	}
 	var dateMeals = [MealType]()
 	
 	var isHall = true
 	
-	var loadState: FoodControllerLoadState = .Loading
+	var loadState: FoodControllerLoadState = .Loading {
+		didSet {
+			if loadState == .Failed {
+				if let refresher = self.refreshControl {
+					refresher.endRefreshing()
+				} else {
+					self.refreshControl = UIRefreshControl()
+					self.refreshControl!.addTarget(self, action: refresh, forControlEvents: .ValueChanged)
+				}
+			} else {
+				if !loadState.showActivity() {
+					self.refreshControl?.endRefreshing()
+					self.refreshControl = nil
+				}
+			}
+			tableView.reloadData()
+		}
+	}
+	
+	var hasData: Bool {
+		get {
+			return information.meals.count != 0
+		}
+	}
+	var hasInlineFoodDisplay: Bool {
+		get {
+			return displayIndexPath.section != -1
+		}
+	}
 	
 	// Core Data
-	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let managedObjectContext = appDelegate.managedObjectContext {
@@ -60,7 +113,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		if hasData() {
+		if hasData {
 			for cell in tableView.visibleCells() as! Array<FoodTableViewCell> {
 				cell.updateDisplay()
 			}
@@ -73,7 +126,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		super.viewDidAppear(animated)
 		
 		// Check how much to do this
-		setInformation()
+		setInformationIfNeeded()
 		scrollToMeal()
 		refreshParallax()
 	}
@@ -84,22 +137,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		NSNotificationCenter.defaultCenter().removeObserver(self, name: "NewDayInfoAdded", object: nil)
 	}
 	
-	func setInformation() {
-		if !hasData() {
-			setInformation(DayInfo(date: information.date, formattedString: informationStr))
+	func setInformationIfNeeded() {
+		if !hasData {
+			information = DayInfo(date: information.date, formattedString: informationStr)
 		}
-	}
-	
-	func setInformation(info: DayInfo) {
-		(tableView.visibleCells() as! Array<EmptyTableViewCell>)[0].setType(.Expanding)
-		information = info
-		dateMeals = orderedMeals(information.meals.keys.array)
-		tableView.reloadData()
-	}
-	
-	func setInformationString(string: String) {
-		informationStr = string
-		loadState = .Expanding
 	}
 	
 	// MARK: - Core Data
@@ -108,13 +149,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		let dDay = notification.userInfo!["newItem"] as! DiningDay
 		
 		if dDay.day == comparisonDate() {
-			setInformationString(dDay.data)
-			(self.tableView.visibleCells() as! [EmptyTableViewCell])[0].setType(loadState)
-			dispatch_async(dispatch_get_main_queue()) {
-				self.setInformation()
-				self.refreshControl?.endRefreshing()
-				self.refreshControl = nil
-			}
+//			setInformationString(dDay.data)
+			informationStr = dDay.data
+//			(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
 		}
 	}
 	
@@ -123,27 +160,25 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func loadFailed(error: NSError!) {
 		dispatch_async(dispatch_get_main_queue()) {
 			self.loadState = .Failed
-			self.tableView.reloadData()
+//			self.tableView.reloadData()
 			
 			if let refresher = self.refreshControl {
 				refresher.endRefreshing()
 			} else {
 				self.refreshControl = UIRefreshControl()
-				self.refreshControl!.addTarget(self, action: "retryLoad", forControlEvents: .ValueChanged)
+				self.refreshControl!.addTarget(self, action: self.refresh, forControlEvents: .ValueChanged)
 			}
 		}
 	}
 	
 	func retryLoad() {
+		loadState = .Loading
+		tableView.reloadData()
 		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
 			if error != nil { // handle error case
 				self.loadFailed(error)
 			}
 		})
-	}
-	
-	func hasData() -> Bool {
-		return information.meals.count != 0
 	}
 	
 	func scrollToMeal() {
@@ -162,7 +197,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func refreshParallax() {
-		if hasData() {
+		if hasData {
 			for cell in (tableView.visibleCells() as! Array<FoodTableViewCell>) {
 				var percent = (cell.frame.origin.y - tableView.contentOffset.y) / tableView.frame.height
 				cell.parallaxImageWithScrollPercent(percent)
@@ -172,41 +207,41 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: - Table view data source
 	override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-		if !hasData() {
+		if !hasData {
 			return 100
 		}
 		return indexPathHasFoodDisplay(indexPath) ? CGFloat(kFoodDisplayHeight) : CGFloat(kRestCellHeight)
 	}
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-		return hasData() ? information.meals.count : 1
+		return hasData ? information.meals.count : 1
 	}
 	
 	override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		if !hasData() { return 1 }
+		if !hasData { return 1 }
 		
 		var currDate = information.date
 		var sectionMeal = dateMeals[section]
 		var mealInfo = (information.meals[sectionMeal])!
 		
 		var rowCount = mealInfo.halls.count
-		if (hasInlineFoodDisplay() && displayIndexPath.section == section) { rowCount++ }
+		if (hasInlineFoodDisplay && displayIndexPath.section == section) { rowCount++ }
 		
 		return rowCount
 	}
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		return hasData() ? dateMeals[section].rawValue : ""
+		return hasData ? dateMeals[section].rawValue : ""
 	}
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		if !hasData() {
+		if !hasData {
 			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as! EmptyTableViewCell
-			cell.setType(loadState)
+			cell.loadState = loadState
 			return cell
 		}
 		
-		var shouldDecr = hasInlineFoodDisplay() && displayIndexPath.row <= indexPath.row && displayIndexPath.section == indexPath.section
+		var shouldDecr = hasInlineFoodDisplay && displayIndexPath.row <= indexPath.row && displayIndexPath.section == indexPath.section
 		var modelRow = indexPath.row - (shouldDecr ? 1 : 0)
 		
 		var allHalls = information.meals[dateMeals[indexPath.section]]!.halls
@@ -245,7 +280,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: - Utilities
 	func updateFoodDisplay() {
-		if hasInlineFoodDisplay() {
+		if hasInlineFoodDisplay {
 			// why not just ask about displayCell?
 			if displayCell?.collectionView != nil { // found the MenuTableViewCell
 				var displayRow = displayIndexPath.row - 1
@@ -261,26 +296,18 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	
-	func hasInlineFoodDisplay() -> Bool {
-		return displayIndexPath.section != -1
-	}
-	
 	func indexPathHasFoodDisplay(indexPath: NSIndexPath) -> Bool {
-		var bool1 = hasInlineFoodDisplay()
+		var bool1 = hasInlineFoodDisplay
 		var bool2 = indexPath.row == displayIndexPath.row
 		var bool3 = indexPath.section == displayIndexPath.section
 		return bool1 && bool2 && bool3
 	}
 	
 	func displayInlineFoodDisplayForRowAtIndexPath(indexPath: NSIndexPath) {
+		var before = false, replaceDisplayWithNew = false, deletingDisplay = hasInlineFoodDisplay
+		var shouldScroll = false, newDisplayBelowOld = false
+		
 		tableView.beginUpdates()
-		
-		var before = false
-		var replaceDisplayWithNew = false
-		var deletingDisplay = hasInlineFoodDisplay()
-		
-		var shouldScroll = false
-		var newDisplayBelowOld = false
 		
 		if deletingDisplay {
 			replaceDisplayWithNew = (displayIndexPath.section != indexPath.section) || (indexPath.row != displayIndexPath.row - 1)

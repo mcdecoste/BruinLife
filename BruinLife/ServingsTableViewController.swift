@@ -10,11 +10,8 @@ import UIKit
 import CoreData
 
 class ServingsTableViewController: UITableViewController {
-	let nutritionID = "nutrition"
-	let foodID = "serving"
-	
-	let nutritionSection = 0
-	let foodSection = 1
+	let nutritionID = "nutrition", foodID = "serving"
+	let nutritionSection = 0, foodSection = 1
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -24,10 +21,17 @@ class ServingsTableViewController: UITableViewController {
 	var foodItems = [Food]()
 	var nutritionValues = [NutritionListing]()
 	
+	var hasFood: Bool {
+		get {
+			return foodItems.count != 0
+		}
+	}
+	
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		self.navigationItem.title = "Nutrition"
+		
 		tableView.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutritionID)
 		tableView.registerClass(ServingsDisplayTableViewCell.self, forCellReuseIdentifier: foodID)
     }
@@ -38,7 +42,7 @@ class ServingsTableViewController: UITableViewController {
 		fetchFoods()
 		nutritionValues = calculateNutritionData()
 		tableView.reloadData()
-		tableView.separatorStyle = .None
+		tableView.separatorStyle = .None // TODO: set this in storyboard
 	}
 	
     override func didReceiveMemoryWarning() {
@@ -107,7 +111,7 @@ class ServingsTableViewController: UITableViewController {
 		foodItems.removeAtIndex(path.row)
 		tableView.endUpdates()
 		
-		if !hasFood() {
+		if !hasFood {
 			tableView.reloadSections(NSIndexSet(index: foodSection), withRowAnimation: .Automatic)
 		}
 	}
@@ -181,12 +185,12 @@ class ServingsTableViewController: UITableViewController {
 	func updateNutritionCell(cell: NutritionTableViewCell, path: NSIndexPath) {
 		let cellInfo = Nutrient.rowPairs[path.row]
 		
-		let nutrArray = Nutrient.allRawValues as NSArray
+		let nutrArray = Nutrient.allRawValues
 		
-		var leftIndex = nutrArray.indexOfObject(cellInfo.left.rawValue)
-		var rightIndex = nutrArray.indexOfObject(cellInfo.right.rawValue)
+		let leftValues = nutritionValues[find(nutrArray, cellInfo.left.rawValue)!]
+		var rightValues = nutritionValues[find(nutrArray, cellInfo.right.rawValue)!]
 		
-		cell.setInformation((type: cellInfo.type, left: nutritionValues[leftIndex], right: nutritionValues[rightIndex]))
+		cell.setInformation((type: cellInfo.type, left: leftValues, right: rightValues))
 		cell.setServingCount(0)
 	}
 	
@@ -195,7 +199,7 @@ class ServingsTableViewController: UITableViewController {
 		case nutritionSection:
 			return "Nutrition Facts"
 		case foodSection:
-			return hasFood() ? "Foods" : ""
+			return hasFood ? "Foods" : ""
 		default:
 			return ""
 		}
@@ -204,26 +208,26 @@ class ServingsTableViewController: UITableViewController {
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
 		switch section {
 		case nutritionSection:
-			return hasFood() ? "" : "You can add foods in the Dorm and Quick sections."
+			return hasFood ? "" : "You can add foods in the Dorm and Quick sections."
 		default:
 			return ""
 		}
 	}
 	
 	override func tableView(tableView: UITableView, titleForDeleteConfirmationButtonForRowAtIndexPath indexPath: NSIndexPath) -> String! {
-		return "Didn't\nEat"
+		return "Remove"
 	}
 	
 	// MARK: Table view delegate
 	
 	override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
-		return hasFood() && indexPath.section == foodSection
+		return hasFood && indexPath.section == foodSection
 	}
 	
 	override func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
 		switch indexPath.section {
 		case foodSection:
-			return hasFood() ? .Delete : .None
+			return hasFood ? .Delete : .None
 		default:
 			return .None
 		}
@@ -234,6 +238,4 @@ class ServingsTableViewController: UITableViewController {
 			removeServing(indexPath)
 		}
 	}
-	
-	func hasFood() -> Bool { return foodItems.count != 0 }
 }

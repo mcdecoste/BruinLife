@@ -60,13 +60,6 @@ class NotificationTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return notifications[sectionFromSection(section)].count
     }
-	
-//	override func tableView(tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//		let footer = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 24))
-//		footer.backgroundColor = .clearColor()
-//		
-//		return footer
-//	}
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell

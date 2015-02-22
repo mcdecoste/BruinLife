@@ -11,8 +11,7 @@ import CoreData
 
 class FavoritesTableViewController: UITableViewController {
 	let cellID = "favorite"
-	let notifySection = 0
-	let dontSection = 1
+	let notifySection = 0, dontSection = 1
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -25,7 +24,11 @@ class FavoritesTableViewController: UITableViewController {
         super.viewDidLoad()
 		
 		navigationItem.title = "Favorites"
-		navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Edit", style: .Plain, target: self, action: "editTable") // editButtonItem()
+		var edit = editButtonItem()
+		edit.action = "editTable"
+		edit.target = self
+		navigationItem.rightBarButtonItem = edit
+		
 		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
     }
 	
@@ -153,8 +156,6 @@ class FavoritesTableViewController: UITableViewController {
 	
 	func editTable() {
 		setEditing(!editing, animated: true)
-		navigationItem.rightBarButtonItem?.style = !editing ? .Plain : .Done
-		navigationItem.rightBarButtonItem?.title = !editing ? "Edit" : "Done"
 	}
 	
 	override func tableView(tableView: UITableView, canMoveRowAtIndexPath indexPath: NSIndexPath) -> Bool {

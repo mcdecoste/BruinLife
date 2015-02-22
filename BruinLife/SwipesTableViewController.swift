@@ -9,12 +9,9 @@
 import UIKit
 
 class SwipesTableViewController: UITableViewController {
-	let scrollID = "swipeCell"
-	let displayID = "displayCell"
+	let scrollID = "swipeCell", displayID = "displayCell"
 	
-	let planTag = 10
-	let weekTag = 20
-	let dowTag = 30
+	let planTag = 10, weekTag = 20, dowTag = 30
 	
 	var model = SwipeModel()
 	

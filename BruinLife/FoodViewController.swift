@@ -32,32 +32,20 @@ enum ReminderCase: Int {
 }
 
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate {
-	private let nutrientCellID = "nutrition"
-	private let ingredientCellID = "ingredient"
-	private let personalCellID = "personal"
-	private let reminderCellID = "reminder"
-	private let servingCellID = "serving"
-	private let cellHeight: CGFloat = 44.0
-	private let smallCellHeight: CGFloat = 36.0
-	private let nutritionGap: CGFloat = 2
-	private let headerGap: CGFloat = 8
+	private let nutrientCellID = "nutrition", ingredientCellID = "ingredient", personalCellID = "personal", reminderCellID = "reminder", servingCellID = "serving"
+	private let cellHeight: CGFloat = 44.0, smallCellHeight: CGFloat = 36.0
+	private let nutritionGap: CGFloat = 2, headerGap: CGFloat = 8
 	
 	private let descriptionSection: Int = 0
 	private let personalSection: Int = 1
-		private let favoriteRow: Int = 0
-		private let reminderRow: Int = 1
-		private let servingRow: Int = 2
+		private let favoriteRow: Int = 0, reminderRow: Int = 1, servingRow: Int = 2
 	private let nutritionSection: Int = 2
 	private let ingredientSection: Int = 3
 	
-	private let realWidth: CGFloat = 280
-	private let realHeight: CGFloat = 460
+	private let realWidth: CGFloat = 280, realHeight: CGFloat = 460
+	private let baseWidth: CGFloat = 280 * 0.9, baseHeight: CGFloat = 460 * 0.5
 	
-	private let baseWidth: CGFloat = 280 * 0.9
-	private let baseHeight: CGFloat = 460 * 0.5
-	
-	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
-	private let lightGreyTextColor = UIColor(white: 0.45, alpha: 1.0)
+	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0), lightGreyTextColor = UIColor(white: 0.45, alpha: 1.0)
 	
 	private let morningTime = Time(hour: 9, minute: 0)
 	
@@ -67,17 +55,13 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var place: RestaurantInfo = RestaurantInfo(hall: .DeNeve)
 	
 	var food: MainFoodInfo = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
-	var foodLabel = UILabel()
-	var typeLabel = UILabel()
+	var foodLabel = UILabel(), typeLabel = UILabel()
 	
 	var nutriTable: UITableView?
 	
 	var nutritionHeader: NutritionHeaderView? // for updating on the fly (hopefully)
 	
-	var ingredientsLabel = UILabel()
-	var descriptionLabel = UILabel()
-	var nutritionLabel = UILabel()
-	var personalLabel = UILabel()
+	var ingredientsLabel = UILabel(), descriptionLabel = UILabel(), nutritionLabel = UILabel(),  personalLabel = UILabel()
 	
 	// track information
 	var numberOfServings = 0
@@ -86,11 +70,15 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	var foodVC: FoodTableViewController?
 	
-	let alertCancel = "Cancel"
-	let alertNever = "Never"
-	let alertMorningFull = "Start of Day (9:00 AM)"
-	let alertMorning = "Start of Day"
-	var alertHall = ""
+	let alertCancel = "Cancel", alertNever = "Never", alertMorningFull = "Start of Day (9:00 AM)", alertMorning = "Start of Day"
+	var alertHall: String {
+		get {
+			if let vc = foodVC {
+				return "When \(place.hall.displayName((foodVC?.isHall)!)) Opens (\(place.openTime.displayString()))"
+			}
+			return ""
+		}
+	}
 	
 	var notificationCell: FoodNotificationTableViewCell?
 	
@@ -154,7 +142,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		self.date = date
 		self.meal = meal
 		self.place = place
-		alertHall = "When \(place.hall.displayName((foodVC?.isHall)!)) Opens (\(place.openTime.displayString()))"
+//		alertHall = "When \(place.hall.displayName((foodVC?.isHall)!)) Opens (\(place.openTime.displayString()))"
 		// set reminder time based on whether there is a saved reminder for that time
 		establishLayout()
 	}
@@ -363,11 +351,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case nutritionSection:
 			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as! NutritionTableViewCell
 			
-			let allRaw = Nutrient.allRawValues as NSArray
+			let allRaw = Nutrient.allRawValues
 			let cellInfo = Nutrient.rowPairs[indexPath.row]
 			
-			var nutrientListingLeft = food.nutrition[allRaw.indexOfObject(cellInfo.left.rawValue)]
-			var nutrientListingRight = food.nutrition[allRaw.indexOfObject(cellInfo.right.rawValue)]
+			var nutrientListingLeft = food.nutrition[find(allRaw, cellInfo.left.rawValue)!]
+			var nutrientListingRight = food.nutrition[find(allRaw, cellInfo.right.rawValue)!]
 			
 			cell.frame.size.width = nutriTable!.frame.width
 			cell.backgroundColor = .clearColor()

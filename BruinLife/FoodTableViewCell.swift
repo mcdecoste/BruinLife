@@ -37,7 +37,7 @@ class FoodTableViewCell: UITableViewCell {
 		self.date = date
 		self.isHall = isHall
 		
-		var imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
+		let imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
 		

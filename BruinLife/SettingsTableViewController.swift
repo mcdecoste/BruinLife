@@ -13,25 +13,23 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 	let tracksSection = 0
 	let settingsSection = 1
 	let feedbackSection = 2
-		let feedbackRow = 0
-		let bugRow = 1
-		let rateRow = 2
+		let feedbackRow = 0, bugRow = 1, rateRow = 2
 	let aboutSection = 3
 	
-	let sectionTitles: Array<String?> = ["Bruin Tracks", "Settings", "Feedback", "About Bruin Life"]
+	let sectionTitles = ["Bruin Tracks", "Feedback", "About Bruin Life"] // took out Settings part
 	let cells: Array<Array<(title: String, vc: String?, acc: UITableViewCellAccessoryType)>> =
 		[
 			[
 				(title: "Upcoming Reminders", vc: "notificationVC", acc: .DisclosureIndicator),
-				(title: "Favorite Foods", vc:"favoriteVC", acc: .DisclosureIndicator),
+				(title: "Favorite Foods", vc: "favoriteVC", acc: .DisclosureIndicator),
 				(title: "Today's Nutrition", vc: "servingVC", acc: .DisclosureIndicator)
 			],
 		
-			[
-				(title: "Favorites", vc: nil, acc: .DisclosureIndicator),
-				(title: "Swipe Counter", vc: nil, acc: .DisclosureIndicator),
-				(title: "Data Syncing", vc: nil, acc: .DisclosureIndicator)
-			],
+//			[
+//				(title: "Favorites", vc: nil, acc: .DisclosureIndicator),
+//				(title: "Swipe Counter", vc: nil, acc: .DisclosureIndicator),
+//				(title: "Data Syncing", vc: nil, acc: .DisclosureIndicator)
+//			],
 			
 			[
 				(title: "Email Feedback", vc: nil, acc: .None),
