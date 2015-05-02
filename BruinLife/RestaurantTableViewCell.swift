@@ -71,7 +71,10 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		}
 		
 		var openText = "until \(closeTrunc)"
-		var closedText = aboutToday && openDate?.timeIntervalSinceNow >= 0 ? "as of \(closeTrunc)" : "\(openTrunc) — \(closeTrunc)"
+		var closedText = aboutToday && openDate?.timeIntervalSinceNow < 0 ? "as of \(closeTrunc)" : "\(openTrunc) — \(closeTrunc)"
+		if openDate == closeDate {
+			closedText = "Not open today"
+		}
 		
 		nameLabel.text = information?.name(isHall)
 		

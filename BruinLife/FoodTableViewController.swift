@@ -118,9 +118,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				cell.updateDisplay()
 			}
 		}
-		
-		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)
-//		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "DayInfoParsed", object: nil)
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -130,12 +127,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		setInformationIfNeeded()
 		scrollToMeal()
 		refreshParallax()
-	}
-	
-	override func viewWillDisappear(animated: Bool) {
-		super.viewWillDisappear(animated)
-		
-		NSNotificationCenter.defaultCenter().removeObserver(self, name: "NewDayInfoAdded", object: nil)
 	}
 	
 	func setInformationIfNeeded() {
@@ -166,11 +157,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			if dDay.day == information.date {
 				informationData = dDay.data
 //				(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
-			}
-		} else if notification.name == "DayInfoParsed" {
-			let info = notification.userInfo!["parsed"] as! DayBrief
-			if info.date == comparisonDate() {
-				information = info
 			}
 		}
 	}

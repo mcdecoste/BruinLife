@@ -21,7 +21,6 @@ func comparisonDate(daysInFuture: Int = 0) -> NSDate {
 class DiningDay: NSManagedObject {
 	@NSManaged var day: NSDate
 	@NSManaged var data: NSData
-	@NSManaged var hours: String
 	
 	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> DiningDay {
 		var request = NSFetchRequest(entityName: "DiningDay")
@@ -32,7 +31,9 @@ class DiningDay: NSManagedObject {
 		// might want to delete this? not sure if it would prevent updates
 		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [DiningDay] {
 			for result in fetchResults {
-				return result
+				if result.data == record.objectForKey("Data") as! NSData {
+					return result
+				}
 			}
 		}
 		
@@ -43,6 +44,32 @@ class DiningDay: NSManagedObject {
 		newItem.day = recordDay
 		
 		NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newItem])
+		
+		return newItem
+	}
+}
+
+class QuickMenu: NSManagedObject {
+	@NSManaged var data: NSData
+	
+	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> QuickMenu {
+		var request = NSFetchRequest(entityName: "QuickMenu")
+		let newData = record.objectForKey("Data") as! NSData
+		
+		// might want to delete this? not sure if it would prevent updates
+		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [QuickMenu] {
+			for result in fetchResults {
+				if result.data == newData {
+					return result
+				}
+			}
+		}
+		
+		var newItem = NSEntityDescription.insertNewObjectForEntityForName("QuickMenu", inManagedObjectContext: moc) as! QuickMenu
+		// put in new processing to grab the hours...
+		
+		newItem.data = newData
+		NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo:["quickInfo":newItem])
 		
 		return newItem
 	}

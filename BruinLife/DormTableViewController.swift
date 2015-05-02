@@ -41,4 +41,25 @@ class DormTableViewController: FoodTableViewController {
 		super.viewDidAppear(animated)
 		dormCVC?.updateNavItem(self)
 	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)
+	}
+	
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		NSNotificationCenter.defaultCenter().removeObserver(self)
+	}
+	
+	override func handleDataChange(notification: NSNotification) {
+		if notification.name == "NewDayInfoAdded" {
+			let dDay = notification.userInfo!["newItem"] as! DiningDay
+			
+			if dDay.day == information.date {
+				informationData = dDay.data
+				//				(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
+			}
+		}
+	}
 }

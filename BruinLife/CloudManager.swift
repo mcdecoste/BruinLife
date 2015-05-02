@@ -16,7 +16,7 @@ private let _CloudManagerSharedInstance = CloudManager()
 private let maxInAdvance: Int = 7
 
 class CloudManager: NSObject {
-	let HallRecordType = "DiningDay"
+	let HallRecordType = "DiningDay", QuickRecordType = "QuickMenu"
 	let CKDateField = "Day", CKDataField = "Data"
 	let CDDateField = "day"
 	
@@ -80,6 +80,18 @@ class CloudManager: NSObject {
 		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
 	}
 	
+//	func fetchQuickRecord(completion: (record: CKRecord!, error: NSError!) -> Void) {
+//		publicDB.fetchRecordWithID(CKRecordID(recordName: "quick"), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("Error in fetching quick")
+//			} else {
+//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//					completion(record: record, error: error)
+//				})
+//			}
+//		})
+//	}
+	
 	func findFirstGap(daysInAdvance: Int = maxInAdvance) -> Int {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
 		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) >= %@", comparisonDate())
@@ -113,33 +125,6 @@ class CloudManager: NSObject {
 			
 			fetchRecord(dateStr, completion: comp)
 		}
-		
-//		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
-//		let endDate = comparisonDate(daysInFuture: min(13, max(startDaysInAdvance + 3, 6)))
-		
-//		var query = CKQuery(recordType: type, predicate: NSPredicate(format: "(\(CKDateField) >= %@) AND (\(CKDateField) <= %@)", startDate, endDate))
-////		var query = CKQuery(recordType: type, predicate: NSPredicate(value: true))
-//		query.sortDescriptors = [NSSortDescriptor(key: CKDateField, ascending: true)] // important?
-//		
-//		var numResults = 0
-//		
-//		let operation = CKQueryOperation(query: query)
-//		operation.recordFetchedBlock = { (record) -> Void in
-//			numResults++
-//			self.newDiningDay(record)
-//		}
-//		operation.queryCompletionBlock = { (cursor, error) in
-//			dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//				if error != nil {
-//					completion(error: error)
-//				} else {
-//					self.save()
-//					completion(error: nil)
-//				}
-//			})
-//		}
-//		
-//		publicDB.addOperation(operation)
 	}
 	
 	// MARK: - Core Data
@@ -149,12 +134,31 @@ class CloudManager: NSObject {
 		}
 	}
 	
+	private func updateQuick(record: CKRecord) {
+		if let moc = managedObjectContext {
+			QuickMenu.dataFromInfo(moc, record: record)
+		}
+	}
+	
 	/// Can either grab the food or delete something
 	func fetchDiningDay(date: NSDate) -> NSData {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
 		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
+			for result in fetchResults {
+				if result.data.length > 0 {
+					return result.data
+				}
+			}
+		}
+		
+		return "".dataUsingEncoding(NSUTF8StringEncoding)!
+	}
+	
+	func fetchQuick() -> NSData {
+		var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
+		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
 			for result in fetchResults {
 				if result.data.length > 0 {
 					return result.data
@@ -178,46 +182,11 @@ class CloudManager: NSObject {
 		return CKRecordID(recordName: form.stringFromDate(date))
 	}
 	
-//	func uploadAsset(assetURL: NSURL, completion: (record: CKRecord) -> Void) {
-//		var assetRecord = CKRecord(recordType: HallRecordType)
-//		assetRecord.setObject(comparisonDate(NSDate()), forKey: DateField)
-//		assetRecord.setObject(CKAsset(fileURL: assetURL), forKey: DataField)
-//		
-//		publicDB.saveRecord(assetRecord, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("Error with uploading an asset")
-//				abort()
-//			} else {
-//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//					completion(record: record)
-//				})
-//			}
-//		})
-//	}
-	
-//	func addRecord(date: NSDate, formattedString: String, completion: (record: CKRecord) -> Void) {
-//		var record = CKRecord(recordType: HallRecordType)
-//		record.setObject(comparisonDate(date), forKey: DateField)
-//		record.setObject(formattedString.dataUsingEncoding(NSUTF8StringEncoding), forKey: DataField)
-//		
-//		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("Error with uploading an asset")
-//				abort()
-//			} else {
-//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//					completion(record: record)
-//				})
-//			}
-//		})
-//	}
-	
 	func fetchRecord(recordID: String, completion: (record: CKRecord!, error: NSError!) -> Void) {
 		println(recordID)
 		publicDB.fetchRecordWithID(CKRecordID(recordName: recordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
 			if error != nil {
 				println("Error in fetching \(recordID)")
-//				abort()
 			} else {
 				dispatch_async(dispatch_get_main_queue(), { () -> Void in
 					completion(record: record, error: error)
@@ -226,34 +195,15 @@ class CloudManager: NSObject {
 		})
 	}
 	
-//	func saveRecord(record: CKRecord) {
-//		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("Error while saving")
-//				abort()
-//			} else {
-//				println("Save succeeded!")
-//			}
-//		})
-//	}
-//	
-//	func deleteRecord(record: CKRecord) {
-//		publicDB.deleteRecordWithID(record.recordID, completionHandler: { (recordID: CKRecordID!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("Error while deleting")
-//				abort()
-//			} else {
-//				println("Delete succeeded")
-//			}
-//		})
-//	}
-	
-	
-//	func queryForRecord(referenceName: String, completion: (records: Array<CKRecord>) -> Void) {
-//		var parent = CKReference(recordID: CKRecordID(recordName: referenceName), action: .None)
-//		var query =
-//		
-//	}
+	func fetchQuickRecord() {
+		publicDB.fetchRecordWithID(CKRecordID(recordName: "quick"), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+			if error != nil {
+				println("quick " + error.description)
+			} else {
+				self.updateQuick(record)
+			}
+		})
+	}
 }
 
 /*
