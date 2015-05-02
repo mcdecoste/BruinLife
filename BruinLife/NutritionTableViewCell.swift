@@ -44,7 +44,7 @@ class NutritionTableViewCell: UITableViewCell {
 		rightDisplay.servingCount = numberServings
 	}
 	
-	func setInformation(information: (type: NutrientDisplayType, left: NutritionListing?, right: NutritionListing?)) {
+	func setInformation(type: NutrientDisplayType, left: (type: String, information: NutritionListing), right: (type: String, information: NutritionListing)) {
 		let textIndent: CGFloat = 15 // to line it up with regular displays
 		let rightDisplayIndent: CGFloat = 15 // was 6
 		let bigFontSize: CGFloat = 17 // prev 16
@@ -55,62 +55,62 @@ class NutritionTableViewCell: UITableViewCell {
 		let halfway = frame.width/2
 		let textRight = textIndent + rightDisplayIndent + leftDisplay.frame.width // 36 or 40
 		
-		let shouldShrink = (information.type == .oneSub)
+		let shouldShrink = (type == .oneSub)
 		let shrink: CGFloat = shouldShrink ? 0.9 : 1
 		let leftTextX = (shouldShrink ? frame.width * (1 - shrink) : 0) + textIndent
 		// NOTE: rightTextX doesn't use textIndent because it doesn't need extra spacing
 		let rightTextX = halfway + rightDisplayIndent // shrink ? frame.width * 0.025 + halfway + sideIndent :
 		var textWidth = (shouldShrink ? frame.width * shrink : halfway) - textRight
-		if information.type == .oneMain { textWidth = frame.width - textRight }
+		if type == .oneMain { textWidth = frame.width - textRight }
 		leftText.frame = CGRect(x: leftTextX, y: 0, width: textWidth, height: frame.height)
 		rightText.frame = CGRect(x: rightTextX, y: 0, width: textWidth, height: frame.height)
 		
-		leftText.text = information.left?.type.rawValue
+		leftText.text = left.type
 		
 		// displays
 		leftDisplay.frame.origin.x = halfway - leftDisplay.frame.width // - rightDisplayIndent
 		leftDisplay.center.y = center.y
-		leftDisplay.setNutrition((information.left)!, servingCount: numberServings)
+		leftDisplay.setNutrition(left.information, servingCount: numberServings)
 		
 		rightDisplay.frame.origin.x = frame.width - rightDisplay.frame.width - rightDisplayIndent
 		rightDisplay.center.y = center.y
 		
 		var displayCenter = frame.height/2
 		
-		switch information.type {
+		switch type {
 		case .oneMain:
 			leftText.font = UIFont.boldSystemFontOfSize(bigFontSize)
 			leftDisplay.hidden = true
 			rightText.text = ""
-			rightDisplay.setNutrition((information.left)!, servingCount: numberServings)
+			rightDisplay.setNutrition(left.information, servingCount: numberServings)
 			rightDisplay.hidden = false
 		case .twoMain:
 			leftText.font = UIFont.boldSystemFontOfSize(bigFontSize)
 			leftDisplay.hidden = false
 			rightText.font = UIFont.systemFontOfSize(smallFontSize)
-			rightText.text = information.right?.type.rawValue
-			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
+			rightText.text = right.type
+			rightDisplay.setNutrition(right.information, servingCount: numberServings)
 			rightDisplay.hidden = false
 		case .oneSub:
 			leftText.font = UIFont.systemFontOfSize(smallFontSize)
 			leftDisplay.hidden = true
 			rightText.text = ""
-			rightDisplay.setNutrition((information.left)!, servingCount: numberServings)
+			rightDisplay.setNutrition(left.information, servingCount: numberServings)
 			rightDisplay.hidden = false
 			displayCenter -= 4
 		case .doubleMain:
 			leftText.font = UIFont.boldSystemFontOfSize(mediumFontSize)
 			leftDisplay.hidden = false
 			rightText.font = UIFont.boldSystemFontOfSize(mediumFontSize)
-			rightText.text = information.right?.type.rawValue
-			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
+			rightText.text = right.type
+			rightDisplay.setNutrition(right.information, servingCount: numberServings)
 			rightDisplay.hidden = false
 		case .doublePlain:
 			leftText.font = UIFont.systemFontOfSize(mediumFontSize)
 			leftDisplay.hidden = false
 			rightText.font = UIFont.systemFontOfSize(mediumFontSize)
-			rightText.text = information.right?.type.rawValue
-			rightDisplay.setNutrition((information.right)!, servingCount: numberServings)
+			rightText.text = right.type
+			rightDisplay.setNutrition(right.information, servingCount: numberServings)
 			rightDisplay.hidden = false
 		default:
 			leftText.text = ""

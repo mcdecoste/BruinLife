@@ -30,7 +30,7 @@ class NutritionHeaderView: UITableViewHeaderFooterView {
 	}
 	
 	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
-	private let baseWidth: CGFloat = 280 * 0.9, baseHeight: CGFloat = 460 * 0.5
+	private let baseWidth: CGFloat = 290 * 0.9, baseHeight: CGFloat = 460 * 0.5
 	
 	override init(frame: CGRect) {
 		mainLabel = UILabel(frame: frame)

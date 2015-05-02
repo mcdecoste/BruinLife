@@ -20,7 +20,7 @@ func comparisonDate(daysInFuture: Int = 0) -> NSDate {
 
 class DiningDay: NSManagedObject {
 	@NSManaged var day: NSDate
-	@NSManaged var data: String
+	@NSManaged var data: NSData
 	@NSManaged var hours: String
 	
 	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> DiningDay {
@@ -29,6 +29,7 @@ class DiningDay: NSManagedObject {
 		let recordDay = comparisonDate(record.objectForKey("Day") as! NSDate)
 		request.predicate = NSPredicate(format: "day == %@", recordDay)
 		
+		// might want to delete this? not sure if it would prevent updates
 		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [DiningDay] {
 			for result in fetchResults {
 				return result
@@ -36,8 +37,9 @@ class DiningDay: NSManagedObject {
 		}
 		
 		var newItem = NSEntityDescription.insertNewObjectForEntityForName("DiningDay", inManagedObjectContext: moc) as! DiningDay
-		newItem.hours = NSString(data: record.objectForKey("Hours") as! NSData, encoding: NSUTF8StringEncoding) as! String
-		newItem.data = NSString(data: record.objectForKey("Data") as! NSData, encoding: NSUTF8StringEncoding) as! String
+		// put in new processing to grab the hours...
+		
+		newItem.data = record.objectForKey("Data") as! NSData
 		newItem.day = recordDay
 		
 		NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newItem])

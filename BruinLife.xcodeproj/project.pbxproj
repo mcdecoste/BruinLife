@@ -10,6 +10,7 @@
 		660A7F341A35EEA000063F33 /* FoodTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */; };
 		6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */; };
 		661CB4431A5DDA82009ED55B /* Food.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661CB4421A5DDA82009ED55B /* Food.swift */; };
+		6621037A1AC5F45600D702B4 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 662103791AC5F45600D702B4 /* CloudKit.framework */; };
 		663A1C641A71B51200CC8893 /* CloudManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663A1C631A71B51200CC8893 /* CloudManager.swift */; };
 		666B6FFE1A26CBCD00E8EAAC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 666B6FFD1A26CBCD00E8EAAC /* AppDelegate.swift */; };
 		666B70051A26CBCD00E8EAAC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 666B70031A26CBCD00E8EAAC /* Main.storyboard */; };
@@ -35,7 +36,6 @@
 		66B9785D1A524B5500144876 /* HorizontalFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785C1A524B5500144876 /* HorizontalFlow.swift */; };
 		66B9785F1A52B18D00144876 /* FoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */; };
 		66B978611A53E11B00144876 /* SectionCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */; };
-		66BBA84A1A7051B400A412D9 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66BBA8491A7051B400A412D9 /* CloudKit.framework */; };
 		66C800C11A6C8C8200380BC3 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C800C01A6C8C8200380BC3 /* NotificationTableViewCell.swift */; };
 		66C800C31A6C8CAB00380BC3 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C800C21A6C8CAB00380BC3 /* ClockView.swift */; };
 		66CD8A321A6730E600F52334 /* FavoritesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */; };
@@ -62,6 +62,7 @@
 		660A7F331A35EEA000063F33 /* FoodTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodTableViewCell.swift; sourceTree = "<group>"; };
 		6613F3E21A2FD2760070E47F /* DormContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DormContainerViewController.swift; sourceTree = "<group>"; };
 		661CB4421A5DDA82009ED55B /* Food.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Food.swift; sourceTree = "<group>"; };
+		662103791AC5F45600D702B4 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		663A1C631A71B51200CC8893 /* CloudManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CloudManager.swift; sourceTree = "<group>"; };
 		666B6FF81A26CBCD00E8EAAC /* BruinLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BruinLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		666B6FFC1A26CBCD00E8EAAC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -92,7 +93,6 @@
 		66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoodCollectionViewCell.swift; sourceTree = "<group>"; };
 		66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionCollectionReusableView.swift; sourceTree = "<group>"; };
 		66BBA8481A7051AD00A412D9 /* BruinLife.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BruinLife.entitlements; sourceTree = "<group>"; };
-		66BBA8491A7051B400A412D9 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		66C800C01A6C8C8200380BC3 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
 		66C800C21A6C8CAB00380BC3 /* ClockView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
 		66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesTableViewController.swift; sourceTree = "<group>"; };
@@ -110,7 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66BBA84A1A7051B400A412D9 /* CloudKit.framework in Frameworks */,
+				6621037A1AC5F45600D702B4 /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,7 +145,7 @@
 		666B6FEF1A26CBCD00E8EAAC = {
 			isa = PBXGroup;
 			children = (
-				66BBA8491A7051B400A412D9 /* CloudKit.framework */,
+				662103791AC5F45600D702B4 /* CloudKit.framework */,
 				666B6FFA1A26CBCD00E8EAAC /* BruinLife */,
 				666B70121A26CBCD00E8EAAC /* BruinLifeTests */,
 				666B6FF91A26CBCD00E8EAAC /* Products */,

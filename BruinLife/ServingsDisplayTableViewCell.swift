@@ -13,14 +13,13 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	var controller: ServingsTableViewController?
 	
 	var nameLabel = UILabel(), stepper = UIStepper(), servingLabel = UILabel()
-	var food: Food {
-		set {
-			nameLabel.text = food.info().name
-			stepper.value = Double(food.servings)
-			servingLabel.text = servingText(Int(food.servings))
-		}
-		get {
-			return Food()
+	var food: Food? {
+		didSet {
+			nameLabel.text = food!.info().name
+			stepper.value = Double(food!.servings)
+			servingLabel.text = servingText(Int(food!.servings))
+			
+			resetConstraints()
 		}
 	}
 	
@@ -53,13 +52,19 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 		contentView.addSubview(servingLabel)
 		
 		// Auto Layout
-		contentView.addConstraint(NSLayoutConstraint(item: nameLabel, attribute: .CenterY, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: 0))
-		contentView.addConstraint(NSLayoutConstraint(item: stepper, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: -4))
+		resetConstraints()
+	}
+	
+	func resetConstraints() {
+		contentView.removeConstraints(contentView.constraints())
 		
-		addConstraint("H:|-16-[name]-(>=5)-[serving]-(>=16)-|")
-		addConstraint("H:|-16-[name]-5-[stepper]-16-|")
-		addConstraint("V:|-(>=10)-[serving]-3-[stepper]-(>=10)-|", option: .AlignAllCenterX)
-		addConstraint("V:|-(>=15)-[name]-(>=15)-|")
+		contentView.addConstraint(NSLayoutConstraint(item: nameLabel, attribute: .CenterY, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: 0))
+		contentView.addConstraint(NSLayoutConstraint(item: stepper, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: -5))
+		contentView.addConstraint(NSLayoutConstraint(item: servingLabel, attribute: .CenterX, relatedBy: .Equal, toItem: stepper, attribute: .CenterX, multiplier: 1, constant: 0))
+		
+		addConstraint("H:|-16-[name]-8-[stepper]-16-|")
+		addConstraint("V:|-(>=6)-[serving]-4-[stepper]-(>=6)-|")
+		addConstraint("V:|-(>=12)-[name]-(>=12)-|")
 	}
 	
 	func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {

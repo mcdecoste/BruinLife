@@ -15,14 +15,14 @@ struct NutriTableDisplay {
 	var measures: Array<String>
 }
 
-enum NutrientDisplayType {
-	case oneMain // bold
-	case doubleMain // both bold
-	case doublePlain // both regular
-	case twoMain // first bold
-	case oneSub // not bold (replacing twoSub)
-	case empty // since no nils possible in tuples
-}
+//enum NutrientDisplayType {
+//	case oneMain // bold
+//	case doubleMain // both bold
+//	case doublePlain // both regular
+//	case twoMain // first bold
+//	case oneSub // not bold (replacing twoSub)
+//	case empty // since no nils possible in tuples
+//}
 
 enum ReminderCase: Int {
 	case beforeAll = 0
@@ -42,8 +42,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	private let nutritionSection: Int = 2
 	private let ingredientSection: Int = 3
 	
-	private let realWidth: CGFloat = 280, realHeight: CGFloat = 460
-	private let baseWidth: CGFloat = 280 * 0.9, baseHeight: CGFloat = 460 * 0.5
+	private let realWidth: CGFloat = 290, realHeight: CGFloat = 460
+	private let baseWidth: CGFloat = 290 * 0.9, baseHeight: CGFloat = 460 * 0.5
 	
 	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0), lightGreyTextColor = UIColor(white: 0.45, alpha: 1.0)
 	
@@ -52,9 +52,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	/// date displayed food is being offered (based on food table view controller)
 	var date: NSDate = NSDate()
 	var meal: MealType = .Breakfast
-	var place: RestaurantInfo = RestaurantInfo(hall: .DeNeve)
+	var place: RestaurantBrief = RestaurantBrief(hall: .DeNeve)
 	
-	var food: MainFoodInfo = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
+	var food: FoodInfo = FoodInfo(name: "", recipe: "000000", type: .Regular)
+	var side: FoodInfo? = FoodInfo(name: "", recipe: "000000", type: .Regular)
 	var foodLabel = UILabel(), typeLabel = UILabel()
 	
 	var nutriTable: UITableView?
@@ -114,6 +115,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: personalCellID)
 		nutriTable?.registerClass(FoodNotificationTableViewCell.self, forCellReuseIdentifier: reminderCellID)
 		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientCellID)
+		
+		preferredContentSize = prefContentSize
     }
 	
 	override func viewWillAppear(animated: Bool) {
@@ -143,8 +146,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	// MARK: - Setup
 	
-	func setFood(food: MainFoodInfo, date: NSDate, meal: MealType, place: RestaurantInfo) {
+	func setFood(food: FoodInfo, side: FoodInfo? = nil, date: NSDate, meal: MealType, place: RestaurantBrief) {
 		self.food = food
+		self.side = side
 		self.date = date
 		self.meal = meal
 		self.place = place
@@ -270,7 +274,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
 		switch indexPath.section {
 		case nutritionSection:
-			return Nutrient.rowPairs[indexPath.row].type == .oneSub ? smallCellHeight : cellHeight
+			let isOneSub = Nutrient.rowPairs[indexPath.row].type == NutrientDisplayType.oneSub
+			return isOneSub ? smallCellHeight : cellHeight
 		case ingredientSection:
 			return ingredientsLabel.frame.maxY + 4
 		case descriptionSection:
@@ -353,16 +358,22 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case nutritionSection:
 			var cell = tableView.dequeueReusableCellWithIdentifier(nutrientCellID) as! NutritionTableViewCell
 			
-			let allRaw = Nutrient.allRawValues
+//			let allRaw = Nutrient.allRawValues
 			let cellInfo = Nutrient.rowPairs[indexPath.row]
 			
-			var nutrientListingLeft = food.nutrition[find(allRaw, cellInfo.left.rawValue)!]
-			var nutrientListingRight = food.nutrition[find(allRaw, cellInfo.right.rawValue)!]
+//			var nutrientListingLeft = (type: cellInfo.left.rawValue, nutrient: food.nutrition[cellInfo.left]!)
+//			var nutrientListingRight = (type: cellInfo.right.rawValue, nutrient: food.nutrition[cellInfo.right]!)
+
+			let leftValues: (type: String, information: NutritionListing) = (type: cellInfo.left.rawValue, information: food.nutrition[cellInfo.left]!)
+			var rightValues: (type: String, information: NutritionListing) = (type: cellInfo.right.rawValue, information: food.nutrition[cellInfo.right]!)
 			
 			cell.frame.size.width = nutriTable!.frame.width
 			cell.backgroundColor = .clearColor()
 			cell.selectionStyle = .None
-			cell.setInformation((type: cellInfo.type, left: nutrientListingLeft, right: nutrientListingRight))
+			
+			let type = cellInfo.type
+			
+			cell.setInformation(type, left: leftValues, right: rightValues)
 			cell.setServingCount(numberOfServings)
 			
 			return cell

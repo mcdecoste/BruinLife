@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6750" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7549" systemVersion="14D136" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="DiningDay" representedClassName="BruinLife.DiningDay" syncable="YES">
-        <attribute name="data" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="data" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="day" optional="YES" attributeType="Date" syncable="YES"/>
-        <attribute name="hours" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="Food" representedClassName="BruinLife.Food" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
@@ -13,7 +12,7 @@
         <attribute name="servings" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>
     <elements>
-        <element name="DiningDay" positionX="-63" positionY="18" width="128" height="88"/>
+        <element name="DiningDay" positionX="-63" positionY="18" width="128" height="75"/>
         <element name="Food" positionX="-63" positionY="-18" width="128" height="120"/>
     </elements>
 </model>

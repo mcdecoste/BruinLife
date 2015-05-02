@@ -13,13 +13,11 @@ import CloudKit
 import CoreData
 
 private let _CloudManagerSharedInstance = CloudManager()
+private let maxInAdvance: Int = 7
 
 class CloudManager: NSObject {
 	let HallRecordType = "DiningDay"
-	let CKDateField = "Day"
-	let CKDataField = "Data"
-	let CKHoursField = "Hours"
-	
+	let CKDateField = "Day", CKDataField = "Data"
 	let CDDateField = "day"
 	
 	private var container: CKContainer
@@ -32,11 +30,14 @@ class CloudManager: NSObject {
 		}()
 	
 	class var sharedInstance: CloudManager {
-		return _CloudManagerSharedInstance
+		get {
+			return _CloudManagerSharedInstance
+		}
 	}
 	
 	override init() {
-		container = CKContainer.defaultContainer()
+		container = CKContainer(identifier: "iCloud.BruinLife.MatthewDeCoste")
+//		container = CKContainer.defaultContainer()
 		publicDB = container.publicCloudDatabase
 	}
 	
@@ -74,47 +75,71 @@ class CloudManager: NSObject {
 	}
 	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
-		fetchRecords(type, completion: completion, startDaysInAdvance: findFirstGap())
+		let gap = findFirstGap()
+		println("gap is \(gap)")
+		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
 	}
 	
-	func findFirstGap(daysInAdvance: Int = 13) -> Int {
+	func findFirstGap(daysInAdvance: Int = maxInAdvance) -> Int {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
 		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) >= %@", comparisonDate())
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: false)] // DateField
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
-			return daysInFuture(fetchResults[0].day)
+			return daysInFuture(fetchResults.last!.day)
 		}
 		return 0
 	}
 	
-	private func fetchRecords(type: String, completion: (error: NSError!) -> Void, startDaysInAdvance: Int = 0) {
-		if startDaysInAdvance == 13 {
-			completion(error: NSError())
+	private func fetchRecords(type: String, startDaysInAdvance: Int = 0, completion: (error: NSError!) -> Void) {
+		if startDaysInAdvance >= maxInAdvance {
+			completion(error: NSError(domain: "Nothing to Load", code: 42, userInfo: nil))
 			return // don't bother loading further
 		}
 		
-		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
-		let endDate = comparisonDate(daysInFuture: min(13, max(startDaysInAdvance + 3, 6)))
-		
-		var query = CKQuery(recordType: type, predicate: NSPredicate(format: "(\(CKDateField) >= %@) AND (\(CKDateField) <= %@)", startDate, endDate))
-		query.sortDescriptors = [NSSortDescriptor(key: CKDateField, ascending: true)] // important?
-		
-		var numResults = 0
-		
-		let operation = CKQueryOperation(query: query)
-		operation.recordFetchedBlock = { (record) -> Void in
-			numResults++
-			self.newDiningDay(record)
-		}
-		operation.queryCompletionBlock = { (cursor, error) in
-			dispatch_async(dispatch_get_main_queue(), { () -> Void in
-				self.save()
-				completion(error: numResults == 0 ? NSError() : error)
-			})
+		for daysInAdvance in startDaysInAdvance...min(maxInAdvance, max(startDaysInAdvance + 3, 6)) {
+			var form = NSDateFormatter()
+			form.dateStyle = .ShortStyle
+			var dateStr = form.stringFromDate(comparisonDate(daysInFuture: daysInAdvance))
+			
+			var comp = { (record: CKRecord!, error: NSError!) -> Void in
+				if error != nil {
+					// handle error case
+					completion(error: error)
+				} else {
+					self.newDiningDay(record) // load more days?
+				}
+			}
+			
+			fetchRecord(dateStr, completion: comp)
 		}
 		
-		publicDB.addOperation(operation)
+//		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
+//		let endDate = comparisonDate(daysInFuture: min(13, max(startDaysInAdvance + 3, 6)))
+		
+//		var query = CKQuery(recordType: type, predicate: NSPredicate(format: "(\(CKDateField) >= %@) AND (\(CKDateField) <= %@)", startDate, endDate))
+////		var query = CKQuery(recordType: type, predicate: NSPredicate(value: true))
+//		query.sortDescriptors = [NSSortDescriptor(key: CKDateField, ascending: true)] // important?
+//		
+//		var numResults = 0
+//		
+//		let operation = CKQueryOperation(query: query)
+//		operation.recordFetchedBlock = { (record) -> Void in
+//			numResults++
+//			self.newDiningDay(record)
+//		}
+//		operation.queryCompletionBlock = { (cursor, error) in
+//			dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//				if error != nil {
+//					completion(error: error)
+//				} else {
+//					self.save()
+//					completion(error: nil)
+//				}
+//			})
+//		}
+//		
+//		publicDB.addOperation(operation)
 	}
 	
 	// MARK: - Core Data
@@ -125,19 +150,19 @@ class CloudManager: NSObject {
 	}
 	
 	/// Can either grab the food or delete something
-	func fetchDiningDay(date: NSDate) -> String {
+	func fetchDiningDay(date: NSDate) -> NSData {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
 		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			for result in fetchResults {
-				if count(result.data) > 0 {
+				if result.data.length > 0 {
 					return result.data
 				}
 			}
 		}
 		
-		return ""
+		return "".dataUsingEncoding(NSUTF8StringEncoding)!
 	}
 	
 	func save() {
@@ -145,6 +170,12 @@ class CloudManager: NSObject {
 		if managedObjectContext!.save(&error) {
 			if error != nil { println(error?.localizedDescription) }
 		}
+	}
+	
+	private func idFromDate(date: NSDate) -> CKRecordID {
+		var form = NSDateFormatter()
+		form.dateStyle = .ShortStyle
+		return CKRecordID(recordName: form.stringFromDate(date))
 	}
 	
 //	func uploadAsset(assetURL: NSURL, completion: (record: CKRecord) -> Void) {
@@ -181,18 +212,19 @@ class CloudManager: NSObject {
 //		})
 //	}
 	
-//	func fetchRecord(recordID: String, completion: (record: CKRecord, error: NSError) -> Void) {
-//		publicDB.fetchRecordWithID(CKRecordID(recordName: recordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("Error in fetching")
+	func fetchRecord(recordID: String, completion: (record: CKRecord!, error: NSError!) -> Void) {
+		println(recordID)
+		publicDB.fetchRecordWithID(CKRecordID(recordName: recordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+			if error != nil {
+				println("Error in fetching \(recordID)")
 //				abort()
-//			} else {
-//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//					completion(record: record, error: error)
-//				})
-//			}
-//		})
-//	}
+			} else {
+				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+					completion(record: record, error: error)
+				})
+			}
+		})
+	}
 	
 //	func saveRecord(record: CKRecord) {
 //		publicDB.saveRecord(record, completionHandler: { (record: CKRecord!, error: NSError!) -> Void in

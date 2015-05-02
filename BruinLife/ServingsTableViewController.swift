@@ -19,7 +19,7 @@ class ServingsTableViewController: UITableViewController {
 		else { return nil }
 	}()
 	var foodItems = [Food]()
-	var nutritionValues = [NutritionListing]()
+	var nutritionValues = [Nutrient:NutritionListing]()
 	
 	var hasFood: Bool {
 		get {
@@ -34,6 +34,9 @@ class ServingsTableViewController: UITableViewController {
 		
 		tableView.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutritionID)
 		tableView.registerClass(ServingsDisplayTableViewCell.self, forCellReuseIdentifier: foodID)
+		
+		tableView.rowHeight = UITableViewAutomaticDimension
+		tableView.estimatedRowHeight = 44
     }
 	
 	override func viewWillAppear(animated: Bool) {
@@ -50,25 +53,22 @@ class ServingsTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	func calculateNutritionData() -> Array<NutritionListing> {
-		var measures = [Int]()
-		for index in 0..<Nutrient.allValues.count { measures.append(0) }
+	func calculateNutritionData() -> Dictionary<Nutrient, NutritionListing> {
+		var data = [Nutrient:NutritionListing]()
+		for nutr in Nutrient.allValues {
+			data[nutr] = NutritionListing(type: nutr, measure: "0")
+		}
 		
 		// add in the various foods
 		for food in foodItems {
-			for (index, nutr) in enumerate(food.info().nutrition) {
-				if let measure = nutr.measure.toInt() {
-					measures[index] += measure * Int(food.servings)
+			for (nutr, list) in food.info().nutrition {
+				if let measure = list.measure.toInt() {
+					data[nutr]!.measure += "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))"
 				}
 			}
 		}
 		
-		var info = [NutritionListing]()
-		for (index, nutrient) in enumerate(Nutrient.allValues) {
-			info.append(NutritionListing(type: nutrient, measure: "\(measures[index])"))
-		}
-		
-		return info
+		return data
 	}
 	
 	// MARK: - Core Data
@@ -165,6 +165,7 @@ class ServingsTableViewController: UITableViewController {
 			let food = foodItems[indexPath.row]
 			
 			let cell = tableView.dequeueReusableCellWithIdentifier(foodID, forIndexPath: indexPath) as! ServingsDisplayTableViewCell
+			cell.frame.size.width = tableView.frame.width
 			cell.selectionStyle = .None
 			cell.controller = self
 			cell.food = food
@@ -185,12 +186,12 @@ class ServingsTableViewController: UITableViewController {
 	func updateNutritionCell(cell: NutritionTableViewCell, path: NSIndexPath) {
 		let cellInfo = Nutrient.rowPairs[path.row]
 		
-		let nutrArray = Nutrient.allRawValues
+//		let nutrArray = Nutrient.allRawValues
 		
-		let leftValues = nutritionValues[find(nutrArray, cellInfo.left.rawValue)!]
-		var rightValues = nutritionValues[find(nutrArray, cellInfo.right.rawValue)!]
+		let leftValues = (type: cellInfo.left.rawValue, information: nutritionValues[cellInfo.left]!)
+		var rightValues = (type: cellInfo.right.rawValue, information: nutritionValues[cellInfo.right]!)
 		
-		cell.setInformation((type: cellInfo.type, left: leftValues, right: rightValues))
+		cell.setInformation(cellInfo.type, left: leftValues, right: rightValues)
 		cell.setServingCount(0)
 	}
 	

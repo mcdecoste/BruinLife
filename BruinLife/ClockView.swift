@@ -13,11 +13,6 @@ class ClockView: UIView {
 	let edge: CGFloat = 36
 	var mainLayer: CAShapeLayer = CAShapeLayer()
 	
-	override init() {
-		super.init()
-		establish()
-	}
-	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
 		establish()

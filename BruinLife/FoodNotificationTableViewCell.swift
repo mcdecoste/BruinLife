@@ -24,10 +24,6 @@ class FoodNotificationTableViewCell: UITableViewCell {
 		super.init(style: .Value1, reuseIdentifier: reuseIdentifier)
 	}
 	
-	override init(frame: CGRect) {
-		super.init(frame: frame)
-	}
-	
 	required init(coder aDecoder: NSCoder) {
 	    super.init(coder: aDecoder)
 	}

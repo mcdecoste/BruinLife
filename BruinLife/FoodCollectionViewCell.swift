@@ -9,7 +9,8 @@
 import UIKit
 
 class FoodCollectionViewCell: UICollectionViewCell {
-	var food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
+//	var food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
+	var food: FoodBrief = FoodBrief(name: "")
 	var nameLabel = UILabel(), typeLabel = UILabel(), extraLabel = UILabel()
 	
 	override init(frame: CGRect) {
@@ -47,7 +48,7 @@ class FoodCollectionViewCell: UICollectionViewCell {
 		addConstraint("V:|-0-[name]-0-[extra]-(>=0)-|")
 	}
 	
-	func setFood(food: MainFoodInfo, isHall: Bool) {
+	func setFood(food: FoodBrief, isHall: Bool) {
 		self.food = food
 		let subDisplayAlpha: CGFloat = 1.0
 		
@@ -57,16 +58,16 @@ class FoodCollectionViewCell: UICollectionViewCell {
 		typeLabel.text = food.type.rawValue
 		typeLabel.textColor = food.type.displayColor(subDisplayAlpha)
 		
-		if let withFood = food.withFood {
-			extraLabel.text = (isHall ? "With " : "") + withFood.name
-			extraLabel.textColor = withFood.type.displayColor(subDisplayAlpha)
+		if let side = food.sideBrief {
+			extraLabel.text = (isHall ? "With " : "") + side.name
+			extraLabel.textColor = side.type.displayColor(subDisplayAlpha)
 		} else {
 			extraLabel.text = ""
 		}
 	}
 	
 	required init(coder aDecoder: NSCoder) {
-		super.init()
+		super.init(coder: aDecoder)
 	}
 	
 	/// Helper method for Auto Layout

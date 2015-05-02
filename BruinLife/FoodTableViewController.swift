@@ -37,18 +37,18 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
-	var informationStr: String = "" {
+	var informationData: NSData = "".dataUsingEncoding(NSUTF8StringEncoding)! {
 		didSet {
 			loadState = .Expanding // will reload tableview
-//			setInformationIfNeeded()
-			dispatch_async(dispatch_get_main_queue()) {
-				self.setInformationIfNeeded()
-			}
+			setInformationIfNeeded()
 		}
 	}
-	var information: DayInfo = DayInfo() {
+	var information: DayBrief = DayBrief() {
 		willSet {
 			loadState = .Expanding
+			
+			
+			
 //			(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = .Expanding
 		}
 		didSet {
@@ -120,6 +120,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)
+//		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "DayInfoParsed", object: nil)
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -139,19 +140,38 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	func setInformationIfNeeded() {
 		if !hasData {
-			information = DayInfo(date: information.date, formattedString: informationStr)
+			if informationData.length != 0 { // ignore if empty
+				let infoExtra = DayBrief(dict: NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
+				
+				// purge out empty entries for quick things
+				for (meal, mealBrief) in infoExtra.meals {
+					for (hall, hallBrief) in mealBrief.halls {
+						if hallBrief.sections.count == 0 {
+							infoExtra.meals[meal]!.halls.removeValueForKey(hall)
+						}
+					}
+				}
+				
+				information = infoExtra
+			}
 		}
 	}
 	
 	// MARK: - Core Data
 	
 	func handleDataChange(notification: NSNotification) {
-		let dDay = notification.userInfo!["newItem"] as! DiningDay
-		
-		if dDay.day == comparisonDate() {
-//			setInformationString(dDay.data)
-			informationStr = dDay.data
-//			(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
+		if notification.name == "NewDayInfoAdded" {
+			let dDay = notification.userInfo!["newItem"] as! DiningDay
+			
+			if dDay.day == information.date {
+				informationData = dDay.data
+//				(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
+			}
+		} else if notification.name == "DayInfoParsed" {
+			let info = notification.userInfo!["parsed"] as! DayBrief
+			if info.date == comparisonDate() {
+				information = info
+			}
 		}
 	}
 	
@@ -270,8 +290,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: Delegate
 	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-		var cell = (tableView.cellForRowAtIndexPath(indexPath))!
-		if cell.reuseIdentifier == kRestCellID {
+		var cell = tableView.cellForRowAtIndexPath(indexPath)
+		if cell!.reuseIdentifier == kRestCellID {
 			displayInlineFoodDisplayForRowAtIndexPath(indexPath)
 		}
 		
@@ -291,7 +311,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				
 				displayCell?.changeInfo(restaurant, andDate: information.date, isHall: isHall)
 				displayCell!.collectionView?.invalidateIntrinsicContentSize()
-				displayCell!.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), atScrollPosition: .Left, animated: true)
+				if displayCell!.collectionView?.numberOfSections() > 0 {
+					displayCell!.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), atScrollPosition: .Left, animated: true)
+				}
 			}
 		}
 	}
@@ -318,7 +340,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			displayIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 		}
 		
-		if replaceDisplayWithNew || (!deletingDisplay && (displayIndexPath.row - 1 != indexPath.row)) {
+		let tappingNewRest = displayIndexPath.row - 1 != indexPath.row
+		let onlyMakingDisplay = !deletingDisplay && tappingNewRest
+		
+		if replaceDisplayWithNew || onlyMakingDisplay {
 			newDisplayBelowOld = before
 			
 			// show new display
@@ -326,7 +351,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			var indexPathToReveal = NSIndexPath(forRow: rowToReveal, inSection: indexPath.section)
 			
 			tableView.insertRowsAtIndexPaths([indexPathToReveal], withRowAnimation: .Fade)
-			displayIndexPath = NSIndexPath(forRow: indexPathToReveal.row, inSection: indexPath.section)
+			displayIndexPath = indexPathToReveal
 			
 			tableView.deselectRowAtIndexPath(indexPath, animated: true)
 			shouldScroll = true
@@ -342,7 +367,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		updateFoodDisplay()
 	}
 	
-	// MARK: ScrollViewDelegate
+	// MARK:- ScrollViewDelegate
 	override func scrollViewDidScroll(scrollView: UIScrollView) {
 		if scrollView == tableView {
 			refreshParallax()
@@ -350,7 +375,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	// MARK: - Popovers
-	func addFoodPopover(food: MainFoodInfo?){
+	func addFoodPopover(food: FoodInfo){
 		var foodVC = storyboard?.instantiateViewControllerWithIdentifier(foodVCid) as! FoodViewController
 		
 		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
@@ -369,7 +394,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		
-		foodVC.setFood(food!, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.information)!)
+		foodVC.setFood(food, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.information)!)
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
@@ -409,8 +434,12 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: UICollectionViewDelegate
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		var restaurant = displayCell?.information
-		addFoodPopover(restaurant?.sections[indexPath.section].foods[indexPath.row])
+		let section = displayCell?.information!.sections[indexPath.section]
+		let foodBrief = section!.foods[indexPath.row]
+		if information.foods.indexForKey(foodBrief.recipe) != nil {
+			let food = information.foods[foodBrief.recipe]!
+			addFoodPopover(food)
+		}
 	}
 	
 	func compact() -> Bool {

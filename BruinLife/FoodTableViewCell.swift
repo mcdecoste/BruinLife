@@ -9,7 +9,7 @@
 import UIKit
 
 class FoodTableViewCell: UITableViewCell {
-	var information: RestaurantInfo?
+	var information: RestaurantBrief?
 	var date: NSDate?
 	var foodVC: FoodTableViewController?
 	var backgroundImageView: UIImageView?
@@ -38,7 +38,7 @@ class FoodTableViewCell: UITableViewCell {
     }
 	
 	/// Preferred method for setting information and date, as this also changes the display
-	func changeInfo(info: RestaurantInfo, andDate date: NSDate, isHall: Bool) {
+	func changeInfo(info: RestaurantBrief, andDate date: NSDate, isHall: Bool) {
 		self.information = info
 		self.date = date
 		self.isHall = isHall

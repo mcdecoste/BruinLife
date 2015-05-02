@@ -2,9 +2,33 @@
 
 import UIKit
 
+//var form = NSDateFormatter()
+//form.dateStyle = NSDateFormatterStyle.ShortStyle
+//var date = NSDate()
+//var str = form.stringFromDate(date)
+//form.dateFromString(str)
+
+var hoursString = "9:00 AM"
+
+var formatter = NSDateFormatter()
+formatter.dateFormat = "h:mm a"
+var date1 = formatter.dateFromString(hoursString)!
+var date2 = NSDate()
+
+let interval = formatter.dateFromString(hoursString)!.timeIntervalSinceDate(NSDate())
+
+var hour = Int(interval) / 3600
+var minute = Int(interval % 3600) / 60
+
+
 find(["Hi", "Bye"], "By")
 
+let percOpt: Int? = 87
+let servingCount = 3
 
+//let perc = percOpt ?? 100
+let perc = percOpt ?? 100
+//let perc = (percOpt * servingCount) ?? 100
 
 //let string = "B70Item"
 //let char = string[string.startIndex]

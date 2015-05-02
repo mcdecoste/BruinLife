@@ -32,11 +32,6 @@ class ScrollSelectionView: UIView {
 		scrollViewSetup()
 	}
 	
-	override init() {
-		super.init()
-		scrollViewSetup()
-	}
-
 	required init(coder aDecoder: NSCoder) {
 	    super.init(coder: aDecoder)
 		scrollViewSetup()

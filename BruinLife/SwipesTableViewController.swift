@@ -22,7 +22,7 @@ class SwipesTableViewController: UITableViewController {
 	override func viewDidLoad() {
         super.viewDidLoad()
 		
-		self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Now", style: .Plain, target: self, action: "revertToToday")
+		self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "revertToToday")
 		self.navigationItem.title = "Swipe Counter"
     }
 	

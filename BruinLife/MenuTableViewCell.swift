@@ -41,7 +41,7 @@ class MenuTableViewCell: FoodTableViewCell {
 	}
 	
 	/// Preferred method for setting information and date, as this also changes the display
-	override func changeInfo(info: RestaurantInfo, andDate date: NSDate, isHall: Bool) {
+	override func changeInfo(info: RestaurantBrief, andDate date: NSDate, isHall: Bool) {
 		self.information = info
 		self.date = date
 		self.isHall = isHall

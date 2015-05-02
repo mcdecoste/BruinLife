@@ -124,8 +124,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	func vcForIndex(index: Int) -> UINavigationController {
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as! DormTableViewController
-		vc.informationStr = CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index))
+		
+		var value = CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index))
 		vc.information.date = comparisonDate(daysInFuture: index)
+		vc.informationData = value
 		vc.dormCVC = self
 		
 		var navVC = UINavigationController(rootViewController: vc)

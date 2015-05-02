@@ -108,7 +108,7 @@ class CircleDisplay: UIButton {
 	}
 	
 	func handleTap() {
-		if (nutrition?.type.hasDVpercentage())! {
+		if nutrition!.percent == nil {
 			showingAmount = !showingAmount
 			updateDisplayText()
 		}
@@ -123,9 +123,12 @@ class CircleDisplay: UIButton {
 		let measure = "\(Int(CGFloat(servingCount) * trueMeasure))" // round it
 		let unit = (nutrition?.unit)!
 		let percOpt = nutrition?.percent
-		let perc = percOpt == nil ? 100 : percOpt! * servingCount
-		
-		let tooLong = count(measure + unit) > 4
+		var perc = 100
+		if let percNotOpt = percOpt {
+			perc = percNotOpt * servingCount
+		}
+//		let perc = percOpt == nil ? 100 : percOpt! * servingCount
+		let tooLong = count(measure + unit) > 4 // count should work but doesn't
 		let inbetweenText = tooLong ? "\n" : ""
 		centralLabel.numberOfLines = tooLong ? 2 : 1
 		
