@@ -657,10 +657,28 @@ class SubFoodInfo: FoodInfo {
 
 // MARK:- NEW MODEL
 
+struct FoodCollection: Serializable {
+	var info: FoodInfo
+	var places: Dictionary<String, Dictionary<String, Bool>> = [:]
+	
+	init(info: FoodInfo) {
+		self.info = info
+	}
+	
+	init(dict: Dictionary<String, AnyObject>) {
+		info = FoodInfo(dict: dict["info"] as! Dictionary<String, AnyObject>)
+		places = dict["places"] as! Dictionary<String, Dictionary<String, Bool>>
+	}
+	
+	func dictFromObject() -> Dictionary<String, AnyObject> {
+		return ["info" : info.dictFromObject(), "places" : places]
+	}
+}
+
 class DayBrief: Serializable {
 	var date = comparisonDate(NSDate())
 	var meals: Dictionary<MealType, MealBrief> = [:]
-	var foods: Dictionary<String, FoodInfo> = [:]
+	var foods: Dictionary<String, FoodCollection> = [:]
 	
 	init() {
 		
@@ -696,7 +714,7 @@ class DayBrief: Serializable {
 		}
 		var foodsDict = dict["foods"] as! Dictionary<String, Dictionary<String, AnyObject>>
 		for (recipe, foodDict) in foodsDict {
-			foods[recipe] = FoodInfo(dict: foodDict)
+			foods[recipe] = FoodCollection(dict: foodDict)
 		}
 	}
 	

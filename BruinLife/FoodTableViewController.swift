@@ -423,7 +423,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		let section = displayCell?.information!.sections[indexPath.section]
 		let foodBrief = section!.foods[indexPath.row]
 		if information.foods.indexForKey(foodBrief.recipe) != nil {
-			let food = information.foods[foodBrief.recipe]!
+			let food = information.foods[foodBrief.recipe]!.info
 			addFoodPopover(food)
 		}
 	}
