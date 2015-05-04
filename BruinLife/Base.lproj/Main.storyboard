@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7515.2" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="49e-Tb-3d3">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7512"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
     </dependencies>
     <scenes>
         <!--Quick Table View Controller-->
@@ -46,7 +46,7 @@
         <scene sceneID="e4M-xV-zxE">
             <objects>
                 <navigationController id="Doc-2p-uUv" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Bruin Life" image="first" id="Yvo-rP-608"/>
+                    <tabBarItem key="tabBarItem" title="Bruin Life" image="Paw" id="Yvo-rP-608"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="zic-cG-m0d">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -150,7 +150,7 @@
         <scene sceneID="uk0-hr-wQ1">
             <objects>
                 <navigationController id="Kej-Wf-44n" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Swipes" image="second" id="UxB-Pe-Kyq"/>
+                    <tabBarItem key="tabBarItem" title="Swipes" image="Swipe" id="UxB-Pe-Kyq"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="GQ2-JN-PqR">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -163,7 +163,7 @@
             </objects>
             <point key="canvasLocation" x="750" y="1738"/>
         </scene>
-        <!--Dorm-->
+        <!--Dorm Container View Controller-->
         <scene sceneID="RU1-33-D9r">
             <objects>
                 <viewController id="EqH-C2-ubs" customClass="DormContainerViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
@@ -176,18 +176,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Dorm" image="first" id="Hrw-9H-SQn"/>
                     <navigationItem key="navigationItem" id="OKS-rt-J84"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iQF-Ff-CgB" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1570" y="-332"/>
         </scene>
-        <!--Dorm-->
+        <!--Halls-->
         <scene sceneID="eyC-fR-fmQ">
             <objects>
                 <navigationController id="Ckg-6e-Jpe" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Dorm" id="wvJ-RB-EMI"/>
+                    <tabBarItem key="tabBarItem" title="Halls" image="Halls" id="wvJ-RB-EMI"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="Sgl-HZ-Tnb">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -244,7 +243,7 @@
         <scene sceneID="y5x-eO-8jq">
             <objects>
                 <navigationController id="5yx-YR-Hpb" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Quick" image="second" id="J8v-Us-k3N"/>
+                    <tabBarItem key="tabBarItem" title="Quick" image="Quick" id="J8v-Us-k3N"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="sHL-Og-PqA">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -280,7 +279,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="first" width="30" height="30"/>
-        <image name="second" width="30" height="30"/>
+        <image name="Halls" width="40" height="40"/>
+        <image name="Paw" width="50" height="50"/>
+        <image name="Quick" width="40" height="40"/>
+        <image name="Swipe" width="40" height="40"/>
     </resources>
 </document>

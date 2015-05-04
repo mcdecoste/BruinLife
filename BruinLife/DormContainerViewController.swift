@@ -42,10 +42,11 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		var leftBar = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
 		leftBar.enabled = false
 		navigationItem.leftBarButtonItem = leftBar
-		
-		var rightBar = UIBarButtonItem(title: "Days", style: .Plain, target: self, action: "showDays")
-		rightBar.enabled = false
-		navigationItem.rightBarButtonItem = rightBar
+
+		// TODO: implement this for easier navigation!
+//		var rightBar = UIBarButtonItem(title: "Days", style: .Plain, target: self, action: "showDays")
+//		rightBar.enabled = false
+//		navigationItem.rightBarButtonItem = rightBar
 		
 		pageController.view.backgroundColor = tableBackgroundColor
 	}
