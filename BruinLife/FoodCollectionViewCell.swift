@@ -9,7 +9,6 @@
 import UIKit
 
 class FoodCollectionViewCell: UICollectionViewCell {
-//	var food = MainFoodInfo(name: "", recipe: "000000", type: .Regular)
 	var food: FoodBrief = FoodBrief(name: "")
 	var nameLabel = UILabel(), typeLabel = UILabel(), extraLabel = UILabel()
 	

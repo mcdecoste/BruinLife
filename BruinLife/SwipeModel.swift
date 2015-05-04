@@ -45,7 +45,7 @@ enum QuarterType: String {
 	
 	static let allValues = [Fall, Winter, Spring]
 	static let allRawValues = QuarterType.allValues.map { (quarter: QuarterType) -> String in return quarter.rawValue }
-	static let startValues = [(2, Winter), (15, Spring), (41, Fall)]
+	static let startValues = [(2, Winter), (14, Spring), (41, Fall)]
 }
 
 enum MealPlanType: String {

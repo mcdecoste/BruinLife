@@ -5,9 +5,9 @@
         <attribute name="day" optional="YES" attributeType="Date" syncable="YES"/>
     </entity>
     <entity name="Food" representedClassName="BruinLife.Food" syncable="YES">
+        <attribute name="data" optional="YES" attributeType="Binary" syncable="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
-        <attribute name="foodString" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="notify" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="servings" optional="YES" attributeType="Integer 16" defaultValueString="0" syncable="YES"/>
     </entity>

@@ -108,7 +108,7 @@ class CircleDisplay: UIButton {
 	}
 	
 	func handleTap() {
-		if nutrition!.percent == nil {
+		if nutrition!.percent != nil {
 			showingAmount = !showingAmount
 			updateDisplayText()
 		}
@@ -119,7 +119,7 @@ class CircleDisplay: UIButton {
 	}
 	
 	func updateDisplayText() {
-		let trueMeasure = CGFloat(NSNumberFormatter().numberFromString((nutrition?.measure)!)!)
+		let trueMeasure = CGFloat(NSNumberFormatter().numberFromString((nutrition?.measure)!) ?? 0)
 		let measure = "\(Int(CGFloat(servingCount) * trueMeasure))" // round it
 		let unit = (nutrition?.unit)!
 		let percOpt = nutrition?.percent

@@ -124,343 +124,6 @@ enum Halls: String {
 	}
 }
 
-class HoursInfo {
-	var hours: Dictionary<MealType, MealHoursInfo>
-	
-	init(dictionary: Dictionary<MealType, Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>>) {
-		hours = [:]
-		for meal in dictionary.keys.array {
-			hours[meal] = MealHoursInfo(dictionary: dictionary[meal]!)
-		}
-	}
-	
-	init(formattedString: String) {
-		hours = [:]
-		
-		for mealStr in formattedString.componentsSeparatedByString("‰") {
-			var mealStrParts = mealStr.componentsSeparatedByString("Ø")
-			hours[MealType(rawValue: mealStrParts[0])!] = MealHoursInfo(formattedString: mealStrParts[1])
-		}
-	}
-	
-	func formattedString() -> String {
-		var string = ""
-		for key in hours.keys.array {
-			if string != "" { string += "‰" }
-			string += "\(key.rawValue)Ø\(hours[key]!.formattedString())"
-		}
-		return string
-	}
-}
-
-class MealHoursInfo {
-	var hours: Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>
-	
-	init(dictionary: Dictionary<Halls, (open: Bool, openTime: Time?, closeTime: Time?)>) {
-		hours = dictionary
-	}
-	
-	init(formattedString: String) {
-		hours = [:]
-		
-		for hallStr in formattedString.componentsSeparatedByString("Í") {
-			let hallStrParts = hallStr.componentsSeparatedByString("ˆ")
-			
-			let hallName = hallStrParts[0]
-			if hallStrParts[1] == "C" {
-				hours[Halls(rawValue: hallName)!] = (false, nil, nil)
-			} else {
-				let hourParts = hallStrParts[1].componentsSeparatedByString("~")
-				
-				let openParts = hourParts[0].componentsSeparatedByString("-")
-				let openTime = Time(hour: openParts[0].toInt()!, minute: openParts[1].toInt()!)
-				
-				let closeParts = hourParts[1].componentsSeparatedByString("-")
-				let closeTime = Time(hour: closeParts[0].toInt()!, minute: closeParts[1].toInt()!)
-				
-				hours[Halls(rawValue: hallName)!] = (true, openTime, closeTime)
-			}
-		}
-	}
-	
-	func formattedString() -> String {
-		var string = ""
-		for key in hours.keys.array {
-			if string != "" { string += "Í" }
-			
-			let (open, openT, closeT) = hours[key]!
-			var form = "C"
-			if open {
-				form = "\(openT!.hour)-\(openT!.minute)~\(closeT!.hour)-\(closeT!.minute)"
-			}
-			
-			string += "\(key.rawValue)ˆ\(form)"
-		}
-		return string
-	}
-}
-
-// MARK:- OLD MODEL
-
-//class DayInfo: Serializable {
-//	var date = comparisonDate(NSDate())
-//	var meals: Dictionary<MealType, MealInfo> = [:]
-//	
-//	init() {
-//		
-//	}
-//	
-//	init(record: CKRecord) {
-//		date = record.objectForKey("Day") as! NSDate
-//		let formString = NSString(data: record.objectForKey("Data") as! NSData, encoding: NSUTF8StringEncoding) as! String
-//		let parts = formString.componentsSeparatedByString("ﬂ")
-//		for part in parts {
-//			let dictParts = part.componentsSeparatedByString("Ø")
-//			let meal = MealType(rawValue: dictParts[0])!
-//			let information = MealInfo(formattedString: dictParts[1])
-//			meals[meal] = information
-//		}
-//	}
-//	
-//	init(date: NSDate = NSDate(), formattedString: String) {
-//		self.date = date
-//		self.meals = [:]
-//		let parts = formattedString.componentsSeparatedByString("ﬂ")
-//		for part in parts {
-//			let dictParts = part.componentsSeparatedByString("Ø")
-//			if dictParts.count == 2 {
-//				let meal = MealType(rawValue: dictParts[0])!
-//				let information = MealInfo(formattedString: dictParts[1])
-//				meals[meal] = information
-//			}
-//		}
-//	}
-//	
-//	init(date: NSDate, meals: Dictionary<MealType, MealInfo>) {
-//		self.date = date
-//		self.meals = meals
-//	}
-//	
-//	required init(dict: Dictionary<String, AnyObject>) {
-//		var form = NSDateFormatter()
-//		form.dateStyle = .ShortStyle
-//		
-//		date = form.dateFromString(dict["date"] as! String)!
-//		
-//		meals = [:]
-//		var mealsDict = dict["meals"] as! Dictionary<String, Dictionary<String, AnyObject>>
-//		for mealDict in mealsDict.keys {
-//			meals[MealType(rawValue: mealDict)!] = MealInfo(dict: mealsDict[mealDict]!)
-//		}
-//	}
-//	
-//	func dictFromObject() -> Dictionary<String, AnyObject> {
-//		var form = NSDateFormatter()
-//		form.dateStyle = .ShortStyle
-//		
-//		var dict: Dictionary<String, AnyObject> = [:]
-//		
-//		dict["date"] = form.stringFromDate(date)
-//		var mealsDict: Dictionary<String, Dictionary<String, AnyObject>> = [:]
-//		for meal in meals.keys {
-//			mealsDict[meal.rawValue] = meals[meal]!.dictFromObject()
-//		}
-//		dict["meals"] = mealsDict
-//		
-//		return dict
-//	}
-//	
-//	func formattedString() -> String {
-//		var string = ""
-//		for key in meals.keys {
-//			if string != "" {
-//				string = string + "ﬂ"
-//			}
-//			
-//			string = string + "\(key.rawValue)Ø\(meals[key]!.formattedString())"
-//		}
-//		return string
-//	}
-//}
-//
-//class MealInfo: Serializable {
-//	var halls: Dictionary<Halls, RestaurantInfo>
-//	
-//	init(halls: Dictionary<Halls, RestaurantInfo>) {
-//		self.halls = halls
-//	}
-//	
-//	init(formattedString: String) {
-//		halls = [:]
-//		let parts = formattedString.componentsSeparatedByString("‡")
-//		for part in parts {
-//			let dictParts = part.componentsSeparatedByString("¨")
-//			let hall = Halls(rawValue: dictParts[0])!
-//			let information = RestaurantInfo(formattedString: dictParts[1])
-//			halls[hall] = information
-//		}
-//	}
-//	
-//	required init(dict: Dictionary<String, AnyObject>) {
-//		halls = [:]
-//		var hallsDict = dict["halls"] as! Dictionary<String, Dictionary<String, AnyObject>>
-//		
-//		for hall in hallsDict.keys {
-//			halls[Halls(rawValue: hall)!] = RestaurantInfo(dict: hallsDict[hall]!)
-//		}
-//	}
-//	
-//	func dictFromObject() -> Dictionary<String, AnyObject> {
-//		var dict: Dictionary<String, AnyObject> = [:]
-//		
-//		var hallsDict: Dictionary<String, Dictionary<String, AnyObject>> = [:]
-//		for hall in halls.keys {
-//			hallsDict[hall.rawValue] = halls[hall]!.dictFromObject()
-//		}
-//		dict["halls"] = hallsDict
-//		
-//		return dict
-//	}
-//	
-//	func formattedString() -> String {
-//		var string = ""
-//		for key in halls.keys {
-//			if string != "" {
-//				string = string + "‡"
-//			}
-//			
-//			string = string + "\(key.rawValue)¨\(halls[key]!.formattedString())"
-//		}
-//		return string
-//	}
-//}
-//
-//class RestaurantInfo: Serializable {
-//	var hall: Halls // redundant storage?
-//	
-//	var openTime: Time = Time(hour: 8, minute: 0)
-//	var closeTime: Time = Time(hour: 17, minute: 0)
-//	
-//	var sections: Array<SectionInfo>
-//	
-//	init(hall: Halls) {
-//		self.hall = hall
-//		self.sections = []
-//	}
-//	
-//	init(formattedString: String) {
-//		let parts = formattedString.componentsSeparatedByString("·")
-//		hall = Halls(rawValue: parts[0])!
-//		
-//		let openParts = parts[1].componentsSeparatedByString("-")
-//		openTime = Time(hour: openParts[0].toInt()!, minute: openParts[1].toInt()!)
-//		
-//		let closeParts = parts[2].componentsSeparatedByString("-")
-//		closeTime = Time(hour: closeParts[0].toInt()!, minute: closeParts[1].toInt()!)
-//		
-//		sections = []
-//		for section in parts[3..<parts.count] {
-//			sections.append(SectionInfo(formattedString: section))
-//		}
-//	}
-//	
-//	required init(dict: Dictionary<String, AnyObject>) {
-//		hall = Halls(rawValue: dict["hall"] as! String)!
-//		openTime = Time(hour: dict["openHour"] as! Int, minute: dict["openMin"] as! Int)
-//		closeTime = Time(hour: dict["closeHour"] as! Int, minute: dict["closeMin"] as! Int)
-//		
-//		sections = []
-//		var sectionDicts = dict["sections"] as? Array<Dictionary<String, AnyObject>> ?? []
-//		for sectionDict in sectionDicts {
-//			sections.append(SectionInfo(dict: sectionDict))
-//		}
-//	}
-//	
-//	func dictFromObject() -> Dictionary<String, AnyObject> {
-//		var dict: Dictionary<String, AnyObject> = [:]
-//		
-//		dict["hall"] = hall.rawValue
-//		dict["openHour"] = openTime.hour
-//		dict["openMin"] = openTime.minute
-//		dict["closeHour"] = closeTime.hour
-//		dict["closeMin"] = closeTime.minute
-//		
-//		var sectionDicts: Array<Dictionary<String, AnyObject>> = []
-//		for section in sections {
-//			sectionDicts.append(section.dictFromObject())
-//		}
-//		dict["sections"] = sectionDicts
-//		
-//		return dict
-//	}
-//	
-//	func name(isHall: Bool) -> String {
-//		return hall.displayName(isHall)
-//	}
-//	
-//	func imageName(open: Bool) -> String {
-//		return hall.imageName(open)
-//	}
-//	
-//	func formattedString() -> String {
-//		var string = "\(hall.rawValue)·\(openTime.hour)-\(openTime.minute)·\(closeTime.hour)-\(closeTime.minute)"
-//		for section in sections {
-//			string = string + "·\(section.formattedString())"
-//		}
-//		return string
-//	}
-//}
-//
-//class SectionInfo: Serializable {
-//	var name: String = ""
-//	var foods = [MainFoodInfo]()
-//	
-//	init(name: String) {
-//		self.name = name
-//	}
-//	
-//	init(formattedString: String) {
-//		let parts = formattedString.componentsSeparatedByString("ª")
-//		name = parts[0]
-//		foods = []
-//		for part in parts[1..<parts.count] {
-//			if part != "" {
-//				foods.append(MainFoodInfo(formattedString: part))
-//			}
-//		}
-//	}
-//	
-//	func formattedString() -> String {
-//		var foodStrings = [String]()
-//		for food in foods { foodStrings.append(food.foodString()) }
-//		
-//		let foodsString = "ª".join(foodStrings)
-//		return "\(name)ª\(foodsString)"
-//	}
-//	
-//	required init(dict: Dictionary<String, AnyObject>) {
-//		name = dict["name"] as? String ?? "No Name"
-//		foods = []
-//		var foodDicts = dict["foods"] as? Array<Dictionary<String, AnyObject>> ?? []
-//		for foodDict in foodDicts {
-//			foods.append(MainFoodInfo(dict: foodDict))
-//		}
-//	}
-//	
-//	func dictFromObject() -> Dictionary<String, AnyObject> {
-//		var dict: Dictionary<String, AnyObject> = [:]
-//		
-//		dict["name"] = name
-//		var foodDicts: Array<Dictionary<String, AnyObject>> = []
-//		for food in foods {
-//			foodDicts.append(food.dictFromObject())
-//		}
-//		dict["foods"] = foodDicts
-//		
-//		return dict
-//	}
-//}
-
 // MARK:- STANDARD MODEL
 
 enum FoodType: String {
@@ -572,86 +235,6 @@ class FoodInfo: Serializable {
 		ingredients = dict["ingredients"] as? String ?? ""
 		description = dict["description"] as? String ?? ""
 		countryCode = dict["country"] as? String ?? ""
-	}
-}
-
-class MainFoodInfo: FoodInfo {
-	var withFood: SubFoodInfo?
-	
-	override init(name: String, recipe: String, type: FoodType) {
-		super.init(name: name, recipe: recipe, type: type)
-	}
-	
-	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
-	override init(formattedString: String) {
-		let parts = formattedString.componentsSeparatedByString("|")
-		if parts[0] == "" {
-			super.init(formattedString: formattedString)
-		} else {
-			super.init(formattedString: parts[0])
-		}
-		
-		withFood = parts.count == 2 ? SubFoodInfo(formattedString: parts[1]) : nil
-	}
-	
-	override func foodString() -> String {
-		if let with = withFood {
-			return "\(super.foodString())|\(with.foodString())"
-		} else {
-			return super.foodString()
-		}
-	}
-	
-	class func isMain(formattedString: String) -> Bool {
-		let parts = formattedString.componentsSeparatedByString("|")
-		return parts.count == 2
-	}
-	
-	// MARK:- Serializable Protocol
-	
-	override func dictFromObject() -> Dictionary<String, AnyObject> {
-		var dict: Dictionary<String, AnyObject> = [:]
-		
-		dict["name"] = name
-		dict["recipe"] = recipe
-		dict["type"] = type.rawValue
-		for nutrient in Nutrient.allValues {
-			dict[nutrient.rawValue] = nutrition[nutrient]?.measure ?? "0"
-		}
-		dict["ingredients"] = ingredients
-		dict["description"] = description
-		dict["country"] = countryCode
-		dict["withFood"] = withFood?.dictFromObject() ?? [:]
-		
-		return dict
-	}
-	
-	required init(dict: Dictionary<String, AnyObject>) {
-		super.init(dict: dict)
-		
-		let withFoodDict = dict["withFood"] as! Dictionary<String, AnyObject>
-		if withFoodDict.count != 0 {
-			withFood = SubFoodInfo(dict: withFoodDict)
-		}
-	}
-}
-
-class SubFoodInfo: FoodInfo {
-	override init(formattedString: String) {
-		if formattedString.rangeOfString("°") == nil {
-			super.init(name: formattedString, recipe: "", type: .Regular)
-		} else {
-			super.init(formattedString: formattedString)
-		}
-	}
-	
-	override func foodString() -> String {
-		return recipe == "" ? name : super.foodString()
-	}
-	
-	// MARK:- Serializable Protocol
-	required init(dict: Dictionary<String, AnyObject>) {
-		super.init(dict: dict)
 	}
 }
 
@@ -770,11 +353,64 @@ class MealBrief: Serializable {
 	}
 }
 
+class PlaceBrief: Serializable {
+	var hall: Halls // redundant storage?
+	
+	var openTime: Time = Time(hour: 8, minute: 0)
+	var closeTime: Time = Time(hour: 8, minute: 0)
+	
+	var sectionDicts: Array<Dictionary<String, AnyObject>> = []
+	
+	var fullDetails: Array<SectionBrief> {
+		get {
+			var sections: Array<SectionBrief> = []
+			
+			for dict in sectionDicts {
+				sections.append(SectionBrief(dict: dict))
+			}
+			
+			return sections
+		}
+	}
+	
+	init(hall: Halls) {
+		self.hall = hall
+	}
+	
+	required init(dict: Dictionary<String, AnyObject>) {
+		hall = Halls(rawValue: dict["hall"] as! String)!
+		openTime = Time(hour: dict["openHour"] as! Int, minute: dict["openMin"] as! Int)
+		closeTime = Time(hour: dict["closeHour"] as! Int, minute: dict["closeMin"] as! Int)
+		sectionDicts = dict["sections"] as? Array<Dictionary<String, AnyObject>> ?? []
+	}
+	
+	func dictFromObject() -> Dictionary<String, AnyObject> {
+		var dict: Dictionary<String, AnyObject> = [:]
+		
+		dict["hall"] = hall.rawValue
+		dict["openHour"] = openTime.hour
+		dict["openMin"] = openTime.minute
+		dict["closeHour"] = closeTime.hour
+		dict["closeMin"] = closeTime.minute
+		dict["sections"] = sectionDicts
+		
+		return dict
+	}
+	
+	func name(isHall: Bool) -> String {
+		return hall.displayName(isHall)
+	}
+	
+	func imageName(open: Bool) -> String {
+		return hall.imageName(open)
+	}
+}
+
 class RestaurantBrief: Serializable {
 	var hall: Halls // redundant storage?
 	
 	var openTime: Time = Time(hour: 8, minute: 0)
-	var closeTime: Time = Time(hour: 17, minute: 0)
+	var closeTime: Time = Time(hour: 8, minute: 0)
 	
 	var sections: Array<SectionBrief>
 	

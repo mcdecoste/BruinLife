@@ -62,7 +62,7 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 		contentView.addConstraint(NSLayoutConstraint(item: stepper, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: -5))
 		contentView.addConstraint(NSLayoutConstraint(item: servingLabel, attribute: .CenterX, relatedBy: .Equal, toItem: stepper, attribute: .CenterX, multiplier: 1, constant: 0))
 		
-		addConstraint("H:|-16-[name]-8-[stepper]-16-|")
+		addConstraint("H:|-[name]-(>=8)-[stepper]-|")
 		addConstraint("V:|-(>=6)-[serving]-4-[stepper]-(>=6)-|")
 		addConstraint("V:|-(>=12)-[name]-(>=12)-|")
 	}

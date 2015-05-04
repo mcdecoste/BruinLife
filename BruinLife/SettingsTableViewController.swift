@@ -11,35 +11,24 @@ import MessageUI // for emailing
 
 class SettingsTableViewController: UITableViewController, MFMailComposeViewControllerDelegate {
 	let tracksSection = 0
-	let settingsSection = 1
-	let feedbackSection = 2
+	let feedbackSection = 1
 		let feedbackRow = 0, bugRow = 1, rateRow = 2
-	let aboutSection = 3
 	
-	let sectionTitles = ["Bruin Tracks", "Feedback", "About Bruin Life"] // took out Settings part
-	let cells: Array<Array<(title: String, vc: String?, acc: UITableViewCellAccessoryType)>> =
+	let cells: Array<(title: String, cells: Array<(title: String, vc: String?, acc: UITableViewCellAccessoryType)>)> =
 		[
+			(title: "Bruin Tracks", cells:
 			[
 				(title: "Upcoming Reminders", vc: "notificationVC", acc: .DisclosureIndicator),
 				(title: "Favorite Foods", vc: "favoriteVC", acc: .DisclosureIndicator),
 				(title: "Today's Nutrition", vc: "servingVC", acc: .DisclosureIndicator)
-			],
-		
-//			[
-//				(title: "Favorites", vc: nil, acc: .DisclosureIndicator),
-//				(title: "Swipe Counter", vc: nil, acc: .DisclosureIndicator),
-//				(title: "Data Syncing", vc: nil, acc: .DisclosureIndicator)
-//			],
+			]),
 			
+			(title: "Feedback", cells:
 			[
 				(title: "Email Feedback", vc: nil, acc: .None),
 				(title: "Email About a Bug", vc: nil, acc: .None),
 				(title: "Rate in App Store", vc: nil, acc: .None)
-			],
-		
-			[
-				(title: "Acknowledgements", vc: nil, acc: .DisclosureIndicator),
-			]
+			])
 		]
 	
 	override init(style: UITableViewStyle) {
@@ -65,22 +54,22 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
     // MARK: - Table view data source
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		return sectionTitles[section]
+		return cells[section].title
 	}
 	
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return sectionTitles.count
+        return cells.count
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return cells[section].count
+        return cells[section].cells.count
     }
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath) as! UITableViewCell
 		
 		// Configure the cell...
-		let info = cells[indexPath.section][indexPath.row]
+		let info = cells[indexPath.section].cells[indexPath.row]
 		cell.textLabel?.text = info.title
 		cell.accessoryType = info.acc
 		
@@ -100,7 +89,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 				println()
 			}
 		} else {
-			if let vcID = cells[indexPath.section][indexPath.row].vc {
+			if let vcID = cells[indexPath.section].cells[indexPath.row].vc {
 				var vc = storyboard?.instantiateViewControllerWithIdentifier(vcID) as! UITableViewController
 				
 				switch indexPath.row {
@@ -119,6 +108,15 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 		}
 		
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
+	}
+	
+	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		switch section {
+		case feedbackSection:
+			return "Version number 2.0"
+		default:
+			return nil
+		}
 	}
 	
 	// MARK: - MFMailComposeViewControllerDelegate

@@ -77,7 +77,7 @@ class QuickMenu: NSManagedObject {
 
 class Food: NSManagedObject {
 	/// All the information for the entire food
-	@NSManaged var foodString: String
+	@NSManaged var data: NSData
 	
 	@NSManaged var favorite: Bool
 	/// Notify at start of day if seen
@@ -99,8 +99,7 @@ class Food: NSManagedObject {
 		}
 		
 		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as! Food
-		newItem.foodString = food.foodString()
-		
+		newItem.data = NSJSONSerialization.dataWithJSONObject(food.dictFromObject(), options: .allZeros, error: nil)!
 		newItem.favorite = false
 		newItem.notify = false
 		newItem.date = comparisonDate(NSDate())
@@ -126,6 +125,6 @@ class Food: NSManagedObject {
 	}
 	
 	func info() -> FoodInfo {
-		return MainFoodInfo.isMain(foodString) ? MainFoodInfo(formattedString: foodString) : FoodInfo(formattedString: foodString)
+		return FoodInfo(dict: NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
 	}
 }

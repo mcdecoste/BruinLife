@@ -46,7 +46,7 @@ class NotificationTableViewCell: UITableViewCell {
 		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: ["name" : nameLabel, "serving" : timeLabel]))
 	}
 	
-	func setLabels(name: String, time: String = "") {
+	func setLabels(name: String, time: String = "", places: Array<String> = []) {
 		nameLabel.text = name
 		timeLabel.text = time
 	}

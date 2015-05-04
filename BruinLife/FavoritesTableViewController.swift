@@ -24,10 +24,7 @@ class FavoritesTableViewController: UITableViewController {
         super.viewDidLoad()
 		
 		navigationItem.title = "Favorites"
-		var edit = editButtonItem()
-		edit.action = "editTable"
-		edit.target = self
-		navigationItem.rightBarButtonItem = edit
+		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: "editTable")
 		
 		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
     }
@@ -66,6 +63,7 @@ class FavoritesTableViewController: UITableViewController {
 		}
 	}
 	
+	// TODO: Remove all future notifications for this food
 	func removeFavorite(path: NSIndexPath) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
 		let recipe = favorites[path.section][path.row].info().recipe
@@ -86,6 +84,7 @@ class FavoritesTableViewController: UITableViewController {
 		tableView.endUpdates()
 	}
 	
+	// TODO: Add future notifications for this food
 	func changeFoodNotify(food: Food, notify: Bool) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
 		let recipe = food.info().recipe
@@ -127,7 +126,7 @@ class FavoritesTableViewController: UITableViewController {
 		case notifySection:
 			return nil
 		case dontSection:
-			return "Favorites will be shown in Today View Extension regardless of this setting"
+			return "These notifications are a work in progress and will work in a future version." // "Notifications will be sent out when the food's dining hall opens" // "Favorites will be shown in Today View Extension regardless of this setting"
 		default:
 			return nil
 		}
@@ -135,7 +134,9 @@ class FavoritesTableViewController: UITableViewController {
 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell
-		cell.setLabels(favorites[indexPath.section][indexPath.row].info().name)
+		var places: Array<String> = []
+		// TODO: Consult existing menus to see when this food will come up again
+		cell.setLabels(favorites[indexPath.section][indexPath.row].info().name, places: places)
 		return cell
 	}
 	
@@ -169,5 +170,9 @@ class FavoritesTableViewController: UITableViewController {
 		favorites[destinationIndexPath.section].insert(movedFood, atIndex: destinationIndexPath.row)
 		
 		changeFoodNotify(movedFood, notify: destinationIndexPath.section == notifySection)
+	}
+	
+	override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 	}
 }

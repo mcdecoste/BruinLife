@@ -63,7 +63,7 @@ class ServingsTableViewController: UITableViewController {
 		for food in foodItems {
 			for (nutr, list) in food.info().nutrition {
 				if let measure = list.measure.toInt() {
-					data[nutr]!.measure += "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))"
+					data[nutr] = NutritionListing(type: nutr, measure: "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))")
 				}
 			}
 		}
@@ -185,8 +185,6 @@ class ServingsTableViewController: UITableViewController {
 	
 	func updateNutritionCell(cell: NutritionTableViewCell, path: NSIndexPath) {
 		let cellInfo = Nutrient.rowPairs[path.row]
-		
-//		let nutrArray = Nutrient.allRawValues
 		
 		let leftValues = (type: cellInfo.left.rawValue, information: nutritionValues[cellInfo.left]!)
 		var rightValues = (type: cellInfo.right.rawValue, information: nutritionValues[cellInfo.right]!)
