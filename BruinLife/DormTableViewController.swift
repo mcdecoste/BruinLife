@@ -66,4 +66,23 @@ class DormTableViewController: FoodTableViewController {
 			}
 		}
 	}
+	
+	override func scrollToMeal() {
+		if representsToday(information.date) {
+			var currMeal = currentMeal()
+			if currMeal == .LateNight {
+				return
+			}
+			
+			var sectionToShow = 0
+			
+			for (index, meal) in enumerate(orderedMeals(information.meals.keys.array)) {
+				if meal.equalTo(currMeal) {
+					sectionToShow = index
+					break
+				}
+			}
+			tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
+		}
+	}
 }

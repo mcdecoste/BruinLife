@@ -190,6 +190,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func scrollToMeal() {
 		if representsToday(information.date) {
 			var currMeal = currentMeal()
+			
 			var sectionToShow = 0
 			
 			for (index, meal) in enumerate(orderedMeals(information.meals.keys.array)) {
@@ -298,7 +299,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				displayCell?.changeInfo(restaurant, andDate: information.date, isHall: isHall)
 				displayCell!.collectionView?.invalidateIntrinsicContentSize()
 				if displayCell!.collectionView?.numberOfSections() > 0 {
-					displayCell!.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), atScrollPosition: .Left, animated: true)
+					displayCell!.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), atScrollPosition: .Left, animated: false)
 				}
 			}
 		}
