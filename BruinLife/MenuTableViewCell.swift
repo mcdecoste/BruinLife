@@ -28,7 +28,7 @@ class MenuTableViewCell: FoodTableViewCell {
 	}
 	
 	override func updateDisplay() {
-		// do things to update the display for the new information
+		// do things to update the display for the new brief
 		backgroundImageView?.frame = bounds
 		backgroundImageView?.clipsToBounds = true
 		
@@ -40,9 +40,9 @@ class MenuTableViewCell: FoodTableViewCell {
 		blurView.frame = bounds
 	}
 	
-	/// Preferred method for setting information and date, as this also changes the display
+	/// Preferred method for setting brief and date, as this also changes the display
 	override func changeInfo(info: RestaurantBrief, andDate date: NSDate, isHall: Bool) {
-		self.information = info
+		self.brief = info
 		self.date = date
 		self.isHall = isHall
 		
@@ -53,7 +53,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open))!))
+		backgroundImageView = UIImageView(image: UIImage(named: (brief?.imageName(open))!))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		

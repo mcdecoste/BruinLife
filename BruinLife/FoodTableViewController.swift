@@ -46,10 +46,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	var information: DayBrief = DayBrief() {
 		willSet {
 			loadState = .Expanding
-			
-			
-			
-//			(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = .Expanding
 		}
 		didSet {
 			dateMeals = orderedMeals(information.meals.keys.array)
@@ -58,7 +54,11 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	var dateMeals = [MealType]()
 	
-	var isHall = true
+	var isHall: Bool {
+		get {
+			return true
+		}
+	}
 	
 	var loadState: FoodControllerLoadState = .Loading {
 		didSet {
@@ -141,6 +141,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 							infoExtra.meals[meal]!.halls.removeValueForKey(hall)
 						}
 					}
+				}
+				
+				if !isHall {
+					information.date = comparisonDate()
 				}
 				
 				information = infoExtra
@@ -381,7 +385,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		
-		foodVC.setFood(food, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.information)!)
+		foodVC.setFood(food, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.brief)!)
 	}
 	
 	// MARK: UIPopoverPresentationControllerDelegate
@@ -391,11 +395,11 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: - UICollectionViewDataSource
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return (displayCell?.information?.sections[section].foods.count)!
+		return (displayCell?.brief?.sections[section].foods.count)!
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		var restaurant = displayCell?.information
+		var restaurant = displayCell?.brief
 		var food = restaurant?.sections[indexPath.section].foods[indexPath.row]
 		var cell = collectionView.dequeueReusableCellWithReuseIdentifier("foodDisplay", forIndexPath: indexPath) as! FoodCollectionViewCell
 		cell.setFood(restaurant!.sections[indexPath.section].foods[indexPath.row], isHall: isHall)
@@ -403,12 +407,12 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-		return displayCell!.information!.sections.count
+		return displayCell!.brief!.sections.count
 	}
 	
 	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
 		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as! SectionCollectionReusableView
-		header.changeTitle((displayCell?.information?.sections[indexPath.section].name)!)
+		header.changeTitle((displayCell?.brief?.sections[indexPath.section].name)!)
 		
 		var flow = collectionView.collectionViewLayout as! HorizontalFlow
 		while flow.headerWidths.count - indexPath.section < 1 {
@@ -421,7 +425,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	// MARK: UICollectionViewDelegate
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		let section = displayCell?.information!.sections[indexPath.section]
+		let section = displayCell?.brief!.sections[indexPath.section]
 		let foodBrief = section!.foods[indexPath.row]
 		if information.foods.indexForKey(foodBrief.recipe) != nil {
 			let food = information.foods[foodBrief.recipe]!.info

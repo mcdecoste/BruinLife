@@ -21,6 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: .Alert | .Badge, categories: nil))
 		}
 		
+		// UINavigationBar.appearance().barTintColor = color(113, 170, 251) // color(36, 80, 249) // color(88, 150, 251)
+//		UINavigationBar.appearance().tintColor = color(88, 150, 251)
+		
 		return true
 	}
 

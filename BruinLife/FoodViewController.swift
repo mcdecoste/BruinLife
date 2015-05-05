@@ -134,8 +134,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		let openDate = place.openTime.timeDateForDate(date)
 		let morningDate = morningTime.timeDateForDate(date)
 		
-		var timeCase = (morningDate?.timeIntervalSinceNow)! > 0 ? 0 : 2
-		timeCase += (openDate?.timeIntervalSinceNow)! > 0 ? 0 : 1
+		var timeCase = morningDate.timeIntervalSinceNow > 0 ? 0 : 2
+		timeCase += openDate.timeIntervalSinceNow > 0 ? 0 : 1
 		
 		return ReminderCase(rawValue: timeCase)!
 	}
@@ -490,9 +490,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case alertNever:
 			removeNotification()
 		case alertMorningFull:
-			addNotification(morningTime.timeDateForDate(date)!)
+			addNotification(morningTime.timeDateForDate(date))
 		case alertHall:
-			addNotification(place.openTime.timeDateForDate(date)!)
+			addNotification(place.openTime.timeDateForDate(date))
 		case alertCancel:
 			println("Cancelling")
 		default:

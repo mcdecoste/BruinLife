@@ -34,7 +34,6 @@ class DormTableViewController: FoodTableViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		isHall = true
 	}
 	
 	override func viewDidAppear(animated: Bool) {

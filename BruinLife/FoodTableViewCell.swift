@@ -9,7 +9,7 @@
 import UIKit
 
 class FoodTableViewCell: UITableViewCell {
-	var information: RestaurantBrief?
+	var brief: RestaurantBrief?
 	var date: NSDate?
 	var foodVC: FoodTableViewController?
 	var backgroundImageView: UIImageView?
@@ -17,7 +17,26 @@ class FoodTableViewCell: UITableViewCell {
 	
 	var open: Bool {
 		get {
-			return dateInfo().open
+			return dateInfo.open
+		}
+	}
+	
+	var dateInfo: (open: Bool, openDate: NSDate?, closeDate: NSDate?) {
+		get {
+			if let info = brief {
+				var openDate1 = info.openTime.timeDateForDate(date!)
+				var closeDate1 = info.closeTime.timeDateForDate(date!)
+				
+				let diff = Double(daysInFuture(date!)-1) * timeInDay
+				var openDate2 = info.openTime.timeDateForDate(date!.dateByAddingTimeInterval(diff))
+				var closeDate2 = info.closeTime.timeDateForDate(date!.dateByAddingTimeInterval(diff))
+				
+				var open1 = (openDate1.timeIntervalSinceNow <= 0 && closeDate1.timeIntervalSinceNow >= 0)
+				var open2 = (openDate2.timeIntervalSinceNow <= 0 && closeDate2.timeIntervalSinceNow >= 0)
+				var open = open1 || open2
+				return (open, openDate1, closeDate1)
+			}
+			return (false, nil, nil)
 		}
 	}
 	
@@ -39,35 +58,21 @@ class FoodTableViewCell: UITableViewCell {
 	
 	/// Preferred method for setting information and date, as this also changes the display
 	func changeInfo(info: RestaurantBrief, andDate date: NSDate, isHall: Bool) {
-		self.information = info
-		self.date = date
+		self.brief = info
+		self.date = isHall ? date : comparisonDate()
 		self.isHall = isHall
 		
 		let imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
 		
-		backgroundImageView = UIImageView(image: UIImage(named: (information?.imageName(open))!))
+		backgroundImageView = UIImageView(image: UIImage(named: (brief?.imageName(open))!))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		
 		insertSubview(backgroundImageView!, atIndex: imageIndex)
 		
 		updateDisplay()
-	}
-	
-	func dateInfo() -> (open: Bool, openDate: NSDate?, closeDate: NSDate?) {
-		var openDate1 = information?.openTime.timeDateForDate(date)
-		var closeDate1 = information?.closeTime.timeDateForDate(date)
-		
-		let diff = Double(daysInFuture(date!)-1) * timeInDay
-		var openDate2 = information?.openTime.timeDateForDate(date?.dateByAddingTimeInterval(diff))
-		var closeDate2 = information?.closeTime.timeDateForDate(date?.dateByAddingTimeInterval(diff))
-		
-		var open1 = (openDate1?.timeIntervalSinceNow <= 0 && closeDate1?.timeIntervalSinceNow >= 0)
-		var open2 = (openDate2?.timeIntervalSinceNow <= 0 && closeDate2?.timeIntervalSinceNow >= 0)
-		var open = open1 || open2
-		return (open, openDate1, closeDate1)
 	}
 	
 	func parallaxImageWithScrollPercent(perc: CGFloat) {

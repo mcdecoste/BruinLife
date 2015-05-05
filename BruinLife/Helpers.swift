@@ -26,7 +26,11 @@ let notificationTimeID: String = "NotificationTimeID"
 /// Used to describe when the hall is open
 let notificationHoursID: String = "NotificationHoursID"
 
-let tableBackgroundColor = UIColor(red: 239.0/255, green: 239.0/255, blue: 244.0/255, alpha: 1)
+let tableBackgroundColor = color(239, 239, 244)
+
+func color(red: Int, green: Int, blue: Int) -> UIColor {
+	return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: CGFloat(1))
+}
 
 /// Returns the most likely Meal given the time
 func currentMeal() -> MealType {

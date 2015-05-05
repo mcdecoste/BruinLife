@@ -52,15 +52,15 @@ class Time {
 		self.minute = Int(interval % 3600) / 60
 	}
 	
-	func timeDateForDate(dayDate: NSDate?) -> NSDate? {
+	func timeDateForDate(date: NSDate) -> NSDate {
 		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
-		return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: dayDate!, options: NSCalendarOptions())?.dateByAddingTimeInterval(interval)
+		return NSCalendar.currentCalendar().startOfDayForDate(date).dateByAddingTimeInterval(interval)
 	}
 	
 	func displayString() -> String {
 		var formatter = NSDateFormatter()
 		formatter.dateFormat = "h:mm a"
-		return formatter.stringFromDate(timeDateForDate(NSDate())!)
+		return formatter.stringFromDate(timeDateForDate(NSDate()))
 	}
 }
 

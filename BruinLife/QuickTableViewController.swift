@@ -9,10 +9,15 @@
 import UIKit
 
 class QuickTableViewController: FoodTableViewController {
+	override var isHall: Bool {
+		get {
+			return false
+		}
+	}
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		self.navigationItem.title = "Quick Service"
-		isHall = false
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -55,6 +60,10 @@ class QuickTableViewController: FoodTableViewController {
 						}
 					}
 				}
+			}
+			
+			if !isHall {
+				information.date = comparisonDate()
 			}
 			
 			information = quickBrief

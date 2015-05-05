@@ -11,7 +11,7 @@ import CloudKit
 import CoreData
 
 func comparisonDate(date: NSDate) -> NSDate {
-	return NSCalendar.currentCalendar().dateBySettingHour(0, minute: 0, second: 0, ofDate: date, options: nil)!
+	return NSCalendar.currentCalendar().startOfDayForDate(date)
 }
 
 func comparisonDate(daysInFuture: Int = 0) -> NSDate {

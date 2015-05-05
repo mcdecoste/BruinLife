@@ -40,54 +40,26 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		// fix the frames
 		updateLabelFrames()
 		
-		var openDate: NSDate?
-		var closeDate: NSDate?
-		var open = true
-		(open, openDate, closeDate) = dateInfo()
-		
-		var aboutToday = comparisonDate() == comparisonDate(date!)
+		var (open, openDate, closeDate) = dateInfo
+		let aboutToday = comparisonDate() == comparisonDate(date!)
 		var formatter = NSDateFormatter()
 		formatter.timeZone = NSTimeZone(name: "Americas/Los_Angeles")
 		formatter.timeStyle = .ShortStyle
-		formatter.dateStyle = .NoStyle
 		
-		var openTime = formatter.stringFromDate(openDate!)
-		var closeTime = formatter.stringFromDate(closeDate!)
+		var openTime = formatter.stringFromDate(openDate!).stringByReplacingOccurrencesOfString(":00", withString: "")
+		var closeTime = formatter.stringFromDate(closeDate!).stringByReplacingOccurrencesOfString(":00", withString: "")
 		
-		let shouldAbbreviate = true
-		
-		var openTrunc = openTime
-		if shouldAbbreviate {
-			if let openZeros = openTrunc.rangeOfString(":00") {
-				openTrunc = stringByRemovingRange(openTrunc, range: openZeros)
-			}
-		}
-		
-		var closeTrunc = closeTime
-		if shouldAbbreviate {
-			if let closeZeros = closeTrunc.rangeOfString(":00") {
-				closeTrunc = stringByRemovingRange(closeTrunc, range: closeZeros)
-			}
-		}
-		
-		var openText = "until \(closeTrunc)"
-		var closedText = aboutToday && openDate?.timeIntervalSinceNow < 0 ? "as of \(closeTrunc)" : "\(openTrunc) — \(closeTrunc)"
+		var openText = "until \(closeTime)"
+		var closedText = aboutToday && openDate?.timeIntervalSinceNow < 0 ? "as of \(closeTime)" : "\(openTime) — \(closeTime)"
 		if openDate == closeDate {
 			closedText = "Not open today"
 		}
 		
-		nameLabel.text = information?.name(isHall)
-		
-//		openLabel.textColor = open ? UIColor(red: 0.0, green: 0.8, blue: 0.0, alpha: 1.0) : .whiteColor()
+		nameLabel.text = brief?.name(isHall)
 		openLabel.textColor = UIColor(red: open ? 0.0 : 0.85, green: open ? 0.8 : 0.0, blue: 0.0, alpha: 1.0)
-		openLabel.font = .systemFontOfSize(20) // .systemFontOfSize(open ? 20 : 18) // considered bold for a bit
+		openLabel.font = .systemFontOfSize(20)
 		openLabel.text = open ? "Open" : "Closed"
-		
 		hoursLabel.text = open ? openText : closedText
-	}
-	
-	func stringByRemovingRange(string: String, range: Range<String.Index>) -> String {
-		return "\(string.substringToIndex(range.startIndex))\(string.substringFromIndex(range.endIndex))"
 	}
 	
 	func updateLabelFrames() {
