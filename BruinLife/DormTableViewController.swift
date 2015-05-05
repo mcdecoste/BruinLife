@@ -52,6 +52,10 @@ class DormTableViewController: FoodTableViewController {
 		NSNotificationCenter.defaultCenter().removeObserver(self)
 	}
 	
+	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+		return hasData ? information.meals.count - 1 : 1
+	}
+	
 	override func handleDataChange(notification: NSNotification) {
 		if notification.name == "NewDayInfoAdded" {
 			let dDay = notification.userInfo!["newItem"] as! DiningDay

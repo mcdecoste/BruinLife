@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "BruinLife/FoodTableViewController.swift"
-            timestampString = "452247654.431094"
+            timestampString = "452485632.766989"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "158"
-            endingLineNumber = "158"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
             landmarkName = "handleDataChange(_:)"
             landmarkType = "5">
          </BreakpointContent>

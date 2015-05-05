@@ -37,7 +37,6 @@ class CloudManager: NSObject {
 	
 	override init() {
 		container = CKContainer(identifier: "iCloud.BruinLife.MatthewDeCoste")
-//		container = CKContainer.defaultContainer()
 		publicDB = container.publicCloudDatabase
 	}
 	
@@ -76,8 +75,12 @@ class CloudManager: NSObject {
 	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
 		let gap = findFirstGap()
-		println("gap is \(gap)")
+		checkForDormUpdates(gap, completion: completion)
 		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
+	}
+	
+	func checkForDormUpdates(upTo: Int, completion: (error: NSError!) -> Void) {
+		
 	}
 	
 //	func fetchQuickRecord(completion: (record: CKRecord!, error: NSError!) -> Void) {
@@ -127,14 +130,39 @@ class CloudManager: NSObject {
 		}
 	}
 	
+	private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
+	private let quickKey: String = "quickDownloadDate"
+	private func updateDownloadDate(dateKey: String, modDate: NSDate) {
+		NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: dateKey)
+		
+		let mostRecent = downloadDate(mostRecentDownloadKey)
+		if modDate.timeIntervalSinceDate(mostRecent) > 0 {
+			NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: mostRecentDownloadKey)
+		}
+		
+		NSUserDefaults.standardUserDefaults().synchronize() // needed?
+	}
+	
+	private func downloadDate(dateKey: String) -> NSDate {
+		return NSUserDefaults.standardUserDefaults().objectForKey(dateKey) as? NSDate ?? NSDate(timeIntervalSince1970: 0)
+	}
+	
+	private func quickDownloadDate() -> NSDate? {
+		return downloadDate(quickKey)
+	}
+	
 	// MARK: - Core Data
 	private func newDiningDay(record: CKRecord) {
+		updateDownloadDate("quickDownloadDate", modDate: record.modificationDate)
+		
 		if let moc = managedObjectContext {
 			DiningDay.dataFromInfo(moc, record: record)
 		}
 	}
 	
 	private func updateQuick(record: CKRecord) {
+		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
+		
 		if let moc = managedObjectContext {
 			QuickMenu.dataFromInfo(moc, record: record)
 		}
