@@ -3,29 +3,16 @@
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="480" height="480"/>
+            <rect key="frame" x="0.0" y="0.0" width="480" height="853"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="  Copyright (c) 2015 Matthew DeCoste. All rights reserved." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="9" translatesAutoresizingMaskIntoConstraints="NO" id="8ie-xW-0ye">
-                    <rect key="frame" x="20" y="439" width="440" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Bruin Life" textAlignment="center" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" minimumFontSize="18" translatesAutoresizingMaskIntoConstraints="NO" id="kId-c2-rCX">
-                    <rect key="frame" x="20" y="61" width="440" height="1"/>
-                    <fontDescription key="fontDescription" type="boldSystem" pointSize="36"/>
-                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
-                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="IconBig" translatesAutoresizingMaskIntoConstraints="NO" id="ugx-Z0-uvL">
-                    <rect key="frame" x="70" y="70" width="341" height="341"/>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="IconTall" translatesAutoresizingMaskIntoConstraints="NO" id="ugx-Z0-uvL">
+                    <rect key="frame" x="0.0" y="0.0" width="481" height="853"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="240" id="3To-ae-KG7"/>
                         <constraint firstAttribute="width" secondItem="ugx-Z0-uvL" secondAttribute="height" multiplier="1:1" id="RmK-Jw-8qP"/>
@@ -33,29 +20,25 @@
                     <variation key="default">
                         <mask key="constraints">
                             <exclude reference="3To-ae-KG7"/>
+                            <exclude reference="RmK-Jw-8qP"/>
                         </mask>
                     </variation>
                 </imageView>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
-                <constraint firstItem="ugx-Z0-uvL" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" symbolic="YES" id="3Fa-MW-JXO"/>
+                <constraint firstItem="ugx-Z0-uvL" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="3Fa-MW-JXO"/>
                 <constraint firstAttribute="centerY" secondItem="ugx-Z0-uvL" secondAttribute="centerY" id="3bK-Jt-FGO"/>
-                <constraint firstItem="ugx-Z0-uvL" firstAttribute="top" relation="greaterThanOrEqual" secondItem="kId-c2-rCX" secondAttribute="bottom" constant="8" symbolic="YES" id="4ID-aY-Lra"/>
-                <constraint firstItem="kId-c2-rCX" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="bottom" multiplier="1/8" constant="1" id="5cJ-9S-tgC"/>
-                <constraint firstAttribute="centerX" secondItem="kId-c2-rCX" secondAttribute="centerX" id="Koa-jz-hwk"/>
-                <constraint firstAttribute="bottom" secondItem="8ie-xW-0ye" secondAttribute="bottom" constant="20" id="Kzo-t9-V3l"/>
-                <constraint firstItem="8ie-xW-0ye" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" symbolic="YES" id="MfP-vx-nX0"/>
-                <constraint firstAttribute="centerX" secondItem="8ie-xW-0ye" secondAttribute="centerX" id="ZEH-qu-HZ9"/>
-                <constraint firstItem="kId-c2-rCX" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="20" symbolic="YES" id="fvb-Df-36g"/>
+                <constraint firstAttribute="bottom" secondItem="ugx-Z0-uvL" secondAttribute="bottom" id="ANi-aH-0eC"/>
+                <constraint firstItem="ugx-Z0-uvL" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="XqK-qi-5OA"/>
                 <constraint firstAttribute="centerX" secondItem="ugx-Z0-uvL" secondAttribute="centerX" id="y2P-US-xXr"/>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="548" y="455"/>
+            <point key="canvasLocation" x="548" y="443.5"/>
         </view>
     </objects>
     <resources>
-        <image name="IconBig" width="341" height="341"/>
+        <image name="IconTall" width="360" height="640"/>
     </resources>
 </document>
