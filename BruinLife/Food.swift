@@ -11,11 +11,11 @@ import CloudKit
 import CoreData
 
 func comparisonDate(date: NSDate) -> NSDate {
-	return NSCalendar.currentCalendar().startOfDayForDate(date)
+	return currCal.startOfDayForDate(date)
 }
 
 func comparisonDate(daysInFuture: Int = 0) -> NSDate {
-	return NSCalendar.currentCalendar().dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
+	return currCal.dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
 }
 
 class DiningDay: NSManagedObject {
@@ -121,7 +121,7 @@ class Food: NSManagedObject {
 	}
 	
 	private func components(date: NSDate) -> NSDateComponents {
-		return NSCalendar.currentCalendar().components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: date)
+		return currCal.components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: date)
 	}
 	
 	func info() -> FoodInfo {

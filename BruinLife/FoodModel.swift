@@ -37,7 +37,7 @@ class Time {
 	init(hoursString: String) {
 		var formatter = NSDateFormatter()
 		formatter.dateFormat = "h:mma"
-		let comps = NSCalendar.currentCalendar().components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: formatter.dateFromString(hoursString)!)
+		let comps = currCal.components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: formatter.dateFromString(hoursString)!)
 		var increase = (comps.hour < 7) ? 24 : 0
 		self.hour = comps.hour + increase
 		self.minute = comps.minute
@@ -54,7 +54,7 @@ class Time {
 	
 	func timeDateForDate(date: NSDate) -> NSDate {
 		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
-		return NSCalendar.currentCalendar().startOfDayForDate(date).dateByAddingTimeInterval(interval)
+		return currCal.startOfDayForDate(date).dateByAddingTimeInterval(interval)
 	}
 	
 	func displayString() -> String {
@@ -670,7 +670,7 @@ enum MealType : String {
 	}
 	
 	static func allMeals(date: NSDate) -> Array<MealType> {
-		var dow = NSCalendar.currentCalendar().component(.CalendarUnitWeekday, fromDate: date)
+		var dow = currCal.component(.CalendarUnitWeekday, fromDate: date)
 		return (dow == 1 || dow == 7) ? [.Brunch, .Dinner] : [.Breakfast, .Lunch, .Dinner]
 	}
 }

@@ -402,14 +402,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	// MARK: - Core Data
 	
 	func fetchFoods() {
-		var fetchRequest = NSFetchRequest(entityName: "Food")
-		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
+		if let fetchResults = managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
 			for result in fetchResults {
 				if result.info().recipe == food.recipe {
-					var theFood = fetchResults[0]
-					numberOfServings = Int(theFood.servings)
-					favorited = theFood.favorite
+					numberOfServings = Int(result.servings)
+					favorited = result.favorite
 				}
 			}
 		}
@@ -547,7 +544,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		information[notificationMealID] = meal.rawValue
 		information[notificationHoursID] = "\(place.openTime.displayString()) until \(place.closeTime.displayString())"
 		
-		let fireCal = NSCalendar.currentCalendar().components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: notif.fireDate!)
+		let fireCal = currCal.components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: notif.fireDate!)
 		let fireTime = Time(hour: fireCal.hour, minute: fireCal.minute)
 		information[notificationTimeID] = fireTime.displayString()
 		notif.userInfo = information
@@ -566,20 +563,16 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func identifierForFood() -> String {
-		let currCal = NSCalendar.currentCalendar()
 		let components = currCal.components(.CalendarUnitMonth | .CalendarUnitDay, fromDate: date)
-		
 		return "\(components.month)/\(components.day) - \(place.hall.displayName((foodVC?.isHall)!)) - \(meal.rawValue) - \(food.name)"
 	}
 	
 	func weekdayForFood() -> String {
-		let weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-		return weekdays[NSCalendar.currentCalendar().components(.CalendarUnitWeekday, fromDate: date).weekday - 1]
+		return currCal.weekdaySymbols[currCal.component(.CalendarUnitWeekday, fromDate: NSDate()) - 1] as! String
 	}
 	
 	func displayForFireDate(date: NSDate) -> String {
-		var components = NSCalendar.currentCalendar().components(NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute, fromDate: date)
-		
+		var components = currCal.components(NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute, fromDate: date)
 		return Time(hour: components.hour, minute: components.minute).displayString()
 	}
 	

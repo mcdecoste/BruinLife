@@ -28,13 +28,19 @@ let notificationHoursID: String = "NotificationHoursID"
 
 let tableBackgroundColor = color(239, 239, 244)
 
+var currCal: NSCalendar {
+	get {
+		return NSCalendar.currentCalendar()
+	}
+}
+
 func color(red: Int, green: Int, blue: Int) -> UIColor {
 	return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: CGFloat(1))
 }
 
 /// Returns the most likely Meal given the time
 func currentMeal() -> MealType {
-	var hour = NSCalendar.currentCalendar().component(.CalendarUnitHour, fromDate: NSDate())
+	var hour = currCal.component(.CalendarUnitHour, fromDate: NSDate())
 	
 	if hour <= 3 { return .LateNight }
 	if hour <= 11 { return .Breakfast }
@@ -48,8 +54,8 @@ func representsToday(date: NSDate) -> Bool {
 }
 
 func daysInFuture(date: NSDate) -> Int {
-	let today = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: NSDate()).day
-	let selectedDay = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: date).day
+	let today = currCal.components(.CalendarUnitDay, fromDate: NSDate()).day
+	let selectedDay = currCal.components(.CalendarUnitDay, fromDate: date).day
 	return abs(today - selectedDay)
 }
 

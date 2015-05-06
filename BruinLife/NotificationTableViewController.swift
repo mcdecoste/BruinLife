@@ -97,7 +97,7 @@ class NotificationTableViewController: UITableViewController {
 	}
 	
 	func sectionFromSection(section: Int) -> Int {
-		let weekday = NSCalendar.currentCalendar().component(.CalendarUnitWeekday, fromDate: NSDate())
+		let weekday = currCal.component(.CalendarUnitWeekday, fromDate: NSDate())
 		return (weekday - 1 + section) % weekdays.count
 	}
 	

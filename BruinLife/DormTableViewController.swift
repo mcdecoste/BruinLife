@@ -18,7 +18,7 @@ class DormTableViewController: FoodTableViewController {
 			formatter.dateFormat = compact() ? "EEEE, MMM. d" : "EEEE, MMMM d"
 			var title = formatter.stringFromDate(information.date)
 			
-			switch NSCalendar.currentCalendar().component(.CalendarUnitDay, fromDate: information.date) {
+			switch currCal.component(.CalendarUnitDay, fromDate: information.date) {
 			case 1, 21, 31:
 				title += "st"
 			case 2, 22:
