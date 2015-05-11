@@ -21,20 +21,17 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		pageController.delegate = self
 		pageController.view.frame = view.bounds
 		
+		// true if we don't have today's data yet. False if we have data
 		if CloudManager.sharedInstance.fetchDiningDay(comparisonDate()) == "" {
 			CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
 				if error != nil {
 					// handle error case
 					self.dormVCfromIndex(0).loadFailed(error)
-				} else {
-					self.loadMoreDays() // load more days?
 				}
 			})
-		} else {
-			loadMoreDays()
 		}
 		
-		// TODO: create empty shell to show for before loading
+		// TODO: create proper shell to show for before loading
 		pageController.setViewControllers([UINavigationController()], direction: .Forward, animated: false, completion: nil)
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)

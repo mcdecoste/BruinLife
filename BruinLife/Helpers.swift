@@ -34,8 +34,16 @@ var currCal: NSCalendar {
 	}
 }
 
-func color(red: Int, green: Int, blue: Int) -> UIColor {
-	return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: CGFloat(1))
+func comparisonDate(date: NSDate) -> NSDate {
+	return currCal.startOfDayForDate(date)
+}
+
+func comparisonDate(daysInFuture: Int = 0) -> NSDate {
+	return currCal.dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
+}
+
+func color(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0) -> UIColor {
+	return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: alpha)
 }
 
 /// Returns the most likely Meal given the time

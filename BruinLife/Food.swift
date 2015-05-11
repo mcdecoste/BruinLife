@@ -10,14 +10,6 @@ import UIKit
 import CloudKit
 import CoreData
 
-func comparisonDate(date: NSDate) -> NSDate {
-	return currCal.startOfDayForDate(date)
-}
-
-func comparisonDate(daysInFuture: Int = 0) -> NSDate {
-	return currCal.dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
-}
-
 class DiningDay: NSManagedObject {
 	@NSManaged var day: NSDate
 	@NSManaged var data: NSData

@@ -14,16 +14,6 @@ protocol Serializable {
 	init(dict: Dictionary<String, AnyObject>)
 }
 
-//func representsToday(date: NSDate) -> Bool {
-//	return daysInFuture(date) == 0
-//}
-//
-//func daysInFuture(date: NSDate) -> Int {
-//	let today = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: NSDate()).day
-//	let selectedDay = NSCalendar.currentCalendar().components(.CalendarUnitDay, fromDate: date).day
-//	return abs(today - selectedDay)
-//}
-
 class Time {
 	var hour: Int
 	var minute: Int
@@ -259,7 +249,7 @@ struct FoodCollection: Serializable {
 }
 
 class DayBrief: Serializable {
-	var date = comparisonDate(NSDate())
+	var date = comparisonDate()
 	var meals: Dictionary<MealType, MealBrief> = [:]
 	var foods: Dictionary<String, FoodCollection> = [:]
 	
