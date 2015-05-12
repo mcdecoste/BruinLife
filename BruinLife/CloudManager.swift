@@ -75,60 +75,90 @@ class CloudManager: NSObject {
 	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
 		let gap = findFirstGap()
-		checkForDormUpdates(gap, completion: completion)
+		println("The gap is \(gap)")
+		
+//		checkForDormUpdates(upTo: gap, completion: completion) // make sure we're okay on what exists
+		fetchUpdatedRecords(endDaysInAdvance: gap, completion: completion)
 		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
 	}
 	
-	func checkForDormUpdates(upTo: Int, completion: (error: NSError!) -> Void) {
-		
-	}
-	
-//	func fetchQuickRecord(completion: (record: CKRecord!, error: NSError!) -> Void) {
-//		publicDB.fetchRecordWithID(CKRecordID(recordName: "quick"), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("Error in fetching quick")
-//			} else {
-//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//					completion(record: record, error: error)
-//				})
-//			}
-//		})
-//	}
-	
 	func findFirstGap(daysInAdvance: Int = maxInAdvance) -> Int {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
-		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) >= %@", comparisonDate())
+		fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
 		fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
-			return daysInFuture(fetchResults.last!.day)
+			return daysInFuture(fetchResults.first!.day) + 1
 		}
 		return 0
+	}
+	
+	private func fetchUpdatedRecords(type: String = "DiningDay", endDaysInAdvance: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
+		if endDaysInAdvance == 0 {
+			completion(error: NSError(domain: "Nothing to Update", code: 42, userInfo: nil))
+			return
+		}
+		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(daysInFuture: endDaysInAdvance), comparisonDate()])
+		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
+		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
+			self.updateDiningDay(record)
+		}
+		operation.queryCompletionBlock = { (cursor: CKQueryCursor!, error: NSError!) -> Void in
+			if let err = error {
+				completion(error: err)
+			}
+		}
+		
+		publicDB.addOperation(operation)
 	}
 	
 	private func fetchRecords(type: String, startDaysInAdvance: Int = 0, completion: (error: NSError!) -> Void) {
 		if startDaysInAdvance >= maxInAdvance {
 			completion(error: NSError(domain: "Nothing to Load", code: 42, userInfo: nil))
-			return // don't bother loading further
+			return
 		}
 		
-		for daysInAdvance in startDaysInAdvance...min(maxInAdvance, max(startDaysInAdvance + 3, 6)) {
-			var form = NSDateFormatter()
-			form.dateStyle = .ShortStyle
-			var dateStr = form.stringFromDate(comparisonDate(daysInFuture: daysInAdvance))
-			
-			var comp = { (record: CKRecord!, error: NSError!) -> Void in
-				if error != nil {
-					// handle error case
-					completion(error: error)
-				} else {
-					self.newDiningDay(record) // load more days?
-				}
-			}
-			
-			fetchRecord(dateStr, completion: comp)
+		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
+		let endDate = comparisonDate(daysInFuture: min(maxInAdvance, max(startDaysInAdvance + 3, 6)))
+		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [endDate, startDate])
+		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
+		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
+			println("Fetched for \(record.recordID.recordName)")
+			self.newDiningDay(record)
 		}
+		operation.queryCompletionBlock = { (cursor: CKQueryCursor!, error: NSError!) -> Void in
+			if let err = error {
+				completion(error: err)
+			} else {
+				self.save()
+			}
+		}
+		
+		publicDB.addOperation(operation)
 	}
+	
+	/// Versions up to 2.1: Reloads all days, saves them.
+	/// Versions 2.2+: does predicate fanciness to prevent extra loads
+//	func checkForDormUpdates(upTo: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
+//		if upTo == 0 {
+//			return
+//		}
+//		
+//		var form = NSDateFormatter()
+//		form.dateStyle = .ShortStyle
+//		
+//		let comp = { (record: CKRecord!, error: NSError!) -> Void in
+//			if let err = error {
+//				completion(error: err)
+//			} else {
+//				self.updateDiningDay(record)
+//			}
+//		}
+//		
+//		for advance in 0...upTo {
+//			fetchRecord(form.stringFromDate(comparisonDate(daysInFuture: advance)), completion: comp)
+//		}
+//	}
 	
 	private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
 	private let quickKey: String = "quickDownloadDate"
@@ -153,15 +183,46 @@ class CloudManager: NSObject {
 	
 	// MARK: - Core Data
 	private func newDiningDay(record: CKRecord) {
-		updateDownloadDate("quickDownloadDate", modDate: record.modificationDate)
+		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
 			DiningDay.dataFromInfo(moc, record: record)
+			moc.save(nil)
+		}
+	}
+	
+	private func updateDiningDay(record: CKRecord) {
+		println("checking update for \(record.recordID.recordName)")
+		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
+		
+		if let moc = managedObjectContext {
+			var req = NSFetchRequest(entityName: "DiningDay")
+			req.predicate = NSPredicate(format: "\(CDDateField) == %@", argumentArray: [record.valueForKey(CKDateField)!])
+			var madeChanges = false
+			
+			if let results = moc.executeFetchRequest(req, error: nil) as? [DiningDay] {
+				println("\(record.recordID.recordName) as \(results.count) results")
+				
+				for day in results {
+					if let recordDayData = record.valueForKey(CKDataField) as? NSData {
+						if day.data != recordDayData {
+							println("actually updating \(record.recordID.recordName)")
+						}
+						day.data = recordDayData
+						madeChanges = true
+					}
+				}
+				
+			}
+			
+			if madeChanges {
+				save()
+			}
 		}
 	}
 	
 	private func updateQuick(record: CKRecord) {
-		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
+		updateDownloadDate(quickKey, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
 			QuickMenu.dataFromInfo(moc, record: record)
@@ -341,40 +402,6 @@ NSString * const ReferenceSubItemsRecordType = @"ReferenceSubitems";
 
 - (BOOL)isSubscribed {
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptionID"] != nil;
-}
-
-- (void)queryForRecordsNearLocation:(CLLocation *)location completionHandler:(void (^)(NSArray *records))completionHandler {
-    
-    CGFloat radiusInKilometers = 5;
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"distanceToLocation:fromLocation:(location, %@) < %f", location, radiusInKilometers];
-    
-    CKQuery *query = [[CKQuery alloc] initWithRecordType:ItemRecordType predicate:predicate];
-    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-    
-    CKQueryOperation *queryOperation = [[CKQueryOperation alloc] initWithQuery:query];
-    
-    // Just request the name field for all records since we have location range
-    queryOperation.desiredKeys = @[NameField];
-    
-    NSMutableArray *results = [[NSMutableArray alloc] init];
-    
-    [queryOperation setRecordFetchedBlock:^(CKRecord *record) {
-        [results addObject:record];
-    }];
-    
-    queryOperation.queryCompletionBlock = ^(CKQueryCursor *cursor, NSError *error) {
-        if (error) {
-            // In your app, handle this error with such perfection that your users will never realize an error occurred.
-            NSLog(@"An error occured in %@: %@", NSStringFromSelector(_cmd), error);
-            abort();
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^(void){
-                completionHandler(results);
-            });
-        }
-    };
-    
-    [self.publicDatabase addOperation:queryOperation];
 }
 
 */
