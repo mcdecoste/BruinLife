@@ -66,12 +66,12 @@ class FavoritesTableViewController: UITableViewController {
 	// TODO: Remove all future notifications for this food
 	func removeFavorite(path: NSIndexPath) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		let recipe = favorites[path.section][path.row].info().recipe
+		let recipe = favorites[path.section][path.row].info.recipe
 		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
 			for result in fetchResults {
-				if result.info().recipe == recipe {
+				if result.info.recipe == recipe {
 					result.favorite = false
 				}
 			}
@@ -87,12 +87,12 @@ class FavoritesTableViewController: UITableViewController {
 	// TODO: Add future notifications for this food
 	func changeFoodNotify(food: Food, notify: Bool) {
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		let recipe = food.info().recipe
+		let recipe = food.info.recipe
 		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
 			for result in fetchResults {
-				if result.info().recipe == recipe {
+				if result.info.recipe == recipe {
 					result.notify = notify
 				}
 			}
@@ -136,7 +136,7 @@ class FavoritesTableViewController: UITableViewController {
 		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell
 		var places: Array<String> = []
 		// TODO: Consult existing menus to see when this food will come up again
-		cell.setLabels(favorites[indexPath.section][indexPath.row].info().name, places: places)
+		cell.setLabels(favorites[indexPath.section][indexPath.row].info.name, places: places)
 		return cell
 	}
 	

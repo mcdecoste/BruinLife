@@ -18,39 +18,23 @@ class Time {
 	var hour: Int
 	var minute: Int
 	
+	var displayString: String {
+		get {
+			var formatter = NSDateFormatter()
+			formatter.dateFormat = "h:mm a"
+			return formatter.stringFromDate(timeDateForDate(NSDate()))
+		}
+	}
+	
 	/// give hour in 24 hour notation (can be more than 24 hours if past midnight)
 	init(hour: Int, minute: Int) {
 		self.hour = hour
 		self.minute = minute
 	}
 	
-	init(hoursString: String) {
-		var formatter = NSDateFormatter()
-		formatter.dateFormat = "h:mma"
-		let comps = currCal.components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: formatter.dateFromString(hoursString)!)
-		var increase = (comps.hour < 7) ? 24 : 0
-		self.hour = comps.hour + increase
-		self.minute = comps.minute
-	}
-	
-	init(hoursString: String, date: NSDate) {
-		var formatter = NSDateFormatter()
-		formatter.dateFormat = "h:mma"
-		let interval = formatter.dateFromString(hoursString)!.timeIntervalSinceDate(date)
-		
-		self.hour = Int(interval) / 3600
-		self.minute = Int(interval % 3600) / 60
-	}
-	
 	func timeDateForDate(date: NSDate) -> NSDate {
 		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
 		return comparisonDate(date: date).dateByAddingTimeInterval(interval)
-	}
-	
-	func displayString() -> String {
-		var formatter = NSDateFormatter()
-		formatter.dateFormat = "h:mm a"
-		return formatter.stringFromDate(timeDateForDate(NSDate()))
 	}
 }
 
@@ -64,29 +48,29 @@ enum Halls: String {
 	case Rendezvous = "Rendezvous"
 	case BruinCafe = "Bruin Cafe"
 	
-	static let allDiningHalls: Array<Halls> = [.DeNeve, .BruinPlate, .Feast, .Hedrick, .Covel] // DeNeve - late night
-	static let allQuickServices: Array<Halls> = [.DeNeve, .Cafe1919, .Rendezvous, .BruinCafe] // DeNeve is late only
-	
-	/// the exact order of this is important to prevent collisions between Rendezvous and Hedrick
-	static let allRestaurants: Array<Halls> = [.Cafe1919, .Rendezvous, .BruinCafe, .DeNeve, .BruinPlate, .Feast, .Hedrick, .Covel]
-	
 	/// returns the URL code (note that 03 and 05 have NO association)
-	func urlCode() -> String? {
+	var urlCode: String? {
 		switch self {
-		case .DeNeve:
+		case DeNeve:
 			return "01"
-		case .Covel:
+		case Covel:
 			return "07"
-		case .Hedrick:
+		case Hedrick:
 			return "06"
-		case .Feast:
+		case Feast:
 			return "04"
-		case .BruinPlate:
+		case BruinPlate:
 			return "02"
 		default:
 			return nil
 		}
 	}
+	
+	static let allDiningHalls: Array<Halls> = [.DeNeve, .BruinPlate, .Feast, .Hedrick, .Covel] // DeNeve - late night
+	static let allQuickServices: Array<Halls> = [.DeNeve, .Cafe1919, .Rendezvous, .BruinCafe] // DeNeve is late only
+	
+	/// the exact order of this is important to prevent collisions between Rendezvous and Hedrick
+	static let allRestaurants: Array<Halls> = [.Cafe1919, .Rendezvous, .BruinCafe, .DeNeve, .BruinPlate, .Feast, .Hedrick, .Covel]
 	
 	static func hallForString(string: String) -> Halls? {
 		// preprocess String to prevent multiple matches?
@@ -135,70 +119,33 @@ enum FoodType: String {
 }
 
 class FoodInfo: Serializable {
-	var name: String
-	var recipe: String
-	var type: FoodType
-	var nutrition = [Nutrient : NutritionListing]()
+	var name: String = ""
+	var recipe: String = "000000"
+	var type: FoodType = .Regular
+	var nutrition: Dictionary<Nutrient, NutritionListing> = [:]
 	var ingredients: String = ""
 	var description: String = ""
 	var countryCode: String = ""
 	
-	init(name: String, recipe: String, type: FoodType) {
-		self.name = name
-		self.recipe = recipe
-		self.type = type
+	init() {
 		for nutrient in Nutrient.allValues {
 			nutrition[nutrient] = NutritionListing(type: nutrient, measure: "0")
 		}
 	}
 	
-	/// Only call this initializer if you had the precisely formatted string created by the foodString() function
-	init(formattedString: String) {
-		let parts = formattedString.componentsSeparatedByString("°")
-		
-		name = parts[0]
-		recipe = parts[1]
-		type = FoodType(rawValue: parts[2])!
-		setNutrition(parts[3])
-		ingredients = parts[4]
-		description = parts[5]
-		countryCode = parts[6]
-	}
-	
-	func typeString() -> String { return type.rawValue }
-	func setType(string: String) { type = FoodType(rawValue: string)! }
-	
-	func nutritionString() -> String {
-		var nutritionStrings = [String]() // other array initialization strategy
-		for nutr in nutrition.values.array {
-			nutritionStrings.append(nutr.measure)
+	required init(dict: Dictionary<String, AnyObject>) {
+		name = dict["name"] as? String ?? "No Name"
+		recipe = dict["recipe"] as? String ?? "No Recipe"
+		type = FoodType(rawValue: dict["type"] as! String)!
+		for nutrient in Nutrient.allValues {
+			nutrition[nutrient] = NutritionListing(type: nutrient, measure: dict[nutrient.rawValue] as? String ?? "0")
 		}
-		
-		return "•".join(nutritionStrings)
-	}
-	
-	func setNutrition(string: String) {
-		let parts = string.componentsSeparatedByString("•")
-		
-		if parts.count == 1 && parts[0] == "" {
-			nutrition = [:]
-			for (index, nutr) in enumerate(Nutrient.allValues) {
-				nutrition[nutr] = (NutritionListing(type: nutr, measure: "0"))
-			}
-		} else {
-			nutrition = [:]
-			for (index, nutr) in enumerate(Nutrient.allValues) {
-				nutrition[nutr] = (NutritionListing(type: nutr, measure: parts[index]))
-			}
-		}
-	}
-	
-	func foodString() -> String {
-		return "\(name)°\(recipe)°\(type.rawValue)°\(nutritionString())°\(ingredients)°\(description)°\(countryCode)"
+		ingredients = dict["ingredients"] as? String ?? ""
+		description = dict["description"] as? String ?? ""
+		countryCode = dict["country"] as? String ?? ""
 	}
 	
 	// MARK:- Serializable Protocol
-	
 	func dictFromObject() -> Dictionary<String, AnyObject> {
 		var dict: Dictionary<String, AnyObject> = [:]
 		
@@ -215,17 +162,7 @@ class FoodInfo: Serializable {
 		return dict
 	}
 	
-	required init(dict: Dictionary<String, AnyObject>) {
-		name = dict["name"] as? String ?? "No Name"
-		recipe = dict["recipe"] as? String ?? "No Recipe"
-		type = FoodType(rawValue: dict["type"] as! String)!
-		for nutrient in Nutrient.allValues {
-			nutrition[nutrient] = NutritionListing(type: nutrient, measure: dict[nutrient.rawValue] as? String ?? "0")
-		}
-		ingredients = dict["ingredients"] as? String ?? ""
-		description = dict["description"] as? String ?? ""
-		countryCode = dict["country"] as? String ?? ""
-	}
+	
 }
 
 // MARK:- NEW MODEL
@@ -255,23 +192,6 @@ class DayBrief: Serializable {
 	
 	init() {
 		
-	}
-	
-	//	init(record: CKRecord) {
-	//		date = record.objectForKey("Day") as! NSDate
-	//		let formString = NSString(data: record.objectForKey("Data") as! NSData, encoding: NSUTF8StringEncoding) as! String
-	//		let parts = formString.componentsSeparatedByString("ﬂ")
-	//		for part in parts {
-	//			let dictParts = part.componentsSeparatedByString("Ø")
-	//			let meal = MealType(rawValue: dictParts[0])!
-	//			let information = MealInfo(formattedString: dictParts[1])
-	//			meals[meal] = information
-	//		}
-	//	}
-	
-	init(date: NSDate, meals: Dictionary<MealType, MealBrief>) {
-		self.date = date
-		self.meals = meals
 	}
 	
 	required init(dict: Dictionary<String, AnyObject>) {
@@ -315,11 +235,7 @@ class DayBrief: Serializable {
 }
 
 class MealBrief: Serializable {
-	var halls: Dictionary<Halls, RestaurantBrief>
-	
-	init(halls: Dictionary<Halls, RestaurantBrief>) {
-		self.halls = halls
-	}
+	var halls: Dictionary<Halls, RestaurantBrief> = [:]
 	
 	required init(dict: Dictionary<String, AnyObject>) {
 		halls = [:]
@@ -397,16 +313,15 @@ class PlaceBrief: Serializable {
 }
 
 class RestaurantBrief: Serializable {
-	var hall: Halls // redundant storage?
+	var hall: Halls = .DeNeve // redundant storage?
 	
 	var openTime: Time = Time(hour: 8, minute: 0)
 	var closeTime: Time = Time(hour: 8, minute: 0)
 	
-	var sections: Array<SectionBrief>
+	var sections: Array<SectionBrief> = []
 	
-	init(hall: Halls) {
-		self.hall = hall
-		self.sections = []
+	init() {
+		
 	}
 	
 	required init(dict: Dictionary<String, AnyObject>) {
@@ -450,17 +365,11 @@ class RestaurantBrief: Serializable {
 
 class SectionBrief: Serializable {
 	var name: String = ""
-	var foods = [FoodBrief]()
-	
-	init(name: String) {
-		self.name = name
-	}
+	var foods: Array<FoodBrief> = []
 	
 	required init(dict: Dictionary<String, AnyObject>) {
 		name = dict["name"] as? String ?? "No Name"
-		foods = []
-		var foodDicts = dict["foods"] as? Array<Dictionary<String, AnyObject>> ?? []
-		for foodDict in foodDicts {
+		for foodDict in dict["foods"] as? Array<Dictionary<String, AnyObject>> ?? [] {
 			foods.append(FoodBrief(dict: foodDict))
 		}
 	}
@@ -480,25 +389,23 @@ class SectionBrief: Serializable {
 }
 
 class FoodBrief: Serializable {
-	var name: String
-	var type: FoodType
-	var recipe: String
+	var name: String = ""
+	var type: FoodType = .Regular
+	var recipe: String = ""
 	var sideBrief: FoodBrief?
 	
 	func dictFromObject() -> Dictionary<String, AnyObject> {
 		return ["name" : name, "type" : type.rawValue, "recipe" : recipe]
 	}
 	
+	init() {
+		
+	}
+	
 	required init(dict: Dictionary<String, AnyObject>) {
 		name = dict["name"] as! String
 		type = FoodType(rawValue: dict["type"] as! String)!
 		recipe = dict["recipe"] as! String
-	}
-	
-	init(name: String) {
-		self.name = name
-		type = .Regular
-		recipe = ""
 	}
 	
 	init(food: FoodInfo, sideFood: FoodInfo? = nil) {
@@ -510,38 +417,6 @@ class FoodBrief: Serializable {
 		}
 	}
 }
-
-class TopFoodInfo: FoodInfo {
-	var withFoodBrief: FoodBrief?
-	
-	// MARK:- Serializable Protocol
-	required init(dict: Dictionary<String, AnyObject>) {
-		super.init(dict: dict)
-		
-		let withFoodDict = dict["withFood"] as! Dictionary<String, AnyObject>
-		if withFoodDict.count != 0 {
-			withFoodBrief = FoodBrief(dict: withFoodDict)
-		}
-	}
-	
-	override func dictFromObject() -> Dictionary<String, AnyObject> {
-		var dict: Dictionary<String, AnyObject> = [:]
-		
-		dict["name"] = name
-		dict["recipe"] = recipe
-		dict["type"] = type.rawValue
-		for nutrient in Nutrient.allValues {
-			dict[nutrient.rawValue] = nutrition[nutrient]?.measure ?? "0"
-		}
-		dict["ingredients"] = ingredients
-		dict["description"] = description
-		dict["country"] = countryCode
-		dict["withFood"] = withFoodBrief?.dictFromObject() ?? [:]
-		
-		return dict
-	}
-}
-
 
 // MARK:- After
 
@@ -555,41 +430,32 @@ enum NutrientDisplayType {
 }
 
 enum Nutrient: String { // , Equatable
-	case Cal = "Calories"
-	case FatCal = "From Fat"
-	case TotFat = "Total Fat"
-	case SatFat = "Saturated Fat"
-	case TransFat = "Trans Fat"
-	case Chol = "Cholesterol"
-	case Sodium = "Sodium"
-	case TotCarb = "Total Carbohydrates"
-	case DietFiber = "Dietary Fiber"
-	case Sugar = "Sugars"
-	case Protein = "Protein"
-	case VitA = "Vitamin A"
-	case VitC = "Vitamin C"
-	case Calcium = "Calcium"
-	case Iron = "Iron"
+	case Cal = "Calories", FatCal = "From Fat"
+	case TotFat = "Total Fat", SatFat = "Saturated Fat"
+	case TransFat = "Trans Fat", Chol = "Cholesterol", Sodium = "Sodium"
+	case TotCarb = "Total Carbohydrates", DietFiber = "Dietary Fiber"
+	case Sugar = "Sugars", Protein = "Protein"
+	case VitA = "Vitamin A", VitC = "Vitamin C", Calcium = "Calcium", Iron = "Iron"
 	
 	func unit() -> String {
 		switch self {
-		case .Cal, .FatCal:
+		case Cal, FatCal:
 			return "cal"
-		case .TotFat, .SatFat, .TransFat, .TotCarb, .DietFiber, .Sugar, .Protein:
+		case TotFat, SatFat, TransFat, TotCarb, DietFiber, Sugar, Protein:
 			return "g"
-		case .Chol, .Sodium:
+		case Chol, Sodium:
 			return "mg"
-		case .VitA, .VitC, .Calcium, .Iron:
+		case VitA, VitC, Calcium, Iron:
 			return "%"
 		}
 	}
 	
-	static let allValues: Array<Nutrient> = [.Cal, .FatCal, .TotFat, .SatFat, .TransFat, .Chol, .Sodium, .TotCarb, .DietFiber, .Sugar, .Protein, .VitA, .VitC, .Calcium, .Iron]
+	static let allValues: Array<Nutrient> = [Cal, FatCal, TotFat, SatFat, TransFat, Chol, Sodium, TotCarb, DietFiber, Sugar, Protein, VitA, VitC, Calcium, Iron]
 	static let allRawValues = Nutrient.allValues.map { (nut: Nutrient) -> String in return nut.rawValue }
 	static let allMatchingValues: Array<String> = ["Calories", "Fat Cal.", "Total Fat", "Saturated Fat", "Trans Fat", "Cholesterol", "Sodium", "Total Carbohydrate", "Dietary Fiber", "Sugars", "Protein", "Vitamin A", "Vitamin C", "Calcium", "Iron"]
 	static let allMatchingXML: Array<String> = ["Cal", "FatCal", "TotFat", "SatFat", "TransFat", "Chol", "Sodium", "TotCarb", "DietFiber", "Sugar", "Protein", "VitA", "VitC", "Calcium", "Iron"]
-	internal static let allDailyValues: Array<Int?> = [2000, nil, 65, 20, nil, 300, 1500, 130, 40, nil, nil, 100, 100, 100, 100]
-	static let rowPairs: Array<(type: NutrientDisplayType, left: Nutrient, right: Nutrient)> = [(.twoMain, .Cal, .FatCal), (.oneMain, .TotFat, .Cal), (.oneSub, .SatFat, .Cal), (.oneSub, .TransFat, .Cal), (.oneMain, .Chol, .Cal), (.oneMain, .Sodium, .Cal), (.oneMain, .TotCarb, .Cal), (.oneSub, .DietFiber, .Cal), (.oneSub, .Sugar, .Cal), (.oneMain, .Protein, .Cal), (.doublePlain, .VitA, .VitC), (.doublePlain, .Calcium, .Iron)]
+	internal static let dailyValues: Dictionary<Nutrient, Int> = [Cal:2000, TotFat:65, SatFat:20, Chol:300, Sodium:1500, TotCarb:130, DietFiber:40, VitA:100, VitC:100, Calcium:100, Iron:100]
+	static let rowPairs: Array<(type: NutrientDisplayType, left: Nutrient, right: Nutrient)> = [(.twoMain, Cal, FatCal), (.oneMain, TotFat, Cal), (.oneSub, SatFat, Cal), (.oneSub, TransFat, Cal), (.oneMain, Chol, Cal), (.oneMain, Sodium, Cal), (.oneMain, TotCarb, Cal), (.oneSub, DietFiber, Cal), (.oneSub, Sugar, Cal), (.oneMain, Protein, Cal), (.doublePlain, VitA, VitC), (.doublePlain, Calcium, Iron)]
 	
 	static func typeForName(name: String) -> Nutrient? {
 		var index = 0
@@ -609,8 +475,19 @@ enum Nutrient: String { // , Equatable
 		return nil
 	}
 	
-	func hasDVpercentage() -> Bool {
-		return Nutrient.allDailyValues[find(Nutrient.allRawValues, rawValue)!] != nil
+	var hasDV: Bool {
+		get {
+			return Nutrient.dailyValues[self] != nil
+		}
+	}
+	
+	// TODO: decide if redundant / maybe swap out for NutritionListing.dailyValue
+	func dailyValue(measure: String) -> Int? {
+		if let dailyValue = Nutrient.dailyValues[self] {
+			return Int((100.0 * ((measure as NSString).floatValue)) / Float(dailyValue))
+		} else {
+			return nil
+		}
 	}
 }
 
@@ -626,7 +503,7 @@ class NutritionListing {
 	}
 	
 	internal func dailyValue(type: Nutrient) -> Int? {
-		if let dailyValue = Nutrient.allDailyValues[(find(Nutrient.allValues, type))!] {
+		if let dailyValue = Nutrient.dailyValues[type] {
 			return Int((100.0 * ((measure as NSString).floatValue)) / Float(dailyValue))
 		}
 		return nil
@@ -640,27 +517,35 @@ enum MealType : String {
 	case Brunch = "Brunch"
 	case LateNight = "Late Night"
 	
-	func equalTo(otherMeal: MealType) -> Bool {
-		var one = (self == .Breakfast || self == .Lunch) && otherMeal == .Brunch
-		var two = (otherMeal == .Breakfast || self == .Lunch) && self == .Brunch
-		return one || two || self.rawValue == otherMeal.rawValue
+	var urlCode: String? {
+		get {
+			switch self {
+			case .Breakfast:
+				return "1"
+			case .Lunch, .Brunch:
+				return "2"
+			case .Dinner:
+				return "3"
+			default:
+				return nil
+			}
+		}
 	}
 	
-	func urlCode() -> String? {
+	func equalTo(otherMeal: MealType) -> Bool {
 		switch self {
-		case .Breakfast:
-			return "1"
-		case .Lunch, .Brunch:
-			return "2"
-		case .Dinner:
-			return "3"
+		case Breakfast:
+			return otherMeal == Breakfast || otherMeal == Brunch
+		case Brunch:
+			return otherMeal == Breakfast || otherMeal == Brunch || otherMeal == Lunch
+		case Lunch:
+			return otherMeal == Lunch || otherMeal == Brunch
 		default:
-			return nil
+			return self == otherMeal
 		}
 	}
 	
 	static func allMeals(date: NSDate) -> Array<MealType> {
-		var dow = currCal.component(.CalendarUnitWeekday, fromDate: date)
-		return (dow == 1 || dow == 7) ? [.Brunch, .Dinner] : [.Breakfast, .Lunch, .Dinner]
+		return currCal.isDateInWeekend(date) ? [Brunch, Dinner] : [Breakfast, Lunch, Dinner]
 	}
 }

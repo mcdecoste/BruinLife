@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "BruinLife/CloudManager.swift"
-            timestampString = "453101240.702149"
+            timestampString = "453113536.315067"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
             landmarkName = "fetchUpdatedRecords(type:endDaysInAdvance:completion:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "BruinLife/CloudManager.swift"
-            timestampString = "453100752.841334"
+            timestampString = "453113536.315067"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "153"
-            endingLineNumber = "153"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "fetchRecords(_:startDaysInAdvance:completion:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "BruinLife/CloudManager.swift"
-            timestampString = "453101240.702149"
+            timestampString = "453113536.315067"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "125"
-            endingLineNumber = "125"
+            startingLineNumber = "92"
+            endingLineNumber = "92"
             landmarkName = "fetchUpdatedRecords(type:endDaysInAdvance:completion:)"
             landmarkType = "5">
          </BreakpointContent>

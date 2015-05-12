@@ -74,39 +74,6 @@ class CloudManager: NSObject {
 		publicDB = container.publicCloudDatabase
 	}
 	
-//	func requestDiscoverabilityPermission(completion: (discoverable: Bool) -> Void) {
-//		container.requestApplicationPermission(.PermissionUserDiscoverability, completionHandler: { (applicationPermissionStatus: CKApplicationPermissionStatus, error: NSError!) -> Void in
-//			if error != nil {
-//				println("error happened")
-//				abort()
-//			} else {
-//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//					completion(discoverable: applicationPermissionStatus == .Granted)
-//				})
-//			}
-//		})
-//	}
-//	
-//	func discoverUserInfo(completion: (user: CKDiscoveredUserInfo) -> Void) {
-//		container.fetchUserRecordIDWithCompletionHandler { (recordID: CKRecordID!, error: NSError!) -> Void in
-//			if error != nil {
-//				println("error!")
-//				abort()
-//			} else {
-//				self.container.discoverUserInfoWithUserRecordID(recordID, completionHandler: { (user: CKDiscoveredUserInfo!, error: NSError!) -> Void in
-//					if error != nil {
-//						println("ERROR")
-//						abort()
-//					} else {
-//						dispatch_async(dispatch_get_main_queue(), { () -> Void in
-//							completion(user: user)
-//						})
-//					}
-//				})
-//			}
-//		}
-//	}
-	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
 		let gap = firstGap
 		println("The gap is \(gap)")
@@ -158,29 +125,6 @@ class CloudManager: NSObject {
 		
 		publicDB.addOperation(operation)
 	}
-	
-	/// Versions up to 2.1: Reloads all days, saves them.
-	/// Versions 2.2+: does predicate fanciness to prevent extra loads
-//	func checkForDormUpdates(upTo: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
-//		if upTo == 0 {
-//			return
-//		}
-//		
-//		var form = NSDateFormatter()
-//		form.dateStyle = .ShortStyle
-//		
-//		let comp = { (record: CKRecord!, error: NSError!) -> Void in
-//			if let err = error {
-//				completion(error: err)
-//			} else {
-//				self.updateDiningDay(record)
-//			}
-//		}
-//		
-//		for advance in 0...upTo {
-//			fetchRecord(form.stringFromDate(comparisonDate(daysInFuture: advance)), completion: comp)
-//		}
-//	}
 	
 	private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
 	private let quickKey: String = "quickDownloadDate"
@@ -264,19 +208,6 @@ class CloudManager: NSObject {
 		
 		return "".dataUsingEncoding(NSUTF8StringEncoding)!
 	}
-	
-//	func fetchQuick() -> NSData {
-//		var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
-//		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
-//			for result in fetchResults {
-//				if result.data.length > 0 {
-//					return result.data
-//				}
-//			}
-//		}
-//		
-//		return "".dataUsingEncoding(NSUTF8StringEncoding)!
-//	}
 	
 	func save() {
 		var error: NSError?

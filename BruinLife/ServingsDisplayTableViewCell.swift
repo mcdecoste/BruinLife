@@ -15,7 +15,7 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	var nameLabel = UILabel(), stepper = UIStepper(), servingLabel = UILabel()
 	var food: Food? {
 		didSet {
-			nameLabel.text = food!.info().name
+			nameLabel.text = food!.info.name
 			stepper.value = Double(food!.servings)
 			servingLabel.text = servingText(Int(food!.servings))
 			

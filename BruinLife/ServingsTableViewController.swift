@@ -61,7 +61,7 @@ class ServingsTableViewController: UITableViewController {
 		
 		// add in the various foods
 		for food in foodItems {
-			for (nutr, list) in food.info().nutrition {
+			for (nutr, list) in food.info.nutrition {
 				if let measure = list.measure.toInt() {
 					data[nutr] = NutritionListing(type: nutr, measure: "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))")
 				}
@@ -95,11 +95,11 @@ class ServingsTableViewController: UITableViewController {
 	
 	func removeServing(path: NSIndexPath) {
 		var request = NSFetchRequest(entityName: "Food")
-		let recipe = foodItems[path.row].info().recipe
+		let recipe = foodItems[path.row].info.recipe
 		
 		if let results = managedObjectContext!.executeFetchRequest(request, error: nil) as? [Food] {
 			for result in results {
-				if result.info().recipe == recipe {
+				if result.info.recipe == recipe {
 					result.servings = 0
 				}
 			}
@@ -119,11 +119,11 @@ class ServingsTableViewController: UITableViewController {
 	func changeServing(row: ServingsDisplayTableViewCell, count: Int) {
 		let path = tableView.indexPathForCell(row)!
 		var fetchRequest = NSFetchRequest(entityName: "Food")
-		let recipe = foodItems[path.row].info().recipe
+		let recipe = foodItems[path.row].info.recipe
 		
 		if let results = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
 			for result in results {
-				if result.info().recipe == recipe {
+				if result.info.recipe == recipe {
 					result.servings = Int16(count)
 				}
 			}

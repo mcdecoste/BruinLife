@@ -78,12 +78,18 @@ class Food: NSManagedObject {
 	@NSManaged var date: NSDate // for servings
 	@NSManaged var servings: Int16
 	
+	var info: FoodInfo {
+		get {
+			return FoodInfo(dict: NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
+		}
+	}
+	
 	class func foodFromInfo(moc: NSManagedObjectContext, food: FoodInfo) -> Food {
 		var request = NSFetchRequest(entityName: "Food")
 		
 		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [Food] {
 			for result in fetchResults {
-				if result.info().recipe == food.recipe {
+				if result.info.recipe == food.recipe {
 					result.checkDate()
 					return result
 				}
@@ -114,9 +120,5 @@ class Food: NSManagedObject {
 	
 	private func components(date: NSDate) -> NSDateComponents {
 		return currCal.components(.CalendarUnitWeekOfYear | .CalendarUnitWeekday, fromDate: date)
-	}
-	
-	func info() -> FoodInfo {
-		return FoodInfo(dict: NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
 	}
 }

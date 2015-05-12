@@ -52,10 +52,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	/// date displayed food is being offered (based on food table view controller)
 	var date: NSDate = NSDate()
 	var meal: MealType = .Breakfast
-	var place: RestaurantBrief = RestaurantBrief(hall: .DeNeve)
+	var place: RestaurantBrief = RestaurantBrief()
 	
-	var food: FoodInfo = FoodInfo(name: "", recipe: "000000", type: .Regular)
-	var side: FoodInfo? = FoodInfo(name: "", recipe: "000000", type: .Regular)
+	var food: FoodInfo = FoodInfo()
+	var side: FoodInfo? = FoodInfo()
 	var foodLabel = UILabel(), typeLabel = UILabel()
 	
 	var nutriTable: UITableView?
@@ -72,7 +72,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	let alertCancel = "Cancel", alertNever = "Never", alertMorningFull = "Start of Day (9:00 AM)", alertMorning = "Start of Day"
 	var alertHall: String {
 		get {
-			return "When \(place.hall.displayName(foodVC.isHall)) Opens (\(place.openTime.displayString()))"
+			return "When \(place.hall.displayName(foodVC.isHall)) Opens (\(place.openTime.displayString))"
 		}
 	}
 	
@@ -405,7 +405,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func fetchFoods() {
 		if let fetchResults = managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
 			for result in fetchResults {
-				if result.info().recipe == food.recipe {
+				if result.info.recipe == food.recipe {
 					numberOfServings = Int(result.servings)
 					favorited = result.favorite
 				}
@@ -503,7 +503,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	// MARK: - Notifications
 	
 	func notificationString() -> String {
-		return "\(place.hall.displayName(foodVC.isHall)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString()) - \(place.closeTime.displayString()))"
+		return "\(place.hall.displayName(foodVC.isHall)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString) - \(place.closeTime.displayString))"
 	}
 	
 	// Remove any existing notification
@@ -543,11 +543,11 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		information[notificationPlaceID] = place.hall.displayName(foodVC.isHall)
 		information[notificationDateID] = weekdayForFood()
 		information[notificationMealID] = meal.rawValue
-		information[notificationHoursID] = "\(place.openTime.displayString()) until \(place.closeTime.displayString())"
+		information[notificationHoursID] = "\(place.openTime.displayString) until \(place.closeTime.displayString)"
 		
 		let fireCal = currCal.components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: notif.fireDate!)
 		let fireTime = Time(hour: fireCal.hour, minute: fireCal.minute)
-		information[notificationTimeID] = fireTime.displayString()
+		information[notificationTimeID] = fireTime.displayString
 		notif.userInfo = information
 		
 		// Sanity check: only add notifications for the future
@@ -574,7 +574,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func displayForFireDate(date: NSDate) -> String {
 		var components = currCal.components(NSCalendarUnit.CalendarUnitHour | NSCalendarUnit.CalendarUnitMinute, fromDate: date)
-		return Time(hour: components.hour, minute: components.minute).displayString()
+		return Time(hour: components.hour, minute: components.minute).displayString
 	}
 	
 	func notificationDisplay() -> String {
