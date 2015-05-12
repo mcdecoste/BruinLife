@@ -80,10 +80,6 @@ enum Halls: String {
 		return nil
 	}
 	
-	func imageName(open: Bool) -> String {
-		return self.rawValue + (open ? " Dark" : " BW")
-	}
-	
 	func displayName(isHall: Bool) -> String {
 		if isHall { return self.rawValue }
 		
@@ -306,10 +302,6 @@ class PlaceBrief: Serializable {
 	func name(isHall: Bool) -> String {
 		return hall.displayName(isHall)
 	}
-	
-	func imageName(open: Bool) -> String {
-		return hall.imageName(open)
-	}
 }
 
 class RestaurantBrief: Serializable {
@@ -356,10 +348,6 @@ class RestaurantBrief: Serializable {
 	
 	func name(isHall: Bool) -> String {
 		return hall.displayName(isHall)
-	}
-	
-	func imageName(open: Bool) -> String {
-		return hall.imageName(open)
 	}
 }
 

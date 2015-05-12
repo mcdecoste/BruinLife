@@ -24,17 +24,17 @@ class FoodTableViewCell: UITableViewCell {
 	var dateInfo: (open: Bool, openDate: NSDate?, closeDate: NSDate?) {
 		get {
 			if let info = brief, useDate = isHall ? date : NSDate() {
-				let openDate1 = info.openTime.timeDateForDate(useDate)
-				let closeDate1 = info.closeTime.timeDateForDate(useDate)
+				let open1 = info.openTime.timeDateForDate(useDate)
+				let close1 = info.closeTime.timeDateForDate(useDate)
 				
 				let diffDate = comparisonDate(daysInFuture(useDate)-1)
-				let openDate2 = info.openTime.timeDateForDate(diffDate)
-				let closeDate2 = info.closeTime.timeDateForDate(diffDate)
+				let open2 = info.openTime.timeDateForDate(diffDate)
+				let close2 = info.closeTime.timeDateForDate(diffDate)
 				
-				let open1 = (openDate1.timeIntervalSinceNow <= 0 && closeDate1.timeIntervalSinceNow >= 0)
-				let open2 = (openDate2.timeIntervalSinceNow <= 0 && closeDate2.timeIntervalSinceNow >= 0)
-				let isOpen = open1 || open2
-				return (isOpen, openDate1, closeDate1)
+				let result1 = open1.timeIntervalSinceNow <= 0 && close1.timeIntervalSinceNow >= 0
+				let result2 = open2.timeIntervalSinceNow <= 0 && close2.timeIntervalSinceNow >= 0
+				let isOpen = result1 || (!isHall && result2)
+				return (isOpen, open1, close1)
 			}
 			return (false, nil, nil)
 		}
@@ -65,8 +65,7 @@ class FoodTableViewCell: UITableViewCell {
 		let imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
-		
-		backgroundImageView = UIImageView(image: UIImage(named: (brief?.imageName(open))!))
+		backgroundImageView = UIImageView(image: ImageProvider.sharedInstance.image(brief!.hall, open: open))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		

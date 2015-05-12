@@ -52,8 +52,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		let imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()
-		
-		backgroundImageView = UIImageView(image: UIImage(named: (brief?.imageName(open))!))
+		backgroundImageView = UIImageView(image: ImageProvider.sharedInstance.image(brief!.hall, open: open))
 		parallaxImageWithScrollPercent(0.0)
 		backgroundImageView?.contentMode = .ScaleAspectFill
 		
