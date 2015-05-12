@@ -40,12 +40,10 @@
 		66B9785F1A52B18D00144876 /* FoodCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B9785E1A52B18D00144876 /* FoodCollectionViewCell.swift */; };
 		66B978611A53E11B00144876 /* SectionCollectionReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */; };
 		66C800C11A6C8C8200380BC3 /* NotificationTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C800C01A6C8C8200380BC3 /* NotificationTableViewCell.swift */; };
-		66C800C31A6C8CAB00380BC3 /* ClockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C800C21A6C8CAB00380BC3 /* ClockView.swift */; };
 		66CD8A321A6730E600F52334 /* FavoritesTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */; };
 		66CD8A341A67310000F52334 /* ServingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A331A67310000F52334 /* ServingsTableViewController.swift */; };
 		66CD8A681A673A5B00F52334 /* BruinLife.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A661A673A5B00F52334 /* BruinLife.xcdatamodeld */; };
 		66CD8A6A1A68859C00F52334 /* ServingsDisplayTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CD8A691A68859C00F52334 /* ServingsDisplayTableViewCell.swift */; };
-		66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */; };
 		66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E553DC1A31582800BF314E /* MenuTableViewCell.swift */; };
 		66FA9B6B1A560E6500F03407 /* CircleDisplay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FA9B6A1A560E6500F03407 /* CircleDisplay.swift */; };
 		66FB03F91A4055560099760E /* ScrollSelectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66FB03F81A4055560099760E /* ScrollSelectionTableViewCell.swift */; };
@@ -100,12 +98,10 @@
 		66B978601A53E11B00144876 /* SectionCollectionReusableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SectionCollectionReusableView.swift; sourceTree = "<group>"; };
 		66BBA8481A7051AD00A412D9 /* BruinLife.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BruinLife.entitlements; sourceTree = "<group>"; };
 		66C800C01A6C8C8200380BC3 /* NotificationTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationTableViewCell.swift; sourceTree = "<group>"; };
-		66C800C21A6C8CAB00380BC3 /* ClockView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClockView.swift; sourceTree = "<group>"; };
 		66CD8A311A6730E600F52334 /* FavoritesTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesTableViewController.swift; sourceTree = "<group>"; };
 		66CD8A331A67310000F52334 /* ServingsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServingsTableViewController.swift; sourceTree = "<group>"; };
 		66CD8A671A673A5B00F52334 /* BruinLife.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = BruinLife.xcdatamodel; sourceTree = "<group>"; };
 		66CD8A691A68859C00F52334 /* ServingsDisplayTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServingsDisplayTableViewCell.swift; sourceTree = "<group>"; };
-		66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CalendarView.swift; sourceTree = "<group>"; };
 		66E553DC1A31582800BF314E /* MenuTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewCell.swift; sourceTree = "<group>"; };
 		66FA9B6A1A560E6500F03407 /* CircleDisplay.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CircleDisplay.swift; sourceTree = "<group>"; };
 		66FB03F81A4055560099760E /* ScrollSelectionTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScrollSelectionTableViewCell.swift; sourceTree = "<group>"; };
@@ -138,14 +134,6 @@
 				666B70201A26CC4700E8EAAC /* Food View Controllers */,
 			);
 			name = Controllers;
-			sourceTree = "<group>";
-		};
-		665CCB3E1A2C4AB300E8BF92 /* Calendar */ = {
-			isa = PBXGroup;
-			children = (
-				66DEC1AB1A2E9E9100C546FA /* CalendarView.swift */,
-			);
-			name = Calendar;
 			sourceTree = "<group>";
 		};
 		666B6FEF1A26CBCD00E8EAAC = {
@@ -250,10 +238,8 @@
 		666B70351A26D4BE00E8EAAC /* Aux Views */ = {
 			isa = PBXGroup;
 			children = (
-				665CCB3E1A2C4AB300E8BF92 /* Calendar */,
 				66FA9B6A1A560E6500F03407 /* CircleDisplay.swift */,
 				66A47FCC1A5930BB0025F653 /* NutritionHeaderView.swift */,
-				66C800C21A6C8CAB00380BC3 /* ClockView.swift */,
 				66034A9F1AFEF723004B4384 /* DayDisplay.swift */,
 			);
 			name = "Aux Views";
@@ -392,7 +378,6 @@
 				66B9785F1A52B18D00144876 /* FoodCollectionViewCell.swift in Sources */,
 				666B702C1A26CF1600E8EAAC /* SwipesTableViewController.swift in Sources */,
 				6673DAE11A37CF8C0070FC18 /* FoodViewController.swift in Sources */,
-				66DEC1AC1A2E9E9100C546FA /* CalendarView.swift in Sources */,
 				667F4CA11A405CF4005D07E5 /* ScrollSelectionView.swift in Sources */,
 				66E553DD1A31582800BF314E /* MenuTableViewCell.swift in Sources */,
 				66CD8A6A1A68859C00F52334 /* ServingsDisplayTableViewCell.swift in Sources */,
@@ -405,7 +390,6 @@
 				66755C4B1A306D2C0067C670 /* RestaurantTableViewCell.swift in Sources */,
 				66B978611A53E11B00144876 /* SectionCollectionReusableView.swift in Sources */,
 				666B702A1A26CDD400E8EAAC /* SettingsTableViewController.swift in Sources */,
-				66C800C31A6C8CAB00380BC3 /* ClockView.swift in Sources */,
 				6613F3E31A2FD2760070E47F /* DormContainerViewController.swift in Sources */,
 				668120CD1A5F264E00872400 /* FoodNotificationTableViewCell.swift in Sources */,
 				666B70241A26CCE000E8EAAC /* QuickTableViewController.swift in Sources */,

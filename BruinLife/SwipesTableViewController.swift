@@ -12,12 +12,10 @@ class SwipesTableViewController: UITableViewController {
 	let scrollID = "swipeCell", displayID = "displayCell"
 	
 	let planTag = 10, weekTag = 20, dowTag = 30
-	
 	var model = SwipeModel()
-	
-	var planView: ScrollSelectionView?
-	var weekView: ScrollSelectionView?
-	var dayView: ScrollSelectionView?
+	lazy var planView: ScrollSelectionView = ScrollSelectionView()
+	lazy var weekView: ScrollSelectionView = ScrollSelectionView()
+	lazy var dayView: ScrollSelectionView = ScrollSelectionView()
 	
 	override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,9 +28,7 @@ class SwipesTableViewController: UITableViewController {
 		super.viewDidAppear(animated)
 		
 		revertToToday()
-		for (index, plan) in enumerate(model.plans) {
-			if plan == model.mealPlan { planView?.scrollToPage(index) }
-		}
+		planView.scrollToPage(find(model.plans, model.mealPlan)!)
 	}
 
     // MARK: - Table view data source
@@ -41,7 +37,7 @@ class SwipesTableViewController: UITableViewController {
 	}
 	
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 2 // Return the number of sections.
+        return 2
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -61,20 +57,20 @@ class SwipesTableViewController: UITableViewController {
 			cell.selectionStyle = .None
 			
 			// Configure the cell...
-			var strArray = [String]()
+			var strArray: Array<String> = []
 			
 			switch indexPath.row {
 			case 0:
 				planView = cell.clipView
-				planView?.scrollView.tag = planTag
+				planView.scrollView.tag = planTag
 				for (index, plan) in enumerate(model.plans) { strArray.append(plan.rawValue) }
 			case 1:
 				weekView = cell.clipView
-				weekView?.scrollView.tag = weekTag
+				weekView.scrollView.tag = weekTag
 				for (index, week) in enumerate(model.weeks) { strArray.append(week.rawValue) }
 			default:
 				dayView = cell.clipView
-				dayView?.scrollView.tag = dowTag
+				dayView.scrollView.tag = dowTag
 				for (index, dow) in enumerate(model.daysOfWeek) { strArray.append(dow.rawValue) }
 			}
 			cell.clipView.scrollView.delegate = self
@@ -130,13 +126,15 @@ class SwipesTableViewController: UITableViewController {
 			reload = false
 		}
 		
-		if reload { tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None) }
+		if reload {
+			tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: 0, inSection: 1)], withRowAnimation: .None)
+		}
 		navigationItem.leftBarButtonItem?.enabled = !model.sameAsCurrent
 	}
 	
 	func revertToToday() {
 		model.resetToCurrent()
-		weekView?.scrollToPage(model.selectedWeek)
-		dayView?.scrollToPage(model.selectedDay)
+		weekView.scrollToPage(model.selectedWeek)
+		dayView.scrollToPage(model.selectedDay)
 	}
 }

@@ -10,9 +10,8 @@ import UIKit
 import MessageUI // for emailing
 
 class SettingsTableViewController: UITableViewController, MFMailComposeViewControllerDelegate {
-	private let tracksSection = 0
-	private let feedbackSection = 1
-		private let feedbackRow = 0, bugRow = 1, rateRow = 2
+	private let tracksSection = 0, feedbackSection = 1
+	private let feedbackRow = 0, bugRow = 1, rateRow = 2
 	
 	private let cells: Array<(title: String, cells: Array<(title: String, vc: String?, acc: UITableViewCellAccessoryType)>)> =
 		[
