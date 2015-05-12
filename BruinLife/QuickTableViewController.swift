@@ -18,6 +18,8 @@ class QuickTableViewController: FoodTableViewController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		self.navigationItem.title = "Quick Service"
+		
+		getTheData()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
@@ -25,18 +27,38 @@ class QuickTableViewController: FoodTableViewController {
 		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "QuickInfoUpdated", object: nil)
 		
+		if !hasData && loadState != .Loading {
+			getTheData()
+		}
+	}
+	
+	func getTheData() {
 		let currentData = CloudManager.sharedInstance.quickData
 		if currentData.length > 0 {
 			informationData = currentData
+			// check for updates anyways (we don't care if this fails)
+			CloudManager.sharedInstance.fetchQuickRecord({ (error) -> Void in return })
 		} else {
-			CloudManager.sharedInstance.fetchQuickRecord()
+			// load for the first time
+			loadState = .Loading
+			CloudManager.sharedInstance.fetchQuickRecord({ (error) -> Void in
+				println(error)
+				self.loadState = .Failed
+			})
 		}
+	}
+	
+	override func retryLoad() {
+		loadState = .Loading
+		tableView.reloadData()
+		getTheData()
 	}
 	
 	override func handleDataChange(notification: NSNotification) {
 		if notification.name == "QuickInfoUpdated" {
 			let dDay = notification.userInfo!["quickInfo"] as! QuickMenu
 			informationData = dDay.data
+			CloudManager.sharedInstance.save()
 		}
 	}
 	

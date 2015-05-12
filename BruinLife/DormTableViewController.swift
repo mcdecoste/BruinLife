@@ -45,11 +45,13 @@ class DormTableViewController: FoodTableViewController {
 			if dDay.day == information.date {
 				informationData = dDay.data
 			}
+//			CloudManager.sharedInstance.save()
 		case "DayInfoUpdated":
 			let dDay = notification.userInfo!["updatedItem"] as! DiningDay
 			if dDay.day == information.date {
 				informationData = dDay.data
 			}
+//			CloudManager.sharedInstance.save()
 		default:
 			break
 		}

@@ -61,7 +61,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			return true
 		}
 	}
-	private var loadState: FoodControllerLoadState = .Loading {
+	internal var loadState: FoodControllerLoadState = .Loading {
 		didSet {
 			if loadState == .Failed {
 				if let refresher = self.refreshControl {
@@ -196,14 +196,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	// MARK: - Core Data
 	
 	func handleDataChange(notification: NSNotification) {
-		if notification.name == "NewDayInfoAdded" {
-			let dDay = notification.userInfo!["newItem"] as! DiningDay
-			
-			if dDay.day == information.date {
-				informationData = dDay.data
-//				(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
-			}
-		}
 	}
 	
 	// MARK: - Helpers
@@ -235,26 +227,25 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func scrollToMeal() {
-		if currCal.isDateInToday(information.date) {
-			var currMeal = currentMeal
-			
-			var sectionToShow = 0
+		if currCal.isDateInToday(information.date) || !isHall {
+			let currMeal = currentMeal
 			
 			for (index, meal) in enumerate(dateMeals) {
 				if meal.equalTo(currMeal) {
-					sectionToShow = index
-					break
+					tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: index), atScrollPosition: .Top, animated: true)
+					return
 				}
 			}
-			tableView.scrollToRowAtIndexPath(NSIndexPath(forRow: 0, inSection: sectionToShow), atScrollPosition: .Top, animated: true)
 		}
 	}
 	
 	func refreshParallax() {
 		if hasData {
-			for cell in tableView.visibleCells() as! Array<FoodTableViewCell> {
-				var percent = (cell.frame.origin.y - tableView.contentOffset.y) / tableView.frame.height
-				cell.parallaxImageWithScrollPercent(percent)
+			if let visibleCells = tableView.visibleCells() as? Array<FoodTableViewCell> {
+				for cell in visibleCells {
+					var percent = (cell.frame.origin.y - tableView.contentOffset.y) / tableView.frame.height
+					cell.parallaxImageWithScrollPercent(percent)
+				}
 			}
 		}
 	}

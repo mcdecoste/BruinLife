@@ -59,9 +59,7 @@ class CloudManager: NSObject {
 			var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
 			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
 				for result in fetchResults {
-					if result.data.length > 0 {
-						return result.data
-					}
+					return result.data
 				}
 			}
 			
@@ -227,10 +225,10 @@ class CloudManager: NSObject {
 		})
 	}
 	
-	func fetchQuickRecord() {
+	func fetchQuickRecord(completion: (error: NSError!) -> Void) {
 		publicDB.fetchRecordWithID(CKRecordID(recordName: "quick"), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
 			if error != nil {
-				println("quick " + error.description)
+				completion(error: error)
 			} else {
 				self.updateQuick(record)
 			}
