@@ -10,6 +10,15 @@ import UIKit
 
 private let _ImageProviderSharedInstance = ImageProvider()
 
+private func grayscale(image: UIImage) -> UIImage {
+	let imageRect = CGRect(origin: CGPointZero, size: image.size)
+	let bitMapInfo = CGBitmapInfo(CGImageAlphaInfo.None.rawValue)
+	var context = CGBitmapContextCreate(nil, Int(image.size.width), Int(image.size.height), 8, 0, CGColorSpaceCreateDeviceGray(), bitMapInfo)
+	
+	CGContextDrawImage(context, imageRect, image.CGImage)
+	return UIImage(CGImage: CGBitmapContextCreateImage(context))!
+}
+
 class ImageProvider {
 	class var sharedInstance: ImageProvider {
 		get {
@@ -17,51 +26,58 @@ class ImageProvider {
 		}
 	}
 	
-	private lazy var deNeve: UIImage = { return UIImage(named: "De Neve")! }()
-	private lazy var covel: UIImage = { return UIImage(named: "Covel")! }()
-	private lazy var hedrick: UIImage = { return UIImage(named: "Hedrick")! }()
-	private lazy var feast: UIImage = { return UIImage(named: "Feast")! }()
-	private lazy var rendez: UIImage = { return UIImage(named: "Rendezvous")! }()
-	private lazy var bPlate: UIImage = { return UIImage(named: "Bruin Plate")! }()
-	private lazy var bCafe: UIImage = { return UIImage(named: "Bruin Cafe")! }()
-	private lazy var cafe1919: UIImage = { return UIImage(named: "Cafe 1919")! }()
+	private let deNeve: UIImage = UIImage(named: "De Neve")!
+	private let covel: UIImage = UIImage(named: "Covel")!
+	private let hedrick: UIImage = UIImage(named: "Hedrick")!
+	private let feast: UIImage = UIImage(named: "Feast")!
+	private let rendez: UIImage = UIImage(named: "Rendezvous")!
+	private let bPlate: UIImage = UIImage(named: "Bruin Plate")!
+	private let bCafe: UIImage = UIImage(named: "Bruin Cafe")!
+	private let cafe1919: UIImage = UIImage(named: "Cafe 1919")!
+	
+	private let deNeveDark: UIImage
+	private let covelDark: UIImage
+	private let hedrickDark: UIImage
+	private let feastDark: UIImage
+	private let rendezDark: UIImage
+	private let bPlateDark: UIImage
+	private let bCafeDark: UIImage
+	private let cafe1919Dark: UIImage
 	
 	init() {
-		
+		deNeveDark = grayscale(deNeve)
+		covelDark = grayscale(covel)
+		hedrickDark = grayscale(hedrick)
+		feastDark = grayscale(feast)
+		rendezDark = grayscale(rendez)
+		bPlateDark = grayscale(bPlate)
+		bCafeDark = grayscale(bCafe)
+		cafe1919Dark = grayscale(cafe1919)
 	}
 	
-	private func grayscale(image: UIImage) -> UIImage {
-		let imageRect = CGRect(origin: CGPointZero, size: image.size)
-		let bitMapInfo = CGBitmapInfo(CGImageAlphaInfo.None.rawValue)
-		var context = CGBitmapContextCreate(nil, Int(image.size.width), Int(image.size.height), 8, 0, CGColorSpaceCreateDeviceGray(), bitMapInfo)
-		
-		CGContextDrawImage(context, imageRect, image.CGImage)
-		return UIImage(CGImage: CGBitmapContextCreateImage(context))!
-	}
+	
 	
 	func image(hall: Halls, open: Bool) -> UIImage {
-		var image: UIImage
 		switch hall {
 		case .DeNeve:
-			image = deNeve
+			return open ? deNeve : deNeveDark
 		case .Covel:
-			image = covel
+			return open ? covel : covelDark
 		case .Hedrick:
-			image = hedrick
+			return open ? hedrick : hedrickDark
 		case .Feast:
-			image = feast
+			return open ? feast : feastDark
 		case .BruinPlate:
-			image = bPlate
+			return open ? bPlate : bPlateDark
 		case .Cafe1919:
-			image = cafe1919
+			return open ? cafe1919 : cafe1919Dark
 		case .Rendezvous:
-			image = rendez
+			return open ? rendez : rendezDark
 		case .BruinCafe:
-			image = bCafe
+			return open ? bCafe : bCafeDark
 		default:
-			image = UIImage(named: "AppIcon")!
+			return UIImage(named: "AppIcon")!
 		}
-		return open ? image : grayscale(image)
 	}
 }
 
