@@ -253,7 +253,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			return Nutrient.rowPairs.count
 		case personalSection:
 			var baseNum = 3
-			if !representsToday(date) { baseNum-- }
+			if !currCal.isDateInToday(date) { baseNum-- }
 			if hideReminders() { baseNum-- }
 			return baseNum
 		default:

@@ -198,8 +198,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func scrollToMeal() {
-		if representsToday(information.date) {
-			var currMeal = currentMeal()
+		if currCal.isDateInToday(information.date) {
+			var currMeal = currentMeal
 			
 			var sectionToShow = 0
 			

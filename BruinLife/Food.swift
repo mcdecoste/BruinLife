@@ -17,7 +17,7 @@ class DiningDay: NSManagedObject {
 	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> DiningDay {
 		var request = NSFetchRequest(entityName: "DiningDay")
 		
-		let recordDay = comparisonDate(record.objectForKey("Day") as! NSDate)
+		let recordDay = comparisonDate(date: record.objectForKey("Day") as! NSDate)
 		request.predicate = NSPredicate(format: "day == %@", recordDay)
 		
 		// might want to delete this? not sure if it would prevent updates
@@ -94,14 +94,14 @@ class Food: NSManagedObject {
 		newItem.data = NSJSONSerialization.dataWithJSONObject(food.dictFromObject(), options: .allZeros, error: nil)!
 		newItem.favorite = false
 		newItem.notify = false
-		newItem.date = comparisonDate(NSDate())
+		newItem.date = comparisonDate(date: NSDate())
 		newItem.servings = 0
 		
 		return newItem
 	}
 	
 	func checkDate() {
-		let compareDate = comparisonDate(NSDate())
+		let compareDate = comparisonDate(date: NSDate())
 		
 		let dateComponents = components(compareDate)
 		let resultComponents = components(date)

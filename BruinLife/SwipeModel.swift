@@ -109,9 +109,9 @@ class SwipeModel: NSObject {
 	}
 	
 	var sameAsCurrent: Bool {
-		var sameWeek = selectedWeek == currentWeekAndQuarter().week
-		var sameDay = selectedDay == currentDayOfWeek()
-		var sameMeal = selectedMeal == currentMeal()
+		var sameWeek = selectedWeek == currentWeekAndQuarter.week
+		var sameDay = selectedDay == currentDayOfWeek
+		var sameMeal = selectedMeal == currentMeal
 		return sameWeek && sameDay && sameMeal
 	}
 	
@@ -121,27 +121,30 @@ class SwipeModel: NSObject {
 	}
 	
 	/// Returns the current week and quarter (since they're related)
-	func currentWeekAndQuarter() -> (week: Int, quarter: QuarterType?) {
-		// decrement if sunday
-		let isSunday = currentDayOfWeek() == 6
-		let weekOfYear = currCal.component(.CalendarUnitWeekOfYear, fromDate: isSunday ? NSDate(timeIntervalSinceNow: -7 * timeInDay) : NSDate())
-		
-		for (startWeek, quarter) in startWeeks {
-			var currWeek = weekOfYear - startWeek
-			if currWeek >= 0 && currWeek < 11 { return (currWeek, quarter) }
+	var currentWeekAndQuarter: (week: Int, quarter: QuarterType?) {
+		get {
+			// decrement if sunday
+			let weekOfYear = currCal.component(.CalendarUnitWeekOfYear, fromDate: currentDayOfWeek == 6 ? comparisonDate(-7) : comparisonDate())
+			
+			for (startWeek, quarter) in startWeeks {
+				var currWeek = weekOfYear - startWeek
+				if currWeek >= 0 && currWeek < 11 { return (currWeek, quarter) }
+			}
+			
+			return (0, nil) // default values
 		}
-		
-		return (0, nil) // default values
 	}
 	
-	func currentDayOfWeek() -> Int {
-		var regularDow = currCal.component(.CalendarUnitWeekday, fromDate: NSDate()) // Sunday = 1, Saturday = 6
-		return (regularDow + 5) % 7 // Monday = 0, Sunday = 6
+	var currentDayOfWeek: Int {
+		get {
+			var regularDow = currCal.component(.CalendarUnitWeekday, fromDate: NSDate()) // Sunday = 1, Saturday = 6
+			return (regularDow + 5) % 7 // Monday = 0, Sunday = 6
+		}
 	}
 	
 	func resetToCurrent() {
-		(selectedWeek, currentQuarter) = currentWeekAndQuarter()
-		selectedDay = currentDayOfWeek()
-		selectedMeal = currentMeal()
+		(selectedWeek, currentQuarter) = currentWeekAndQuarter
+		selectedDay = currentDayOfWeek
+		selectedMeal = currentMeal
 	}
 }

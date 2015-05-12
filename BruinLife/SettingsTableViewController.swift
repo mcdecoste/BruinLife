@@ -10,11 +10,11 @@ import UIKit
 import MessageUI // for emailing
 
 class SettingsTableViewController: UITableViewController, MFMailComposeViewControllerDelegate {
-	let tracksSection = 0
-	let feedbackSection = 1
-		let feedbackRow = 0, bugRow = 1, rateRow = 2
+	private let tracksSection = 0
+	private let feedbackSection = 1
+		private let feedbackRow = 0, bugRow = 1, rateRow = 2
 	
-	let cells: Array<(title: String, cells: Array<(title: String, vc: String?, acc: UITableViewCellAccessoryType)>)> =
+	private let cells: Array<(title: String, cells: Array<(title: String, vc: String?, acc: UITableViewCellAccessoryType)>)> =
 		[
 			(title: "Bruin Tracks", cells:
 			[
@@ -25,9 +25,9 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 			
 			(title: "Feedback", cells:
 			[
-				(title: "Email Feedback", vc: nil, acc: .None),
-				(title: "Email About a Bug", vc: nil, acc: .None),
-				(title: "Rate in App Store", vc: nil, acc: .None)
+				(title: "Email with Feedback", vc: nil, acc: .None),
+				(title: "Email about a Bug", vc: nil, acc: .None),
+				(title: "Rate \(displayStr) in the App Store", vc: nil, acc: .None)
 			])
 		]
 	
@@ -43,7 +43,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
         super.viewDidLoad()
 
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "cell")
-		navigationItem.title = "Bruin Life"
+		navigationItem.title = displayStr
     }
 
     override func didReceiveMemoryWarning() {
@@ -103,7 +103,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 					vc = vc as UITableViewController
 				}
 				
-				self.showViewController(vc, sender: self)
+				showViewController(vc, sender: self)
 			}
 		}
 		
@@ -113,7 +113,7 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
 		switch section {
 		case feedbackSection:
-			return "Version number 2.0"
+			return versionDisplayString
 		default:
 			return nil
 		}
@@ -123,40 +123,47 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 	
 	func mailComposeController(controller: MFMailComposeViewController!, didFinishWithResult result: MFMailComposeResult, error: NSError!) {
 		controller.dismissViewControllerAnimated(true, completion: nil)
+		if result.value == MFMailComposeResultSent.value {
+			UIAlertView(title: "Thanks!", message: "Thank you for using Bruin Life and for your feedback!", delegate: nil, cancelButtonTitle: "Okay").show()
+		}
 	}
 	
-	func sendGeneralEmail() {
-		sendEmail("Bruin Life Feedback", body: "Please enter your feedback here.\n\nThanks for using Bruin Life!")
+	private func sendGeneralEmail() {
+		sendEmail("Feedback for \(displayStr) \(versionStr)", body: "Please enter your feedback here.")
 	}
 	
-	func sendBugEmail() {
-		sendEmail("Found a Bug!", body: "Please list the bug you found and exactly how you run into it. The more details you give, the faster I'll be able to fix them.\n\nThanks for using Bruin Life!")
+	private func sendBugEmail() {
+		sendEmail("Bug in \(versionDisplayString)", body: "Please describe the bug and exactly what you did to encounter it. The more details you give, the faster I'll be able to fix them.")
 	}
 	
 	/// Send an email with the provided subject and body
 	///
 	/// :param: subject The preferred subject for the email.
 	/// :param: body The body of the email. The user's signature will be added on.
-	func sendEmail(subject: String, body: String) {
+	private func sendEmail(subject: String, body: String) {
 		if(MFMailComposeViewController.canSendMail()){
 			var mailer = MFMailComposeViewController()
 			mailer.mailComposeDelegate = self
 			
 			mailer.setSubject(subject)
 			mailer.setToRecipients(["bruinlifeapp@gmail.com"])
-			mailer.setMessageBody(body, isHTML: true)
+			mailer.setMessageBody(body, isHTML: false)
 			
 			//Display the view controller
-			self.presentViewController(mailer, animated: true, completion: nil)
+			presentViewController(mailer, animated: true, completion: nil)
 		} else {
 			UIAlertView(title: "Can't Send Email", message: "Sorry, but you can't send email from this device.", delegate: nil, cancelButtonTitle: "Darn.").show()
 		}
 	}
 	
 	/// Open the Bruin Life listing in the App Store
-	func openStore() {
+	private func openStore() {
 		let appID = "575404770"
 		let storeURL = "itms-apps://itunes.apple.com/app/id\(appID)"
-		UIApplication.sharedApplication().openURL(NSURL(string: storeURL)!) // var success =
+		let success = UIApplication.sharedApplication().openURL(NSURL(string: storeURL)!)
+		
+		if !success {
+			UIAlertView(title: "Can't Review", message: "Sorry, but something went wrong while trying to open the App Store.", delegate: nil, cancelButtonTitle: "Oh well").show()
+		}
 	}
 }

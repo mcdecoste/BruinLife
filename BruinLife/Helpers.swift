@@ -8,9 +8,6 @@
 
 import UIKit
 
-/// Number of seconds in a day
-let timeInDay: Double = 24*60*60
-
 /// Used to determine notification identity
 let notificationID: String = "NotificationID"
 /// Used for text label in NotificationTableViewController
@@ -27,19 +24,39 @@ let notificationTimeID: String = "NotificationTimeID"
 let notificationHoursID: String = "NotificationHoursID"
 
 let tableBackgroundColor = color(239, 239, 244)
+let currCal = NSCalendar.currentCalendar()
 
-var currCal: NSCalendar {
+/// Name, version, and build of application
+var versionDisplayString: String {
 	get {
-		return NSCalendar.currentCalendar()
+		return "\(displayStr) \(versionStr) (\(buildStr))"
 	}
 }
+/// Displayed name of application
+var displayStr: String {
+get {
+	return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleDisplayName") as! String
+}
+}
+/// Version number of application
+var versionStr: String {
+get {
+	return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
+}
+}
+/// Build number of application
+var buildStr: String {
+get {
+	return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as! String
+}
+}
 
-func comparisonDate(date: NSDate) -> NSDate {
+func comparisonDate(date: NSDate = NSDate()) -> NSDate {
 	return currCal.startOfDayForDate(date)
 }
 
-func comparisonDate(daysInFuture: Int = 0) -> NSDate {
-	return currCal.dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(NSDate()), options: nil)!
+func comparisonDate(daysInFuture: Int) -> NSDate {
+	return currCal.dateByAddingUnit(.CalendarUnitDay, value: daysInFuture, toDate: comparisonDate(), options: nil)!
 }
 
 func color(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0) -> UIColor {
@@ -47,23 +64,21 @@ func color(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0) -> UIColor {
 }
 
 /// Returns the most likely Meal given the time
-func currentMeal() -> MealType {
-	var hour = currCal.component(.CalendarUnitHour, fromDate: NSDate())
-	
-	if hour <= 3 { return .LateNight }
-	if hour <= 11 { return .Breakfast }
-	if hour <= 16 { return .Lunch }
-	if hour <= 20 { return .Dinner }
-	return .LateNight
-}
-
-func representsToday(date: NSDate) -> Bool {
-	return daysInFuture(date) == 0
+var currentMeal: MealType {
+	get {
+		var hour = currCal.component(.CalendarUnitHour, fromDate: NSDate())
+		
+		if hour <= 3 { return .LateNight }
+		if hour <= 11 { return .Breakfast }
+		if hour <= 16 { return .Lunch }
+		if hour <= 20 { return .Dinner }
+		return .LateNight
+	}
 }
 
 func daysInFuture(date: NSDate) -> Int {
-	let today = currCal.components(.CalendarUnitDay, fromDate: NSDate()).day
-	let selectedDay = currCal.components(.CalendarUnitDay, fromDate: date).day
+	let today = currCal.component(.CalendarUnitDay, fromDate: NSDate())
+	let selectedDay = currCal.component(.CalendarUnitDay, fromDate: date)
 	return abs(today - selectedDay)
 }
 

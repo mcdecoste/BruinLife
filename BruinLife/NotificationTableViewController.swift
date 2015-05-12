@@ -38,7 +38,7 @@ class NotificationTableViewController: UITableViewController {
 	}
 	
 	func removeNotification(indexPath: NSIndexPath) {
-		let realSection = sectionFromSection(indexPath.section)
+		let realSection = processedSection(indexPath.section)
 		
 		UIApplication.sharedApplication().cancelLocalNotification(notifications[realSection][indexPath.row])
 		notifications[realSection].removeAtIndex(indexPath.row)
@@ -49,7 +49,7 @@ class NotificationTableViewController: UITableViewController {
 	}
 	
 	func notificationForPath(path: NSIndexPath) -> UILocalNotification {
-		return notifications[sectionFromSection(path.section)][path.row]
+		return notifications[processedSection(path.section)][path.row]
 	}
 	
     // MARK: - Table view data source
@@ -58,7 +58,7 @@ class NotificationTableViewController: UITableViewController {
     }
 
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return notifications[sectionFromSection(section)].count
+        return notifications[processedSection(section)].count
     }
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -75,7 +75,7 @@ class NotificationTableViewController: UITableViewController {
 			removeNotification(indexPath)
 			tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Left)
 			
-			let realSection = sectionFromSection(indexPath.section)
+			let realSection = processedSection(indexPath.section)
 			if notifications[realSection].count == 0 {
 				tableView.reloadSections(NSIndexSet(index: indexPath.section), withRowAnimation: .Fade)
 			}
@@ -90,23 +90,23 @@ class NotificationTableViewController: UITableViewController {
 		
 		tableView.deselectRowAtIndexPath(indexPath, animated: true)
 		
-		let dayRelated = representsToday(notification.fireDate!) ? "later today" : "on \(userInfo[notificationDateID]!)"
+		let dayRelated = currCal.isDateInToday(notification.fireDate!) ? "later today" : "on \(userInfo[notificationDateID]!)"
 		let body = "will be at \(userInfo[notificationPlaceID]!) for \(userInfo[notificationMealID]!) \(dayRelated). You will be reminded at \(userInfo[notificationTimeID]!). \(userInfo[notificationPlaceID]!) will be open from \(userInfo[notificationHoursID]!)."
 		
 		UIAlertView(title: userInfo[notificationFoodID], message: body, delegate: nil, cancelButtonTitle: "Got it").show()
 	}
 	
-	func sectionFromSection(section: Int) -> Int {
+	private func processedSection(section: Int) -> Int {
 		let weekday = currCal.component(.CalendarUnitWeekday, fromDate: NSDate())
 		return (weekday - 1 + section) % weekdays.count
 	}
 	
 	func pathFromPath(path: NSIndexPath) -> NSIndexPath {
-		return NSIndexPath(forRow: path.row, inSection: sectionFromSection(path.section))
+		return NSIndexPath(forRow: path.row, inSection: processedSection(path.section))
 	}
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-		let realSection = sectionFromSection(section)
+		let realSection = processedSection(section)
 		return notifications[realSection].count > 0 ? weekdays[realSection] : nil
 	}
 }

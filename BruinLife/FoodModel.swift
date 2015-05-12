@@ -44,7 +44,7 @@ class Time {
 	
 	func timeDateForDate(date: NSDate) -> NSDate {
 		var interval = 3600.0 * Double(hour) + 60 * Double(minute)
-		return currCal.startOfDayForDate(date).dateByAddingTimeInterval(interval)
+		return comparisonDate(date: date).dateByAddingTimeInterval(interval)
 	}
 	
 	func displayString() -> String {

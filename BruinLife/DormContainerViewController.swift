@@ -88,6 +88,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		controller.sourceRect = (navigationItem.titleView as! DayDisplay).bounds
 		controller.permittedArrowDirections = .Up
 		
+		(navigationItem.titleView as! DayDisplay).enabled = false
 		presentViewController(popVC, animated: true, completion: nil)
 	}
 	
@@ -120,6 +121,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	// MARK: UIPopoverPresentationControllerDelegate
 	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
 		return .None
+	}
+	
+	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
+		(navigationItem.titleView as! DayDisplay).enabled = true
 	}
 	
 	// MARK: - UIPageViewControllerDataSource
@@ -157,8 +162,8 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func vcForIndex(index: Int) -> UINavigationController {
 		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as! DormTableViewController
 		
-		var value = CloudManager.sharedInstance.fetchDiningDay(comparisonDate(daysInFuture: index))
-		vc.information.date = comparisonDate(daysInFuture: index)
+		var value = CloudManager.sharedInstance.fetchDiningDay(comparisonDate(index))
+		vc.information.date = comparisonDate(index)
 		vc.informationData = value
 		vc.dormCVC = self
 		

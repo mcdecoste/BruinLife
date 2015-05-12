@@ -54,8 +54,8 @@ class DormTableViewController: FoodTableViewController {
 	}
 	
 	override func scrollToMeal() {
-		if representsToday(information.date) {
-			var currMeal = currentMeal()
+		if currCal.isDateInToday(information.date) {
+			var currMeal = currentMeal
 			if currMeal == .LateNight {
 				return
 			}

@@ -41,7 +41,7 @@ class RestaurantTableViewCell: FoodTableViewCell {
 		updateLabelFrames()
 		
 		var (open, openDate, closeDate) = dateInfo
-		let aboutToday = comparisonDate() == comparisonDate(date!)
+		let aboutToday = comparisonDate() == comparisonDate(date: date!)
 		var formatter = NSDateFormatter()
 		formatter.timeZone = NSTimeZone(name: "Americas/Los_Angeles")
 		formatter.timeStyle = .ShortStyle

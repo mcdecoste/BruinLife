@@ -51,7 +51,7 @@ class SwipesTableViewController: UITableViewController {
     }
 	
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-		var displayText = model.currentWeekAndQuarter().quarter == nil ? "It doesn't appear to be any quarter right now." : "Will likely differ from your actual swipe count."
+		var displayText = model.currentWeekAndQuarter.quarter == nil ? "It doesn't appear to be any quarter right now." : "Will likely differ from your actual swipe count."
 		return section == 1 ? displayText : nil
 	}
 	

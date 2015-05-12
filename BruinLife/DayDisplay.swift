@@ -20,6 +20,11 @@ class DayDisplay: UIButton {
 			return UIColor(red: comp[0], green: comp[1], blue: comp[2], alpha: 0.2)
 		}
 	}
+	private var dimmedColor: UIColor {
+		get {
+			return UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
+		}
+	}
 	private var title: String {
 		get {
 			return DayDisplay.titleStringDate(date)
@@ -31,6 +36,7 @@ class DayDisplay: UIButton {
 		titleLabel!.font = .boldSystemFontOfSize(17)
 		setTitleColor(normalColor, forState: .Normal)
 		setTitleColor(highlightedColor, forState: .Highlighted)
+		setTitleColor(dimmedColor, forState: .Disabled)
 	}
 	
 	var date: NSDate = comparisonDate() {
@@ -42,12 +48,12 @@ class DayDisplay: UIButton {
 	}
 	var dayIndex: Int = 0 {
 		didSet {
-			date = comparisonDate(daysInFuture: dayIndex)
+			date = comparisonDate(dayIndex)
 		}
 	}
 	
 	class func titleString(daysInAdvance: Int) -> String {
-		return titleStringDate(comparisonDate(daysInFuture: daysInAdvance))
+		return titleStringDate(comparisonDate(daysInAdvance))
 	}
 	
 	class func titleStringDate(date: NSDate) -> String {

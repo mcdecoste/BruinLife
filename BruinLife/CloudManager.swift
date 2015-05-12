@@ -98,7 +98,7 @@ class CloudManager: NSObject {
 			completion(error: NSError(domain: "Nothing to Update", code: 42, userInfo: nil))
 			return
 		}
-		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(daysInFuture: endDaysInAdvance), comparisonDate()])
+		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(endDaysInAdvance), comparisonDate()])
 		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
 		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
 			self.updateDiningDay(record)
@@ -118,8 +118,8 @@ class CloudManager: NSObject {
 			return
 		}
 		
-		let startDate = comparisonDate(daysInFuture: startDaysInAdvance)
-		let endDate = comparisonDate(daysInFuture: min(maxInAdvance, max(startDaysInAdvance + 3, 6)))
+		let startDate = comparisonDate(startDaysInAdvance)
+		let endDate = comparisonDate(min(maxInAdvance, max(startDaysInAdvance + 3, 6)))
 		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [endDate, startDate])
 		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
 		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
@@ -232,7 +232,7 @@ class CloudManager: NSObject {
 	/// Can either grab the food or delete something
 	func fetchDiningDay(date: NSDate) -> NSData {
 		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
-		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date))
+		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date: date))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
 			for result in fetchResults {
