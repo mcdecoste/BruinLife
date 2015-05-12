@@ -11,24 +11,11 @@ import UIKit
 class DormTableViewController: FoodTableViewController {
 	var dormCVC: DormContainerViewController?
 	
-	/// Returns the desired title for the page view controller's navbar
-	var preferredTitle: String {
+	var preferredTitleView: DayDisplay {
 		get {
-			var formatter = NSDateFormatter()
-			formatter.dateFormat = compact() ? "EEEE, MMM. d" : "EEEE, MMMM d"
-			var title = formatter.stringFromDate(information.date)
-			
-			switch currCal.component(.CalendarUnitDay, fromDate: information.date) {
-			case 1, 21, 31:
-				title += "st"
-			case 2, 22:
-				title += "nd"
-			case 3, 23:
-				title += "rd"
-			default:
-				title += "th"
-			}
-			return title
+			var pref = DayDisplay()
+			pref.date = information.date
+			return pref
 		}
 	}
 	

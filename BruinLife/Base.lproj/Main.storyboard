@@ -239,6 +239,24 @@
             </objects>
             <point key="canvasLocation" x="3002" y="-332"/>
         </scene>
+        <!--Coming Week Table View Controller-->
+        <scene sceneID="DC6-Gi-ufF">
+            <objects>
+                <tableViewController storyboardIdentifier="comingWeek" id="rjo-Z1-FBG" customClass="ComingWeekTableViewController" customModule="BruinLife" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="rb7-BQ-Xev">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <connections>
+                            <outlet property="dataSource" destination="rjo-Z1-FBG" id="7E3-PJ-CLB"/>
+                            <outlet property="delegate" destination="rjo-Z1-FBG" id="MFc-Mr-zXt"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="4gz-Yd-aM8" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="3694" y="-332"/>
+        </scene>
         <!--Quick-->
         <scene sceneID="y5x-eO-8jq">
             <objects>

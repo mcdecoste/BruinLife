@@ -9,10 +9,35 @@
 import UIKit
 
 class DayDisplay: UIButton {
+	private var normalColor: UIColor {
+		get {
+			return tintColor!
+		}
+	}
+	private var highlightedColor: UIColor {
+		get {
+			let comp = CGColorGetComponents(normalColor.CGColor!)
+			return UIColor(red: comp[0], green: comp[1], blue: comp[2], alpha: 0.2)
+		}
+	}
+	private var title: String {
+		get {
+			return DayDisplay.titleStringDate(date)
+		}
+	}
+	
+	private func setupLabel() {
+		setTitle("Hello", forState: .Normal)
+		titleLabel!.font = .boldSystemFontOfSize(17)
+		setTitleColor(normalColor, forState: .Normal)
+		setTitleColor(highlightedColor, forState: .Highlighted)
+	}
+	
 	var date: NSDate = comparisonDate() {
 		didSet {
 			setupLabel()
-			changeLabelText()
+			setTitle(title, forState: .Normal)
+			frame.size = NSString(string: titleLabel!.text!).sizeWithAttributes([NSFontAttributeName:titleLabel!.font])
 		}
 	}
 	var dayIndex: Int = 0 {
@@ -21,24 +46,36 @@ class DayDisplay: UIButton {
 		}
 	}
 	
-	func setupLabel() {
-		setTitle("Hello", forState: .Normal)
-		titleLabel!.font = .boldSystemFontOfSize(14)
-//		titleLabel!.textAlignment = .Center
-		setTitleColor(color(0, 122, 255), forState: .Normal)
-		setTitleColor(color(0, 122, 255, alpha: 0.4), forState: .Highlighted)
+	class func titleString(daysInAdvance: Int) -> String {
+		return titleStringDate(comparisonDate(daysInFuture: daysInAdvance))
 	}
 	
-	func changeLabelText() {
+	class func titleStringDate(date: NSDate) -> String {
 		var formatter = NSDateFormatter()
-//		formatter.dateStyle = .ShortStyle
-		formatter.dateFormat = "EEEE, M/d"
+		formatter.dateFormat = "MMM"
+		let shortMonth = formatter.stringFromDate(date)
+		formatter.dateFormat = "MMMM"
+		let longMonth = formatter.stringFromDate(date)
+		let monthStr = shortMonth == longMonth ? longMonth : "\(shortMonth)."
 		
-		titleLabel!.text = formatter.stringFromDate(date)
-//		titleLabel.frame.size.width = NSString(string: titleLabel.text!).sizeWithAttributes([NSFontAttributeName: titleLabel.font]).width
-//		frame.size.width = titleLabel.frame.width
-//		setNeedsDisplay()
+		formatter.dateFormat = "EEEE, "
+		let weekday = formatter.stringFromDate(date)
+		formatter.dateFormat = "d"
+		let day = formatter.stringFromDate(date)
+		
+		var titleStr = "\(weekday)\(monthStr) \(day)"
+		
+		switch currCal.component(.CalendarUnitDay, fromDate: date) {
+		case 1, 21, 31:
+			titleStr += "st"
+		case 2, 22:
+			titleStr += "nd"
+		case 3, 23:
+			titleStr += "rd"
+		default:
+			titleStr += "th"
+		}
+		
+		return titleStr
 	}
-	
-	
 }

@@ -90,6 +90,12 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	
+	private var compact: Bool {
+		get {
+			return view.frame.width == 320
+		}
+	}
+	
 	// Core Data
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -371,18 +377,17 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		
 		foodVC.modalPresentationStyle = UIModalPresentationStyle.Popover
 		foodVC.preferredContentSize = foodVC.preferredContentSize
-		foodVC.foodVC = self
 		
-		let ppc = foodVC.popoverPresentationController
-		ppc?.permittedArrowDirections = UIPopoverArrowDirection.allZeros
-		ppc?.delegate = self
-		ppc?.sourceView = tableView // or source rect or barbuttonitem
+		let ppc = foodVC.popoverPresentationController!
+		ppc.permittedArrowDirections = .allZeros
+		ppc.delegate = self
+		ppc.sourceView = tableView // or source rect or barbuttonitem
 		
 		var anchorFrame = tableView.rectForRowAtIndexPath(displayIndexPath)
 		
 		let xVal = (anchorFrame.origin.x) + anchorFrame.size.width / 2.0
 		let yVal = ((anchorFrame.origin.y) + anchorFrame.size.height / 2.0) + 11.0
-		ppc?.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
+		ppc.sourceRect = CGRect(x: xVal, y: yVal, width: 0.0, height: 0.0)
 		presentViewController(foodVC, animated: true, completion: nil)
 		
 		foodVC.setFood(food, date: information.date, meal: dateMeals[displayIndexPath.section], place: (displayCell?.brief)!)
@@ -431,9 +436,5 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			let food = information.foods[foodBrief.recipe]!.info
 			addFoodPopover(food)
 		}
-	}
-	
-	func compact() -> Bool {
-		return view.frame.width == 320
 	}
 }

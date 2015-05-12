@@ -69,15 +69,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var favorited = false
 	var reminding = false
 	
-	var foodVC: FoodTableViewController?
-	
 	let alertCancel = "Cancel", alertNever = "Never", alertMorningFull = "Start of Day (9:00 AM)", alertMorning = "Start of Day"
 	var alertHall: String {
 		get {
-			if let vc = foodVC {
-				return "When \(place.hall.displayName((foodVC?.isHall)!)) Opens (\(place.openTime.displayString()))"
-			}
-			return ""
+			return "When \(place.hall.displayName(foodVC.isHall)) Opens (\(place.openTime.displayString()))"
 		}
 	}
 	
@@ -86,6 +81,12 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	var prefContentSize: CGSize {
 		get {
 			return CGSize(width: realWidth, height: realHeight)
+		}
+	}
+	
+	private var foodVC: FoodTableViewController {
+		get {
+			return popoverPresentationController?.delegate as! FoodTableViewController
 		}
 	}
 	
@@ -478,7 +479,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 			actionSheet = UIActionSheet(title: "There are no reminder options.", delegate: self, cancelButtonTitle: alertCancel, destructiveButtonTitle: removeText) // had to customize this one
 		}
 		
-		actionSheet?.showInView(foodVC?.view)
+		actionSheet?.showInView(foodVC.view)
 	}
 	
 	// MARK: UIActionSheetDelegate
@@ -502,7 +503,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	// MARK: - Notifications
 	
 	func notificationString() -> String {
-		return "\(place.hall.displayName((foodVC?.isHall)!)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString()) - \(place.closeTime.displayString()))"
+		return "\(place.hall.displayName(foodVC.isHall)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString()) - \(place.closeTime.displayString()))"
 	}
 	
 	// Remove any existing notification
@@ -539,7 +540,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		var information = [String:String]()
 		information[notificationID] = identifierForFood()
 		information[notificationFoodID] = food.name
-		information[notificationPlaceID] = place.hall.displayName((foodVC?.isHall)!)
+		information[notificationPlaceID] = place.hall.displayName(foodVC.isHall)
 		information[notificationDateID] = weekdayForFood()
 		information[notificationMealID] = meal.rawValue
 		information[notificationHoursID] = "\(place.openTime.displayString()) until \(place.closeTime.displayString())"
@@ -564,7 +565,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func identifierForFood() -> String {
 		let components = currCal.components(.CalendarUnitMonth | .CalendarUnitDay, fromDate: date)
-		return "\(components.month)/\(components.day) - \(place.hall.displayName((foodVC?.isHall)!)) - \(meal.rawValue) - \(food.name)"
+		return "\(components.month)/\(components.day) - \(place.hall.displayName(foodVC.isHall)) - \(meal.rawValue) - \(food.name)"
 	}
 	
 	func weekdayForFood() -> String {

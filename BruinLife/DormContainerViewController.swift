@@ -10,8 +10,16 @@ import UIKit
 import CloudKit
 import CoreData
 
-class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate {
-	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: UIPageViewControllerNavigationOrientation.Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 32.0])
+class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIPopoverPresentationControllerDelegate {
+	private var currIndex: Int = 0 {
+		didSet {
+			navigationItem.leftBarButtonItem?.enabled = currIndex != 0
+			if let titleDisplay = navigationItem.titleView as? DayDisplay {
+				titleDisplay.dayIndex = currIndex
+			}
+		}
+	}
+	var pageController = UIPageViewController(transitionStyle: .Scroll, navigationOrientation: .Horizontal, options: [UIPageViewControllerOptionInterPageSpacingKey : 32.0])
 	let pageStoryboardID = "dormTableView"
 	
 	override func viewDidLoad() {
@@ -39,11 +47,6 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		var leftBar = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
 		leftBar.enabled = false
 		navigationItem.leftBarButtonItem = leftBar
-
-		// TODO: implement this for easier navigation!
-//		var rightBar = UIBarButtonItem(title: "Days", style: .Plain, target: self, action: "showDays")
-//		rightBar.enabled = false
-//		navigationItem.rightBarButtonItem = rightBar
 		
 		pageController.view.backgroundColor = tableBackgroundColor
 	}
@@ -70,22 +73,57 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func jumpToFirst() {
-		pageController.setViewControllers([vcForIndex(0)], direction: .Reverse, animated: true, completion: nil)
+		didPickDay(0)
 	}
 	
+	/// Show the popover for what day to pick
 	func showDays() {
+		let popVC = storyboard?.instantiateViewControllerWithIdentifier("comingWeek") as! ComingWeekTableViewController
+		popVC.modalPresentationStyle = UIModalPresentationStyle.Popover
+		popVC.preferredContentSize = popVC.preferredContentSize
 		
+		let controller = popVC.popoverPresentationController!
+		controller.delegate = self
+		controller.sourceView = navigationItem.titleView as! DayDisplay
+		controller.sourceRect = (navigationItem.titleView as! DayDisplay).bounds
+		controller.permittedArrowDirections = .Up
+		
+		presentViewController(popVC, animated: true, completion: nil)
+	}
+	
+	func didPickDay(newIndex: Int) {
+		let direction: UIPageViewControllerNavigationDirection
+		switch newIndex {
+		case currIndex:
+			return
+		case 0..<currIndex:
+			direction = .Reverse
+		default:
+			direction = .Forward
+		}
+		
+		pageController.setViewControllers([vcForIndex(newIndex)], direction: direction, animated: true, completion: nil)
 	}
 	
 	func updateNavItem(vc: DormTableViewController) {
-		navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
-		navigationItem.title = vc.preferredTitle
+		currIndex = daysInFuture(vc.information.date)
+		createDayDisplayIfNecessary(vc)
+	}
+	
+	func createDayDisplayIfNecessary(vc: DormTableViewController) {
+		if navigationItem.titleView as? DayDisplay == nil {
+			navigationItem.titleView = vc.preferredTitleView
+			(navigationItem.titleView as! DayDisplay).addTarget(self, action: "showDays", forControlEvents: .TouchUpInside)
+		}
+	}
+	
+	// MARK: UIPopoverPresentationControllerDelegate
+	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+		return .None
 	}
 	
 	// MARK: - UIPageViewControllerDataSource
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-		viewController.navigationItem.leftBarButtonItem = nil
-		viewController.navigationItem.rightBarButtonItem = nil
 		let index = daysInFuture(dormVCfromNavVC(viewController as! UINavigationController).information.date)
 		if index == 0 { return nil }
 		return vcForIndex(index - 1)
@@ -107,16 +145,12 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	// MARK: UIPageViewControllerDelegate
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-		let vc = completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as! UINavigationController)
-		navigationItem.leftBarButtonItem?.enabled = daysInFuture(vc.information.date) != 0
-		navigationItem.title = vc.preferredTitle
+		updateNavItem(completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as! UINavigationController))
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [AnyObject]) {
 		if pendingViewControllers.count != 0 {
-			let vc = dormVCfromNavVC(pendingViewControllers[0] as! UINavigationController)
-			navigationItem.leftBarButtonItem!.enabled = daysInFuture(vc.information.date) != 0
-			navigationItem.title = vc.preferredTitle
+			updateNavItem(dormVCfromNavVC(pendingViewControllers[0] as! UINavigationController))
 		}
 	}
 	
