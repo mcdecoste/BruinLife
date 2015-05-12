@@ -1,5 +1,6 @@
 # Bruin Life
-![Big Logo](/BruinLife/Images.xcassets/IconBig.imagesetlogo@large.png)
+![Big Logo](https://raw.githubusercontent.com/mcdecoste/BruinLife/master/BruinLife/Images.xcassets/AppIcon.appiconset/logo%403x.png)
+
 Source code for the Bruin Life app for iOS
 
 This is a solo side project, so expect the code to be a bit messy. It's not necessarily written for public consumption, but it shouldn't be too dense.
@@ -40,9 +41,20 @@ Shows the food's name, type (Vegan / Vegetarian / Regular), description (if avai
 
 This is a mess at the moment; need to redo it as a table view controller. It works for now, but I'm dreading the day something breaks. Also need to make all constituent parts Autolayout-compatible so as to better work with larger devices.
 
-### Swipes
+### Swipes (SwipesTableViewController.swift)
+Uses the aforementioned Swipes Model to show the user how many swipes they should have.
 
-### Settings
+### Settings (SettingsTableViewController.swift)
+Allows the user to check on reminders, favorites, and nutritional information. Also lets the user give feedback through email or App Store reviews (without pestering them, yay).
 
 ---
 ## Views
+
+### Table View Cells
+Far too many of these to cover one-by-one. Some are Autolayout-compatible, others suck. Moving on.
+
+### Circle Display (CircleDisplay.swift)
+Used for nutrional information displays. If the nutrient has a daily value, it shows a colored circle that is filled in by the percent the current measure is of the daily value and tapping the circle toggles between the exact measurement and the percent value. Otherwise, it's a faded out grey circle that isn't tappable.
+
+### Day Display (DayDisplay.swift)
+Used both as the tappable button atop the Dining Hall View Controller (for day changing), but also as the source for the strings of the cells in the popover whose appearance that button toggles. English? English.
