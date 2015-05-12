@@ -25,7 +25,7 @@ class QuickTableViewController: FoodTableViewController {
 		
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "QuickInfoUpdated", object: nil)
 		
-		let currentData = CloudManager.sharedInstance.fetchQuick()
+		let currentData = CloudManager.sharedInstance.quickData
 		if currentData.length > 0 {
 			informationData = currentData
 		} else {

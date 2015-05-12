@@ -35,67 +35,88 @@ class CloudManager: NSObject {
 		}
 	}
 	
+	var firstGap: Int {
+		get {
+			var fetchRequest = NSFetchRequest(entityName: "DiningDay")
+			fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
+			fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
+			
+			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
+				return daysInFuture(fetchResults.first!.day) + 1
+			}
+			return 0
+		}
+	}
+	
+	private var quickDownloadDate: NSDate? {
+		get {
+			return downloadDate(quickKey)
+		}
+	}
+	
+	var quickData: NSData {
+		get {
+			var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
+			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
+				for result in fetchResults {
+					if result.data.length > 0 {
+						return result.data
+					}
+				}
+			}
+			
+			return "".dataUsingEncoding(NSUTF8StringEncoding)!
+		}
+	}
+	
 	override init() {
 		container = CKContainer(identifier: "iCloud.BruinLife.MatthewDeCoste")
 		publicDB = container.publicCloudDatabase
 	}
 	
-	func requestDiscoverabilityPermission(completion: (discoverable: Bool) -> Void) {
-		container.requestApplicationPermission(.PermissionUserDiscoverability, completionHandler: { (applicationPermissionStatus: CKApplicationPermissionStatus, error: NSError!) -> Void in
-			if error != nil {
-				println("error happened")
-				abort()
-			} else {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					completion(discoverable: applicationPermissionStatus == .Granted)
-				})
-			}
-		})
-	}
-	
-	func discoverUserInfo(completion: (user: CKDiscoveredUserInfo) -> Void) {
-		container.fetchUserRecordIDWithCompletionHandler { (recordID: CKRecordID!, error: NSError!) -> Void in
-			if error != nil {
-				println("error!")
-				abort()
-			} else {
-				self.container.discoverUserInfoWithUserRecordID(recordID, completionHandler: { (user: CKDiscoveredUserInfo!, error: NSError!) -> Void in
-					if error != nil {
-						println("ERROR")
-						abort()
-					} else {
-						dispatch_async(dispatch_get_main_queue(), { () -> Void in
-							completion(user: user)
-						})
-					}
-				})
-			}
-		}
-	}
+//	func requestDiscoverabilityPermission(completion: (discoverable: Bool) -> Void) {
+//		container.requestApplicationPermission(.PermissionUserDiscoverability, completionHandler: { (applicationPermissionStatus: CKApplicationPermissionStatus, error: NSError!) -> Void in
+//			if error != nil {
+//				println("error happened")
+//				abort()
+//			} else {
+//				dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//					completion(discoverable: applicationPermissionStatus == .Granted)
+//				})
+//			}
+//		})
+//	}
+//	
+//	func discoverUserInfo(completion: (user: CKDiscoveredUserInfo) -> Void) {
+//		container.fetchUserRecordIDWithCompletionHandler { (recordID: CKRecordID!, error: NSError!) -> Void in
+//			if error != nil {
+//				println("error!")
+//				abort()
+//			} else {
+//				self.container.discoverUserInfoWithUserRecordID(recordID, completionHandler: { (user: CKDiscoveredUserInfo!, error: NSError!) -> Void in
+//					if error != nil {
+//						println("ERROR")
+//						abort()
+//					} else {
+//						dispatch_async(dispatch_get_main_queue(), { () -> Void in
+//							completion(user: user)
+//						})
+//					}
+//				})
+//			}
+//		}
+//	}
 	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
-		let gap = findFirstGap()
+		let gap = firstGap
 		println("The gap is \(gap)")
 		
-//		checkForDormUpdates(upTo: gap, completion: completion) // make sure we're okay on what exists
 		fetchUpdatedRecords(endDaysInAdvance: gap, completion: completion)
 		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
 	}
 	
-	func findFirstGap(daysInAdvance: Int = maxInAdvance) -> Int {
-		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
-		fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
-		fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
-		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
-			return daysInFuture(fetchResults.first!.day) + 1
-		}
-		return 0
-	}
-	
 	private func fetchUpdatedRecords(type: String = "DiningDay", endDaysInAdvance: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
 		if endDaysInAdvance == 0 {
-			completion(error: NSError(domain: "Nothing to Update", code: 42, userInfo: nil))
 			return
 		}
 		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(endDaysInAdvance), comparisonDate()])
@@ -105,7 +126,8 @@ class CloudManager: NSObject {
 		}
 		operation.queryCompletionBlock = { (cursor: CKQueryCursor!, error: NSError!) -> Void in
 			if let err = error {
-				completion(error: err)
+//				completion(error: err)
+				// reconsider actually failing on a messed up update...
 			}
 		}
 		
@@ -177,12 +199,9 @@ class CloudManager: NSObject {
 		return NSUserDefaults.standardUserDefaults().objectForKey(dateKey) as? NSDate ?? NSDate(timeIntervalSince1970: 0)
 	}
 	
-	private func quickDownloadDate() -> NSDate? {
-		return downloadDate(quickKey)
-	}
-	
 	// MARK: - Core Data
 	private func newDiningDay(record: CKRecord) {
+		println("Downlaoded new record for \(record.recordID.recordName)")
 		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
@@ -207,6 +226,7 @@ class CloudManager: NSObject {
 					if let recordDayData = record.valueForKey(CKDataField) as? NSData {
 						if day.data != recordDayData {
 							println("actually updating \(record.recordID.recordName)")
+							NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":recordDayData])
 						}
 						day.data = recordDayData
 						madeChanges = true
@@ -245,18 +265,18 @@ class CloudManager: NSObject {
 		return "".dataUsingEncoding(NSUTF8StringEncoding)!
 	}
 	
-	func fetchQuick() -> NSData {
-		var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
-			for result in fetchResults {
-				if result.data.length > 0 {
-					return result.data
-				}
-			}
-		}
-		
-		return "".dataUsingEncoding(NSUTF8StringEncoding)!
-	}
+//	func fetchQuick() -> NSData {
+//		var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
+//		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
+//			for result in fetchResults {
+//				if result.data.length > 0 {
+//					return result.data
+//				}
+//			}
+//		}
+//		
+//		return "".dataUsingEncoding(NSUTF8StringEncoding)!
+//	}
 	
 	func save() {
 		var error: NSError?

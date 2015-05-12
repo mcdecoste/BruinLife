@@ -33,11 +33,6 @@ class DormTableViewController: FoodTableViewController {
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)
 	}
 	
-	override func viewWillDisappear(animated: Bool) {
-		super.viewWillDisappear(animated)
-		NSNotificationCenter.defaultCenter().removeObserver(self)
-	}
-	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
 		return hasData ? information.meals.count - 1 : 1
 	}
@@ -62,7 +57,7 @@ class DormTableViewController: FoodTableViewController {
 			
 			var sectionToShow = 0
 			
-			for (index, meal) in enumerate(orderedMeals(information.meals.keys.array)) {
+			for (index, meal) in enumerate(dateMeals) {
 				if meal.equalTo(currMeal) {
 					sectionToShow = index
 					break

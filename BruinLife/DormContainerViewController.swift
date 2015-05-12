@@ -30,14 +30,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		pageController.view.frame = view.bounds
 		
 		// true if we don't have today's data yet. False if we have data
-		if CloudManager.sharedInstance.fetchDiningDay(comparisonDate()) == "" {
-			CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
-				if error != nil {
-					// handle error case
-					self.dormVCfromIndex(0).loadFailed(error)
-				}
-			})
-		}
+//		let todayData = CloudManager.sharedInstance.fetchDiningDay(NSDate())
+//		if todayData.length == 0 {
+//			loadMoreDays()
+//		}
 		
 		// TODO: create proper shell to show for before loading
 		pageController.setViewControllers([UINavigationController()], direction: .Forward, animated: false, completion: nil)
@@ -54,9 +50,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		if CloudManager.sharedInstance.findFirstGap() <= 10 {
-			loadMoreDays()
-		}
+		loadMoreDays()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -69,7 +63,12 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	// MARK: - Helpers
 	func loadMoreDays() {
-		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in })
+		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
+			if error != nil {
+				println(error)
+//				self.dormVCfromIndex(0).loadFailed(error)
+			}
+		})
 	}
 	
 	func jumpToFirst() {
@@ -88,7 +87,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		controller.sourceRect = (navigationItem.titleView as! DayDisplay).bounds
 		controller.permittedArrowDirections = .Up
 		
-		(navigationItem.titleView as! DayDisplay).enabled = false
+//		(navigationItem.titleView as! DayDisplay).enabled = false
 		presentViewController(popVC, animated: true, completion: nil)
 	}
 	
@@ -124,7 +123,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	}
 	
 	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
-		(navigationItem.titleView as! DayDisplay).enabled = true
+//		(navigationItem.titleView as! DayDisplay).enabled = true
 	}
 	
 	// MARK: - UIPageViewControllerDataSource

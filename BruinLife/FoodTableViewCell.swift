@@ -23,18 +23,18 @@ class FoodTableViewCell: UITableViewCell {
 	
 	var dateInfo: (open: Bool, openDate: NSDate?, closeDate: NSDate?) {
 		get {
-			if let info = brief {
-				var openDate1 = info.openTime.timeDateForDate(date!)
-				var closeDate1 = info.closeTime.timeDateForDate(date!)
+			if let info = brief, useDate = isHall ? date : NSDate() {
+				let openDate1 = info.openTime.timeDateForDate(useDate)
+				let closeDate1 = info.closeTime.timeDateForDate(useDate)
 				
-				let diffDate = comparisonDate(daysInFuture(date!)-1)
-				var openDate2 = info.openTime.timeDateForDate(diffDate)
-				var closeDate2 = info.closeTime.timeDateForDate(diffDate)
+				let diffDate = comparisonDate(daysInFuture(useDate)-1)
+				let openDate2 = info.openTime.timeDateForDate(diffDate)
+				let closeDate2 = info.closeTime.timeDateForDate(diffDate)
 				
-				var open1 = (openDate1.timeIntervalSinceNow <= 0 && closeDate1.timeIntervalSinceNow >= 0)
-				var open2 = (openDate2.timeIntervalSinceNow <= 0 && closeDate2.timeIntervalSinceNow >= 0)
-				var open = open1 || open2
-				return (open, openDate1, closeDate1)
+				let open1 = (openDate1.timeIntervalSinceNow <= 0 && closeDate1.timeIntervalSinceNow >= 0)
+				let open2 = (openDate2.timeIntervalSinceNow <= 0 && closeDate2.timeIntervalSinceNow >= 0)
+				let isOpen = open1 || open2
+				return (isOpen, openDate1, closeDate1)
 			}
 			return (false, nil, nil)
 		}

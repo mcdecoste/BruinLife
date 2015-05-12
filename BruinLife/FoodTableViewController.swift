@@ -52,15 +52,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			loadState = hasData ? .Done : .Failed
 		}
 	}
-	var dateMeals = [MealType]()
-	
-	var isHall: Bool {
+	internal var dateMeals = [MealType]()
+	internal var isHall: Bool {
 		get {
 			return true
 		}
 	}
-	
-	var loadState: FoodControllerLoadState = .Loading {
+	private var loadState: FoodControllerLoadState = .Loading {
 		didSet {
 			if loadState == .Failed {
 				if let refresher = self.refreshControl {
@@ -78,22 +76,40 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			tableView.reloadData()
 		}
 	}
-	
-	var hasData: Bool {
+	internal var hasData: Bool {
 		get {
 			return information.meals.count != 0
 		}
 	}
-	var hasInlineFoodDisplay: Bool {
+	private var hasInlineFoodDisplay: Bool {
 		get {
 			return displayIndexPath.section != -1
 		}
 	}
-	
 	private var compact: Bool {
 		get {
 			return view.frame.width == 320
 		}
+	}
+	
+	private func orderedMeals(meals: Array<MealType>) -> Array<MealType> {
+		var mealByValue: Dictionary<MealType, Int> = [.Breakfast : 1, .Lunch : 2, .Brunch : 2, .Dinner : 3, .LateNight : 4]
+		var remainingMeals = meals, orderedMeals: Array<MealType> = []
+		
+		while remainingMeals.count > 0 {
+			var nextMeal = remainingMeals.first!, nextMealIndex = 0
+			for (index, meal) in enumerate(remainingMeals) {
+				if mealByValue[meal] < mealByValue[nextMeal] {
+					nextMeal = meal
+					nextMealIndex = index
+				}
+			}
+			
+			orderedMeals.append(nextMeal)
+			remainingMeals.removeAtIndex(nextMealIndex)
+		}
+		
+		return orderedMeals
 	}
 	
 	// Core Data
@@ -124,6 +140,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				cell.updateDisplay()
 			}
 		}
+		
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleForeground:", name: "AppEnteringForeground", object: nil)
 	}
 	
 	override func viewDidAppear(animated: Bool) {
@@ -132,6 +150,17 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		// Check how much to do this
 		setInformationIfNeeded()
 		scrollToMeal()
+	}
+	
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		
+		NSNotificationCenter.defaultCenter().removeObserver(self)
+	}
+	
+	// prevent stale displays
+	func handleForeground(notification: NSNotification) {
+		tableView.reloadData()
 		refreshParallax()
 	}
 	
@@ -174,15 +203,17 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	// MARK: - Helpers
 	
 	func loadFailed(error: NSError!) {
-		dispatch_async(dispatch_get_main_queue()) {
-			self.loadState = .Failed
-//			self.tableView.reloadData()
-			
-			if let refresher = self.refreshControl {
-				refresher.endRefreshing()
-			} else {
-				self.refreshControl = UIRefreshControl()
-				self.refreshControl!.addTarget(self, action: self.refresh, forControlEvents: .ValueChanged)
+		if informationData.length == 0 {
+			dispatch_async(dispatch_get_main_queue()) {
+				self.loadState = .Failed
+				//			self.tableView.reloadData()
+				
+				if let refresher = self.refreshControl {
+					refresher.endRefreshing()
+				} else {
+					self.refreshControl = UIRefreshControl()
+					self.refreshControl!.addTarget(self, action: self.refresh, forControlEvents: .ValueChanged)
+				}
 			}
 		}
 	}
@@ -203,7 +234,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			
 			var sectionToShow = 0
 			
-			for (index, meal) in enumerate(orderedMeals(information.meals.keys.array)) {
+			for (index, meal) in enumerate(dateMeals) {
 				if meal.equalTo(currMeal) {
 					sectionToShow = index
 					break
@@ -215,7 +246,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	func refreshParallax() {
 		if hasData {
-			for cell in (tableView.visibleCells() as! Array<FoodTableViewCell>) {
+			for cell in tableView.visibleCells() as! Array<FoodTableViewCell> {
 				var percent = (cell.frame.origin.y - tableView.contentOffset.y) / tableView.frame.height
 				cell.parallaxImageWithScrollPercent(percent)
 			}
