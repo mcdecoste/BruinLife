@@ -44,15 +44,18 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	var information: DayBrief = DayBrief() {
-		willSet {
-			loadState = .Expanding
-		}
+//		willSet {
+//			loadState = .Expanding
+//		}
 		didSet {
-			dateMeals = orderedMeals(information.meals.keys.array)
 			loadState = hasData ? .Done : .Failed
 		}
 	}
-	internal var dateMeals = [MealType]()
+	internal var dateMeals: Array<MealType> {
+		get {
+			return orderedMeals(information.meals.keys.array)
+		}
+	}
 	internal var isHall: Bool {
 		get {
 			return true
@@ -73,7 +76,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 					self.refreshControl = nil
 				}
 			}
-			tableView.reloadData()
+			dispatch_async(dispatch_get_main_queue(), { () -> Void in
+				self.tableView.reloadData()
+//				self.tableView.setNeedsDisplay()
+			})
 		}
 	}
 	internal var hasData: Bool {

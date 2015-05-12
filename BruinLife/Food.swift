@@ -24,7 +24,12 @@ class DiningDay: NSManagedObject {
 		if let fetchResults = moc.executeFetchRequest(request, error: nil) as? [DiningDay] {
 			for result in fetchResults {
 				if result.data == record.objectForKey("Data") as! NSData {
+					println("\(record.recordID.recordName) already exists")
 					return result
+				} else {
+					println("\(record.recordID.recordName) is updating")
+					result.data = record.objectForKey("Data") as! NSData
+					NSNotificationCenter.defaultCenter().postNotificationName("DayInfoUpdated", object: nil, userInfo:["updatedItem":result])
 				}
 			}
 		}
@@ -35,6 +40,7 @@ class DiningDay: NSManagedObject {
 		newItem.data = record.objectForKey("Data") as! NSData
 		newItem.day = recordDay
 		
+		println("\(record.recordID.recordName) is new!")
 		NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newItem])
 		
 		return newItem
@@ -53,6 +59,11 @@ class QuickMenu: NSManagedObject {
 			for result in fetchResults {
 				if result.data == newData {
 					return result
+				} else {
+					// update it!
+					result.data = newData
+					NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo:["quickInfo":result])
+					return result
 				}
 			}
 		}
@@ -62,7 +73,6 @@ class QuickMenu: NSManagedObject {
 		
 		newItem.data = newData
 		NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo:["quickInfo":newItem])
-		
 		return newItem
 	}
 }

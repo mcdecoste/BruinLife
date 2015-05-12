@@ -42,7 +42,7 @@ class CloudManager: NSObject {
 			fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
 			
 			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
-				return daysInFuture(fetchResults.first!.day) + 1
+				return daysInFuture(fetchResults.last!.day) + 1
 			}
 			return 0
 		}
@@ -76,7 +76,7 @@ class CloudManager: NSObject {
 	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
 		let gap = firstGap
-		println("The gap is \(gap)")
+//		println("The gap is \(gap)")
 		
 		fetchUpdatedRecords(endDaysInAdvance: gap, completion: completion)
 		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
@@ -103,7 +103,6 @@ class CloudManager: NSObject {
 	
 	private func fetchRecords(type: String, startDaysInAdvance: Int = 0, completion: (error: NSError!) -> Void) {
 		if startDaysInAdvance >= maxInAdvance {
-			completion(error: NSError(domain: "Nothing to Load", code: 42, userInfo: nil))
 			return
 		}
 		
@@ -112,7 +111,6 @@ class CloudManager: NSObject {
 		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [endDate, startDate])
 		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
 		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
-			println("Fetched for \(record.recordID.recordName)")
 			self.newDiningDay(record)
 		}
 		operation.queryCompletionBlock = { (cursor: CKQueryCursor!, error: NSError!) -> Void in
@@ -145,7 +143,6 @@ class CloudManager: NSObject {
 	
 	// MARK: - Core Data
 	private func newDiningDay(record: CKRecord) {
-		println("Downlaoded new record for \(record.recordID.recordName)")
 		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
@@ -155,28 +152,23 @@ class CloudManager: NSObject {
 	}
 	
 	private func updateDiningDay(record: CKRecord) {
-		println("checking update for \(record.recordID.recordName)")
+//		println("checking update for \(record.recordID.recordName)")
 		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
 			var req = NSFetchRequest(entityName: "DiningDay")
-			req.predicate = NSPredicate(format: "\(CDDateField) == %@", argumentArray: [record.valueForKey(CKDateField)!])
+			req.predicate = NSPredicate(format: "\(CDDateField) == %@", argumentArray: [record.objectForKey(CKDateField)!])
 			var madeChanges = false
 			
 			if let results = moc.executeFetchRequest(req, error: nil) as? [DiningDay] {
-				println("\(record.recordID.recordName) as \(results.count) results")
-				
 				for day in results {
-					if let recordDayData = record.valueForKey(CKDataField) as? NSData {
-						if day.data != recordDayData {
-							println("actually updating \(record.recordID.recordName)")
-							NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":recordDayData])
-						}
-						day.data = recordDayData
+					if let recData = record.objectForKey(CKDataField) as? NSData where day.data != recData {
+						println("actually updating \(record.recordID.recordName)")
+						NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":recData])
+						day.data = recData
 						madeChanges = true
 					}
 				}
-				
 			}
 			
 			if madeChanges {

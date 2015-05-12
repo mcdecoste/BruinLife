@@ -31,6 +31,7 @@ class DormTableViewController: FoodTableViewController {
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "DayInfoUpdated", object: nil)
 	}
 	
 	override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -38,13 +39,19 @@ class DormTableViewController: FoodTableViewController {
 	}
 	
 	override func handleDataChange(notification: NSNotification) {
-		if notification.name == "NewDayInfoAdded" {
+		switch notification.name {
+		case "NewDayInfoAdded":
 			let dDay = notification.userInfo!["newItem"] as! DiningDay
-			
 			if dDay.day == information.date {
 				informationData = dDay.data
-				//				(tableView.visibleCells() as! [EmptyTableViewCell]).first!.loadState = loadState
 			}
+		case "DayInfoUpdated":
+			let dDay = notification.userInfo!["updatedItem"] as! DiningDay
+			if dDay.day == information.date {
+				informationData = dDay.data
+			}
+		default:
+			break
 		}
 	}
 	
