@@ -569,7 +569,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	}
 	
 	func weekdayForFood() -> String {
-		return currCal.weekdaySymbols[currCal.component(.CalendarUnitWeekday, fromDate: NSDate()) - 1] as! String
+		return currCal.weekdaySymbols[currCal.component(.CalendarUnitWeekday, fromDate: date) - 1] as! String
 	}
 	
 	func displayForFireDate(date: NSDate) -> String {
