@@ -7,20 +7,13 @@
 //
 
 import UIKit
-import CoreData
 
 class ServingsTableViewController: UITableViewController {
 	let nutritionID = "nutrition", foodID = "serving"
 	let nutritionSection = 0, foodSection = 1
 	
-	lazy var managedObjectContext : NSManagedObjectContext? = {
-		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-		if let moc = appDelegate.managedObjectContext { return moc }
-		else { return nil }
-	}()
-	var foodItems = [Food]()
-	var nutritionValues = [Nutrient:NutritionListing]()
-	
+	var foodItems: Array<Food> = []
+	var nutritionValues: Dictionary<Nutrient, NutritionListing> = [:]
 	var hasFood: Bool {
 		get {
 			return foodItems.count != 0
@@ -43,7 +36,7 @@ class ServingsTableViewController: UITableViewController {
 		super.viewWillAppear(animated)
 		
 		fetchFoods()
-		nutritionValues = calculateNutritionData()
+		nutritionValues = nutritionData
 		tableView.reloadData()
 		tableView.separatorStyle = .None // TODO: set this in storyboard
 	}
@@ -53,58 +46,36 @@ class ServingsTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	func calculateNutritionData() -> Dictionary<Nutrient, NutritionListing> {
-		var data = [Nutrient:NutritionListing]()
-		for nutr in Nutrient.allValues {
-			data[nutr] = NutritionListing(type: nutr, measure: "0")
-		}
-		
-		// add in the various foods
-		for food in foodItems {
-			for (nutr, list) in food.info.nutrition {
-				if let measure = list.measure.toInt() {
-					data[nutr] = NutritionListing(type: nutr, measure: "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))")
+	// TODO: something's gone wrong here
+	private var nutritionData: Dictionary<Nutrient, NutritionListing> {
+		get {
+			var data = [Nutrient:NutritionListing]()
+			for nutr in Nutrient.allValues {
+				data[nutr] = NutritionListing(type: nutr, measure: "0")
+			}
+			
+			// add in the various foods
+			for food in foodItems {
+				for (nutr, list) in food.info.nutrition {
+					if let measure = list.measure.toInt() {
+						data[nutr] = NutritionListing(type: nutr, measure: "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))")
+					}
 				}
 			}
+			
+			return data
 		}
-		
-		return data
 	}
 	
 	// MARK: - Core Data
 	
 	/// Can either grab the food or delete something
 	func fetchFoods() {
-		var fetchRequest = NSFetchRequest(entityName: "Food")
-		fetchRequest.predicate = NSPredicate(format: "servings > 0")
-		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			for food in fetchResults { food.checkDate() }
-		}
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			foodItems = fetchResults
-		}
-	}
-	
-	func save() {
-		var error: NSError?
-		if managedObjectContext!.save(&error) {
-			if error != nil { println(error?.localizedDescription) }
-		}
+		foodItems = CloudManager.sharedInstance.eatenFoods
 	}
 	
 	func removeServing(path: NSIndexPath) {
-		var request = NSFetchRequest(entityName: "Food")
-		let recipe = foodItems[path.row].info.recipe
-		
-		if let results = managedObjectContext!.executeFetchRequest(request, error: nil) as? [Food] {
-			for result in results {
-				if result.info.recipe == recipe {
-					result.servings = 0
-				}
-			}
-		}
-		save()
+		CloudManager.sharedInstance.removeEaten(foodItems[path.row].info.recipe)
 		
 		tableView.beginUpdates()
 		tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Left)
@@ -117,27 +88,16 @@ class ServingsTableViewController: UITableViewController {
 	}
 	
 	func changeServing(row: ServingsDisplayTableViewCell, count: Int) {
-		let path = tableView.indexPathForCell(row)!
-		var fetchRequest = NSFetchRequest(entityName: "Food")
-		let recipe = foodItems[path.row].info.recipe
+		let recipe = foodItems[tableView.indexPathForCell(row)!.row].info.recipe
 		
-		if let results = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-			for result in results {
-				if result.info.recipe == recipe {
-					result.servings = Int16(count)
-				}
-			}
-		}
-		save()
+		CloudManager.sharedInstance.changeEaten(recipe, newCount: count)
 		
 		// update the nutrition side
-		nutritionValues = calculateNutritionData()
-		for cell in (tableView.visibleCells() as! [UITableViewCell]) {
-			if let cellPath = tableView.indexPathForCell(cell) {
-				// update nutritional cells
-				if cellPath.section == nutritionSection {
-					updateNutritionCell(cell as! NutritionTableViewCell, path: cellPath)
-				}
+		nutritionValues = nutritionData
+		for cellPath in tableView.indexPathsForVisibleRows() as! Array<NSIndexPath> {
+			// update nutritional cells
+			if cellPath.section == nutritionSection {
+				updateNutritionCell(tableView.cellForRowAtIndexPath(cellPath) as! NutritionTableViewCell, path: cellPath)
 			}
 		}
 	}
