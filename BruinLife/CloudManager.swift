@@ -67,6 +67,88 @@ class CloudManager: NSObject {
 		}
 	}
 	
+	/// Can either grab the food or delete something
+	var favoritedFoods: Array<Array<Food>> {
+		get {
+			var fetchRequest = NSFetchRequest(entityName: "Food")
+			fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
+			
+			var favorites: Array<Array<Food>> = [[], []]
+			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
+				for result in fetchResults {
+					favorites[result.notify ? 0	: 1].append(result)
+				}
+			}
+			return favorites
+		}
+	}
+	
+	var eatenFoods: Array<Food> {
+		get {
+			var fetchRequest = NSFetchRequest(entityName: "Food")
+			fetchRequest.predicate = NSPredicate(format: "servings > 0")
+			
+			var result: Array<Food> = []
+			
+			for food in managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? [] {
+				food.checkDate()
+				if food.servings > 0 {
+					result.append(food)
+				}
+			}
+			
+			return result
+		}
+	}
+	
+	private var favorites: Array<Food> {
+		var fetchRequest = NSFetchRequest(entityName: "Food")
+		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
+		return managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? []
+	}
+	
+	// TODO: Remove all future notifications for this food
+	func removeFavorite(recipe: String) {
+		for result in favorites {
+			if result.info.recipe == recipe {
+				result.favorite = false
+			}
+		}
+		save()
+	}
+	
+	// TODO: Add future notifications for this food
+	func changeFoodNotification(recipe: String, shouldNotify notify: Bool) {
+		for result in favorites {
+			if result.info.recipe == recipe {
+				result.notify = notify
+			}
+		}
+		save()
+	}
+	
+	func removeEaten(recipe: String) {
+		var request = NSFetchRequest(entityName: "Food")
+		for result in managedObjectContext!.executeFetchRequest(request, error: nil) as? Array<Food> ?? [] {
+			if result.info.recipe == recipe {
+				result.servings = 0
+			}
+		}
+		
+		save()
+	}
+	
+	func changeEaten(recipe: String, newCount count: Int) {
+		var fetchRequest = NSFetchRequest(entityName: "Food")
+		
+		for result in managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? [] {
+			if result.info.recipe == recipe {
+				result.servings = Int16(count)
+			}
+		}
+		save()
+	}
+	
 	override init() {
 		container = CKContainer(identifier: "iCloud.BruinLife.MatthewDeCoste")
 		publicDB = container.publicCloudDatabase
@@ -217,6 +299,35 @@ class CloudManager: NSObject {
 		}
 		
 		return NSData()
+	}
+	
+	// helpers for FoodViewController
+	
+	func foodDetails(recipe: String) -> (number: Int, favorite: Bool) {
+		if let fetchResults = managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
+			for result in fetchResults {
+				if result.info.recipe == recipe {
+					return (number: Int(result.servings), favorite: result.favorite)
+				}
+			}
+		}
+		return (0, false)
+	}
+	
+	func changeFavorite(food: FoodInfo, favorite: Bool) {
+		if let moc = managedObjectContext {
+			var theFood = Food.foodFromInfo(moc, food: food)
+			theFood.favorite = favorite
+			save()
+		}
+	}
+	
+	func changeServingCount(food: FoodInfo, number: Int) {
+		if let moc = managedObjectContext {
+			var theFood = Food.foodFromInfo(moc, food: food)
+			theFood.servings = Int16(number)
+			save()
+		}
 	}
 	
 	func save() {

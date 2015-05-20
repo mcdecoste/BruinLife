@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import CloudKit
-import CoreData
 
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIPopoverPresentationControllerDelegate {
 	private var currIndex: Int = 0 {

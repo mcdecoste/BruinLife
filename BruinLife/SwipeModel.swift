@@ -93,6 +93,7 @@ internal enum MealPlanType: String {
 	}
 	
 	func swipesLeft(week: Int, day: Int, meal: MealType) -> Int {
+//		let checkDays = (day + 1) % weeklySwipes.count
 		let weekRemainder = weeklySwipes[day + 1]
 		let rolloverSwipes = hasRollover ? (10 - week) * weeklySwipes[0] : 0
 		return mealSwipeDict(weeklySwipes[day] - weeklySwipes[day + 1])[meal]! + weekRemainder + rolloverSwipes
@@ -122,7 +123,7 @@ class SwipeModel: NSObject {
 	private var currentDayOfWeek: Int {
 		// go from Sunday = 1, Saturday = 7 to Monday = 0, Sunday = 6
 		get {
-			return currCal.component(.CalendarUnitWeekday, fromDate: comparisonDate(5))
+			return currCal.component(.CalendarUnitWeekday, fromDate: comparisonDate(5)) % 7
 		}
 	}
 	
