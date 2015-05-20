@@ -144,8 +144,12 @@ class CloudManager: NSObject {
 		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
-			DiningDay.dataFromInfo(moc, record: record)
-			moc.save(nil)
+			if let recordData = record.objectForKey(CKDataField) as? NSData where checkDayDataForErrors(recordData) {
+				DiningDay.dataFromInfo(moc, record: record)
+				moc.save(nil)
+			} else {
+				println("STOPPED UNSAFE RECORD")
+			}
 		}
 	}
 	
@@ -161,10 +165,14 @@ class CloudManager: NSObject {
 			if let results = moc.executeFetchRequest(req, error: nil) as? [DiningDay] {
 				for day in results {
 					if let recData = record.objectForKey(CKDataField) as? NSData where day.data != recData {
-						println("actually updating \(record.recordID.recordName)")
-						NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":recData])
-						day.data = recData
-						madeChanges = true
+						if !checkDayDataForErrors(recData) {
+							println("UNSAFE DAY RECORD")
+						} else {
+							println("actually updating \(record.recordID.recordName)")
+							NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":recData])
+							day.data = recData
+							madeChanges = true
+						}
 					}
 				}
 			}
@@ -173,6 +181,18 @@ class CloudManager: NSObject {
 				save()
 			}
 		}
+	}
+	
+	/// Is this data safe?
+	private func checkDayDataForErrors(data: NSData) -> Bool {
+		if let dict = NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
+			var hasDate = dict["date"] as? String != nil
+			var hasMeals = dict["meals"] as? Dictionary<String, Dictionary<String, AnyObject>> != nil
+			var hasFoods = dict["foods"] as? Dictionary<String, Dictionary<String, AnyObject>> != nil
+			return hasDate && hasMeals && hasFoods
+		}
+		
+		return false
 	}
 	
 	private func updateQuick(record: CKRecord) {
@@ -196,7 +216,7 @@ class CloudManager: NSObject {
 			}
 		}
 		
-		return "".dataUsingEncoding(NSUTF8StringEncoding)!
+		return NSData()
 	}
 	
 	func save() {

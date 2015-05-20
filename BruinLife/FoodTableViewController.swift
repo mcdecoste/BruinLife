@@ -27,7 +27,7 @@ enum FoodControllerLoadState: Int {
 	}
 }
 
-class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate {
+class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIAlertViewDelegate {
 	let kRestCellID = "FoodCell", kRestCellHeight: CGFloat = 88
 	let kFoodDisplayID = "DisplayCell", kFoodDisplayHeight: CGFloat = 220
 	let EmptyCellID = "EmptyCell"
@@ -171,9 +171,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func setInformationIfNeeded() {
-		if !hasData {
-			if informationData.length != 0 { // ignore if empty
-				let infoExtra = DayBrief(dict: NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
+		if !hasData && informationData.length != 0 {
+			var jsonError: NSError?
+			if let dayDataDict = NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
+				let infoExtra = DayBrief(dict: dayDataDict)
 				
 				// purge out empty entries for quick things
 				for (meal, mealBrief) in infoExtra.meals {
@@ -189,6 +190,8 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				}
 				
 				information = infoExtra
+			} else {
+				println(jsonError)
 			}
 		}
 	}
@@ -204,7 +207,10 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		if informationData.length == 0 {
 			dispatch_async(dispatch_get_main_queue()) {
 				self.loadState = .Failed
-				//			self.tableView.reloadData()
+				
+				if let userInfo = error.userInfo, errDesc = userInfo[NSLocalizedDescriptionKey] as? String {
+					UIAlertView(title: "Error", message: errDesc, delegate: self, cancelButtonTitle: "Okay", otherButtonTitles: "Reload").show()
+				}
 				
 				if let refresher = self.refreshControl {
 					refresher.endRefreshing()
@@ -463,6 +469,15 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		if information.foods.indexForKey(foodBrief.recipe) != nil {
 			let food = information.foods[foodBrief.recipe]!.info
 			addFoodPopover(food)
+		}
+	}
+	
+	func alertView(alertView: UIAlertView, didDismissWithButtonIndex buttonIndex: Int) {
+		switch alertView.buttonTitleAtIndex(buttonIndex) {
+		case "Reload":
+			retryLoad()
+		default:
+			return
 		}
 	}
 }

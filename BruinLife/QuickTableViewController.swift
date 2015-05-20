@@ -64,31 +64,41 @@ class QuickTableViewController: FoodTableViewController {
 	
 	override func setInformationIfNeeded() {
 		if !hasData && informationData.length != 0 {
-			var quickBrief = DayBrief(dict: NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
-			
-			// grab the hours information from the dining side!
-			let dayData = CloudManager.sharedInstance.fetchDiningDay(NSDate())
-			if dayData.length > 0 {
-				// we have info to use
-				let dayBrief = DayBrief(dict: NSJSONSerialization.JSONObjectWithData(dayData, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
+			var quickError: NSError?
+			if let quickDict = NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
+				let quickBrief = DayBrief(dict: quickDict)
 				
-				for (meal, mealBrief) in dayBrief.meals {
-					for (hall, hallBrief) in mealBrief.halls {
-						if find(Halls.allQuickServices, hall) != nil {
-							var mealToUse = meal == .Brunch ? .Lunch : meal
-							
-							quickBrief.meals[mealToUse]?.halls[hall]?.openTime = hallBrief.openTime
-							quickBrief.meals[mealToUse]?.halls[hall]?.closeTime = hallBrief.closeTime
+				// grab the hours information from the dining side!
+				let dayData = CloudManager.sharedInstance.fetchDiningDay(NSDate())
+				if dayData.length > 0 {
+					// we have info to use
+					var dayError: NSError?
+					if let dayDict = NSJSONSerialization.JSONObjectWithData(dayData, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
+						let dayBrief = DayBrief(dict: dayDict)
+						
+						for (meal, mealBrief) in dayBrief.meals {
+							for (hall, hallBrief) in mealBrief.halls {
+								if find(Halls.allQuickServices, hall) != nil {
+									var mealToUse = meal == .Brunch ? .Lunch : meal
+									
+									quickBrief.meals[mealToUse]?.halls[hall]?.openTime = hallBrief.openTime
+									quickBrief.meals[mealToUse]?.halls[hall]?.closeTime = hallBrief.closeTime
+								}
+							}
 						}
+					} else {
+						println(dayError)
 					}
 				}
+				
+				if !isHall {
+					information.date = comparisonDate()
+				}
+				
+				information = quickBrief
+			} else {
+				println(quickError)
 			}
-			
-			if !isHall {
-				information.date = comparisonDate()
-			}
-			
-			information = quickBrief
 		}
 	}
 }

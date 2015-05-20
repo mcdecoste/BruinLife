@@ -65,8 +65,9 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	func loadMoreDays() {
 		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
 			if error != nil {
-				println(error)
-//				self.dormVCfromIndex(0).loadFailed(error)
+				if self.pageController.viewControllers.count > 0 {
+					self.dormVCfromIndex(0).loadFailed(error)
+				}
 			}
 		})
 	}
