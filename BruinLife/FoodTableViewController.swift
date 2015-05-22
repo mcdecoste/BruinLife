@@ -382,6 +382,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			tableView.scrollToRowAtIndexPath(pathToShow, atScrollPosition: .Top, animated: true)
 		}
 		
+		refreshParallax()
 		updateFoodDisplay()
 	}
 	
