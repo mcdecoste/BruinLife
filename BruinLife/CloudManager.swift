@@ -23,6 +23,9 @@ class CloudManager: NSObject {
 	private var container: CKContainer
 	private var publicDB: CKDatabase
 	
+	private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
+	private let quickKey: String = "quickDownloadDate"
+	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
 		if let moc = appDelegate.managedObjectContext { return moc }
@@ -35,7 +38,7 @@ class CloudManager: NSObject {
 		}
 	}
 	
-	var firstGap: Int {
+	private var firstGap: Int {
 		get {
 			var fetchRequest = NSFetchRequest(entityName: "DiningDay")
 			fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
@@ -63,41 +66,24 @@ class CloudManager: NSObject {
 				}
 			}
 			
-			return "".dataUsingEncoding(NSUTF8StringEncoding)!
+			return NSData()
 		}
 	}
 	
-	/// Can either grab the food or delete something
+	override init() {
+		container = CKContainer(identifier: "iCloud.BruinLife.MatthewDeCoste")
+		publicDB = container.publicCloudDatabase
+	}
+	
+	// MARK:- Favorites
+	
 	var favoritedFoods: Array<Array<Food>> {
 		get {
-			var fetchRequest = NSFetchRequest(entityName: "Food")
-			fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
-			
-			var favorites: Array<Array<Food>> = [[], []]
-			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [Food] {
-				for result in fetchResults {
-					favorites[result.notify ? 0	: 1].append(result)
-				}
+			var favNotif: Array<Array<Food>> = [[], []]
+			for result in favorites {
+				favNotif[result.notify ? 0 : 1].append(result)
 			}
-			return favorites
-		}
-	}
-	
-	var eatenFoods: Array<Food> {
-		get {
-			var fetchRequest = NSFetchRequest(entityName: "Food")
-			fetchRequest.predicate = NSPredicate(format: "servings > 0")
-			
-			var result: Array<Food> = []
-			
-			for food in managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? [] {
-				food.checkDate()
-				if food.servings > 0 {
-					result.append(food)
-				}
-			}
-			
-			return result
+			return favNotif
 		}
 	}
 	
@@ -106,6 +92,8 @@ class CloudManager: NSObject {
 		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		return managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? []
 	}
+	
+	// MARK:- Notifications
 	
 	// TODO: Remove all future notifications for this food
 	func removeFavorite(recipe: String) {
@@ -127,56 +115,74 @@ class CloudManager: NSObject {
 		save()
 	}
 	
-	func removeEaten(recipe: String) {
+	// MARK:- Servings
+	
+	var eatenFoods: Array<Food> {
+		get {
+			var fetchRequest = NSFetchRequest(entityName: "Food")
+			fetchRequest.predicate = NSPredicate(format: "servings > 0")
+			
+			var result: Array<Food> = []
+			
+			for food in managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? [] {
+				food.checkDate()
+				if food.servings > 0 {
+					result.append(food)
+				}
+			}
+			
+			return result
+		}
+	}
+	
+	func eatenFood(recipe: String) -> Food? {
 		var request = NSFetchRequest(entityName: "Food")
 		for result in managedObjectContext!.executeFetchRequest(request, error: nil) as? Array<Food> ?? [] {
 			if result.info.recipe == recipe {
-				result.servings = 0
+				return result
 			}
 		}
+		return nil
 		
-		save()
+		/*
+		var request = NSFetchRequest(entityName: "Food")
+		request.predicate = NSPredicate(block: { (food, _) -> Bool in
+			return (food as! Food).info.recipe == recipe
+		})
+		
+		return (managedObjectContext!.executeFetchRequest(request, error: nil) as? Array<Food>)?.first
+		*/
+	}
+	
+	func removeEaten(recipe: String) {
+		changeEaten(recipe, newCount: 0)
 	}
 	
 	func changeEaten(recipe: String, newCount count: Int) {
-		var fetchRequest = NSFetchRequest(entityName: "Food")
-		
-		for result in managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? [] {
-			if result.info.recipe == recipe {
-				result.servings = Int16(count)
-			}
+		if let eaten = eatenFood(recipe) {
+			eaten.servings = Int16(count)
+			save()
 		}
-		save()
 	}
 	
-	override init() {
-		container = CKContainer(identifier: "iCloud.BruinLife.MatthewDeCoste")
-		publicDB = container.publicCloudDatabase
-	}
+	// MARK:- Generic
 	
 	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
 		let gap = firstGap
-//		println("The gap is \(gap)")
 		
 		fetchUpdatedRecords(endDaysInAdvance: gap, completion: completion)
 		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
 	}
 	
+	// MARK:- CloudKit
+	
 	private func fetchUpdatedRecords(type: String = "DiningDay", endDaysInAdvance: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
 		if endDaysInAdvance == 0 {
 			return
 		}
-		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(endDaysInAdvance), comparisonDate()])
-		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
-		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
-			self.updateDiningDay(record)
-		}
-		operation.queryCompletionBlock = { (cursor: CKQueryCursor!, error: NSError!) -> Void in
-			if let err = error {
-//				completion(error: err)
-				// reconsider actually failing on a messed up update...
-			}
-		}
+		
+		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(endDaysInAdvance), comparisonDate()])))
+		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in self.updateDiningDay(record) }
 		
 		publicDB.addOperation(operation)
 	}
@@ -186,13 +192,8 @@ class CloudManager: NSObject {
 			return
 		}
 		
-		let startDate = comparisonDate(startDaysInAdvance)
-		let endDate = comparisonDate(min(maxInAdvance, max(startDaysInAdvance + 3, 6)))
-		let pred = NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [endDate, startDate])
-		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: pred))
-		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in
-			self.newDiningDay(record)
-		}
+		let operation = CKQueryOperation(query: CKQuery(recordType: HallRecordType, predicate: NSPredicate(format: "\(CKDateField) <= %@ AND \(CKDateField) >= %@", argumentArray: [comparisonDate(min(maxInAdvance, max(startDaysInAdvance + 3, 6))), comparisonDate(startDaysInAdvance)])))
+		operation.recordFetchedBlock = { (record: CKRecord!) -> Void in self.newDiningDay(record) }
 		operation.queryCompletionBlock = { (cursor: CKQueryCursor!, error: NSError!) -> Void in
 			if let err = error {
 				completion(error: err)
@@ -204,8 +205,6 @@ class CloudManager: NSObject {
 		publicDB.addOperation(operation)
 	}
 	
-	private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
-	private let quickKey: String = "quickDownloadDate"
 	private func updateDownloadDate(dateKey: String, modDate: NSDate) {
 		NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: dateKey)
 		

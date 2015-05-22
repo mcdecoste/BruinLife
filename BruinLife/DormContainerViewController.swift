@@ -64,7 +64,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
 			if error != nil {
 				if self.pageController.viewControllers.count > 0 {
-					self.dormVCfromIndex(0).loadFailed(error)
+					self.dormVCfromIndex(0)?.loadFailed(error)
 				}
 			}
 		})
@@ -104,9 +104,11 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		pageController.setViewControllers([vcForIndex(newIndex)], direction: direction, animated: true, completion: nil)
 	}
 	
-	func updateNavItem(vc: DormTableViewController) {
-		currIndex = daysInFuture(vc.information.date)
-		createDayDisplayIfNecessary(vc)
+	func updateNavItem(vc: DormTableViewController?) {
+		if let dormVC = vc {
+			currIndex = daysInFuture(dormVC.information.date)
+			createDayDisplayIfNecessary(dormVC)
+		}
 	}
 	
 	func createDayDisplayIfNecessary(vc: DormTableViewController) {
@@ -127,33 +129,41 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	// MARK: - UIPageViewControllerDataSource
 	func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
-		let index = daysInFuture(dormVCfromNavVC(viewController as! UINavigationController).information.date)
-		if index == 0 { return nil }
-		return vcForIndex(index - 1)
+		if let dormVC = dormVCfromNavVC(viewController as? UINavigationController) {
+			let index = daysInFuture(dormVC.information.date)
+			if index > 0 {
+				return vcForIndex(index - 1)
+			}
+		}
+		return nil
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
-		let index = daysInFuture(dormVCfromNavVC(viewController as! UINavigationController).information.date)
-		if index == 6 { return nil }
-		return vcForIndex(index + 1)
+		if let dormVC = dormVCfromNavVC(viewController as? UINavigationController) {
+			let index = daysInFuture(dormVC.information.date)
+			if index < 6 {
+				return vcForIndex(index + 1)
+			}
+		}
+		return nil
 	}
 	
-	func dormVCfromIndex(index: Int) -> DormTableViewController {
-		return dormVCfromNavVC(pageController.viewControllers[index] as! UINavigationController)
+	func dormVCfromIndex(index: Int) -> DormTableViewController? {
+		return dormVCfromNavVC(pageController.viewControllers[index] as? UINavigationController)
 	}
 	
-	func dormVCfromNavVC(navVC: UINavigationController) -> DormTableViewController {
-		return navVC.viewControllers[0] as! DormTableViewController
+	func dormVCfromNavVC(navVC: UINavigationController?) -> DormTableViewController? {
+		return navVC?.viewControllers.first as? DormTableViewController
 	}
 	
 	// MARK: UIPageViewControllerDelegate
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-		updateNavItem(completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers[0] as! UINavigationController))
+		updateNavItem(completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers.first as? UINavigationController))
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [AnyObject]) {
 		if pendingViewControllers.count != 0 {
-			updateNavItem(dormVCfromNavVC(pendingViewControllers[0] as! UINavigationController))
+			updateNavItem(dormVCfromNavVC(pendingViewControllers[0] as? UINavigationController))
 		}
 	}
 	

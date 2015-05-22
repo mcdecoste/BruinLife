@@ -35,7 +35,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	var displayIndexPath: NSIndexPath = NSIndexPath(forRow: 0, inSection: -1)
 	var displayCell: MenuTableViewCell?
-	var informationData: NSData = "".dataUsingEncoding(NSUTF8StringEncoding)! {
+	var informationData: NSData = NSData() {
 		didSet {
 			loadState = .Expanding // will reload tableview
 			setInformationIfNeeded()

@@ -116,6 +116,7 @@ class Food: NSManagedObject {
 		return newItem
 	}
 	
+	/// Invalidate servings count if the day has changed.
 	func checkDate() {
 		let compareDate = comparisonDate(date: NSDate())
 		
