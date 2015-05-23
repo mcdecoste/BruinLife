@@ -64,19 +64,14 @@ class QuickTableViewController: FoodTableViewController {
 	
 	override func setInformationIfNeeded() {
 		if !hasData && informationData.length != 0 {
-			var quickError: NSError?
 			if let quickDict = NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
 				let quickBrief = DayBrief(dict: quickDict)
 				
 				// grab the hours information from the dining side!
-				let dayData = CloudManager.sharedInstance.fetchDiningDay(NSDate())
-				if dayData.length > 0 {
+				if let dayData = CloudManager.sharedInstance.diningDay(NSDate())?.data where dayData.length > 0 {
 					// we have info to use
-					var dayError: NSError?
 					if let dayDict = NSJSONSerialization.JSONObjectWithData(dayData, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
-						let dayBrief = DayBrief(dict: dayDict)
-						
-						for (meal, mealBrief) in dayBrief.meals {
+						for (meal, mealBrief) in DayBrief(dict: dayDict).meals {
 							for (hall, hallBrief) in mealBrief.halls {
 								if find(Halls.allQuickServices, hall) != nil {
 									var mealToUse = meal == .Brunch ? .Lunch : meal
@@ -86,18 +81,14 @@ class QuickTableViewController: FoodTableViewController {
 								}
 							}
 						}
-					} else {
-						println(dayError)
 					}
 				}
 				
 				if !isHall {
-					information.date = comparisonDate()
+					quickBrief.date = comparisonDate()
 				}
 				
 				information = quickBrief
-			} else {
-				println(quickError)
 			}
 		}
 	}

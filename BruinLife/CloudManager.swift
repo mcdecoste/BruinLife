@@ -250,6 +250,17 @@ class CloudManager: NSObject {
 		}
 	}
 	
+	private func updateDiningDay(record: CKRecord) {
+		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
+		
+		if let moc = managedObjectContext, date = record.objectForKey(CKDateField) as? NSDate, data = record.objectForKey(CKDataField) as? NSData, day = diningDay(date) where day.data != data && validDayData(data) {
+			println("actually updating \(record.recordID.recordName)")
+			day.data = data
+			NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":data])
+			save()
+		}
+	}
+	
 	private func diningDayEntity(record: CKRecord) {
 		if let moc = managedObjectContext, date = record.objectForKey(CKDateField) as? NSDate, data = record.objectForKey("Data") as? NSData {
 			let compDate = comparisonDate(date: date)
@@ -270,20 +281,9 @@ class CloudManager: NSObject {
 		println("\(record.recordID.recordName) is not a valid dining day record")
 	}
 	
-	private func updateDiningDay(record: CKRecord) {
-		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
-		
-		if let moc = managedObjectContext, date = record.objectForKey(CKDateField) as? NSDate, data = record.objectForKey(CKDataField) as? NSData, day = diningDay(date) where day.data != data && validDayData(data) {
-			println("actually updating \(record.recordID.recordName)")
-			day.data = data
-			NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":data])
-			save()
-		}
-	}
-	
 	func diningDay(date: NSDate) -> DiningDay? {
 		var request = NSFetchRequest(entityName: HallEntityType)
-		request.predicate = NSPredicate(format: "\(CDDateField) == %@", date)
+		request.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date: date))
 		if let moc = managedObjectContext, days = moc.executeFetchRequest(request, error: nil) as? Array<DiningDay> {
 			return days.first
 		}
@@ -310,22 +310,6 @@ class CloudManager: NSObject {
 		if let moc = managedObjectContext {
 			QuickMenu.dataFromInfo(moc, record: record)
 		}
-	}
-	
-	/// Can either grab the food or delete something
-	func fetchDiningDay(date: NSDate) -> NSData {
-		var fetchRequest = NSFetchRequest(entityName: HallRecordType)
-		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date: date))
-		
-		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
-			for result in fetchResults {
-				if result.data.length > 0 {
-					return result.data
-				}
-			}
-		}
-		
-		return NSData()
 	}
 	
 	func save() {

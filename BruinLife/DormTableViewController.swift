@@ -39,22 +39,19 @@ class DormTableViewController: FoodTableViewController {
 	}
 	
 	override func handleDataChange(notification: NSNotification) {
+		let keyString: String
 		switch notification.name {
 		case "NewDayInfoAdded":
-			let dDay = notification.userInfo!["newItem"] as! DiningDay
-			if dDay.day == information.date {
-				informationData = dDay.data
-			}
-//			CloudManager.sharedInstance.save()
+			keyString = "newItem"
 		case "DayInfoUpdated":
-			let dDay = notification.userInfo!["updatedItem"] as! DiningDay
-			if dDay.day == information.date {
-				informationData = dDay.data
-			}
-//			CloudManager.sharedInstance.save()
+			keyString = "updatedItem"
 		default:
-			break
+			return
 		}
+		if let newDay = notification.userInfo![keyString] as? DiningDay where newDay.day == information.date {
+			informationData = newDay.data
+		}
+//		CloudManager.sharedInstance.save()
 	}
 	
 	override func scrollToMeal() {

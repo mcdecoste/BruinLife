@@ -31,17 +31,12 @@ class DayDisplay: UIButton {
 		}
 	}
 	
-	private func setupLabel() {
-		setTitle("Hello", forState: .Normal)
-		titleLabel!.font = .boldSystemFontOfSize(17)
-		setTitleColor(normalColor, forState: .Normal)
-		setTitleColor(highlightedColor, forState: .Highlighted)
-		setTitleColor(dimmedColor, forState: .Disabled)
-	}
-	
-	var date: NSDate = comparisonDate() {
+	// comparisonDate()
+	var date: NSDate = NSDate(timeIntervalSince1970: 0) {
 		didSet {
-			setupLabel()
+			if oldValue == NSDate(timeIntervalSince1970: 0) {
+				setupLabel()
+			}
 			setTitle(title, forState: .Normal)
 			frame.size = NSString(string: titleLabel!.text!).sizeWithAttributes([NSFontAttributeName:titleLabel!.font])
 		}
@@ -50,6 +45,14 @@ class DayDisplay: UIButton {
 		didSet {
 			date = comparisonDate(dayIndex)
 		}
+	}
+	
+	private func setupLabel() {
+		setTitle("Hello", forState: .Normal)
+		titleLabel!.font = .boldSystemFontOfSize(17)
+		setTitleColor(normalColor, forState: .Normal)
+		setTitleColor(highlightedColor, forState: .Highlighted)
+		setTitleColor(dimmedColor, forState: .Disabled)
 	}
 	
 	class func titleString(daysInAdvance: Int) -> String {

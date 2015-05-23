@@ -132,7 +132,7 @@ class FoodInfo: Serializable {
 	required init(dict: Dictionary<String, AnyObject>) {
 		name = dict["name"] as? String ?? "No Name"
 		recipe = dict["recipe"] as? String ?? "No Recipe"
-		type = FoodType(rawValue: dict["type"] as! String)!
+		type = FoodType(rawValue: dict["type"] as? String ?? "")!
 		for nutrient in Nutrient.allValues {
 			nutrition[nutrient] = NutritionListing(type: nutrient, measure: dict[nutrient.rawValue] as? String ?? "0")
 		}
