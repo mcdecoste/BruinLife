@@ -37,11 +37,11 @@ class QuickTableViewController: FoodTableViewController {
 		if currentData.length > 0 {
 			informationData = currentData
 			// check for updates anyways (we don't care if this fails)
-			CloudManager.sharedInstance.fetchQuickRecord({ (error) -> Void in return })
+			CloudManager.sharedInstance.downloadQuickRecord({ (error) -> Void in return })
 		} else {
 			// load for the first time
 			loadState = .Loading
-			CloudManager.sharedInstance.fetchQuickRecord({ (error) -> Void in
+			CloudManager.sharedInstance.downloadQuickRecord({ (error) -> Void in
 				println(error)
 				self.loadState = .Failed
 			})

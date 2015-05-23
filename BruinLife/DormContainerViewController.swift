@@ -11,7 +11,9 @@ import UIKit
 class DormContainerViewController: UIViewController, UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIPopoverPresentationControllerDelegate {
 	private var currIndex: Int = 0 {
 		didSet {
-			navigationItem.leftBarButtonItem?.enabled = currIndex != 0
+			if let todayButton = navigationItem.leftBarButtonItem {
+				todayButton.enabled = currIndex != 0
+			}
 			if let titleDisplay = navigationItem.titleView as? DayDisplay {
 				titleDisplay.dayIndex = currIndex
 			}
@@ -22,73 +24,56 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		// Do any additional setup after loading the view.
+		// page controller setup
 		pageController.dataSource = self
 		pageController.delegate = self
 		pageController.view.frame = view.bounds
-		
-		// true if we don't have today's data yet. False if we have data
-//		let todayData = CloudManager.sharedInstance.fetchDiningDay(NSDate())
-//		if todayData.length == 0 {
-//			loadMoreDays()
-//		}
-		
-		// TODO: create proper shell to show for before loading
-		pageController.setViewControllers([UINavigationController()], direction: .Forward, animated: false, completion: nil)
+		pageController.view.backgroundColor = tableBackgroundColor
 		addChildViewController(pageController)
 		view.addSubview(pageController.view)
 		
-		var leftBar = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
-		leftBar.enabled = false
-		navigationItem.leftBarButtonItem = leftBar
-		
-		pageController.view.backgroundColor = tableBackgroundColor
+		navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Today", style: .Plain, target: self, action: "jumpToFirst")
+		currIndex = 0
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		
 		loadMoreDays()
 	}
 	
 	override func viewDidAppear(animated: Bool) {
 		super.viewDidAppear(animated)
 		
-		if (pageController.viewControllers[0] as! UINavigationController).viewControllers.count == 0 {
-			pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: false, completion: nil)
+		// if (no displayed view controller) or (empty displayed controller), update
+		if let first = pageController.viewControllers.first as? UINavigationController where first.viewControllers.count != 0 {
+		} else {
+			pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: true, completion: nil)
 		}
 	}
 	
-	// MARK: - Helpers
-	func loadMoreDays() {
-		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
-			if error != nil {
-				if self.pageController.viewControllers.count > 0 {
-					self.dormVCfromIndex(0)?.loadFailed(error)
-				}
+	// MARK:- Navigation Item
+	
+	/// Show the popover for what day to pick
+	func showDays() {
+		if let popVC = storyboard?.instantiateViewControllerWithIdentifier("comingWeek") as? ComingWeekTableViewController {
+			popVC.modalPresentationStyle = UIModalPresentationStyle.Popover
+			popVC.preferredContentSize = popVC.preferredContentSize
+			
+			if let controller = popVC.popoverPresentationController {
+				controller.delegate = self
+				controller.sourceView = navigationItem.titleView as! DayDisplay
+				controller.sourceRect = (navigationItem.titleView as! DayDisplay).bounds
+				controller.permittedArrowDirections = .Up
 			}
-		})
+			
+			presentViewController(popVC, animated: true, completion: nil)
+		}
 	}
 	
 	func jumpToFirst() {
 		didPickDay(0)
 	}
 	
-	/// Show the popover for what day to pick
-	func showDays() {
-		let popVC = storyboard?.instantiateViewControllerWithIdentifier("comingWeek") as! ComingWeekTableViewController
-		popVC.modalPresentationStyle = UIModalPresentationStyle.Popover
-		popVC.preferredContentSize = popVC.preferredContentSize
-		
-		let controller = popVC.popoverPresentationController!
-		controller.delegate = self
-		controller.sourceView = navigationItem.titleView as! DayDisplay
-		controller.sourceRect = (navigationItem.titleView as! DayDisplay).bounds
-		controller.permittedArrowDirections = .Up
-		
-//		(navigationItem.titleView as! DayDisplay).enabled = false
-		presentViewController(popVC, animated: true, completion: nil)
-	}
 	
 	func didPickDay(newIndex: Int) {
 		let direction: UIPageViewControllerNavigationDirection
@@ -101,9 +86,10 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 			direction = .Forward
 		}
 		
-		pageController.setViewControllers([vcForIndex(newIndex)], direction: direction, animated: true, completion: nil)
+		pageController.setViewControllers([vcForIndex(newIndex)], direction: direction, animated: false, completion: nil)
 	}
 	
+	/// Update the navigation item based on the newly presented view controller
 	func updateNavItem(vc: DormTableViewController?) {
 		if let dormVC = vc {
 			currIndex = daysInFuture(dormVC.information.date)
@@ -118,13 +104,41 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		}
 	}
 	
-	// MARK: UIPopoverPresentationControllerDelegate
+	// MARK: - Helpers
+	func loadMoreDays() {
+		CloudManager.sharedInstance.downloadNewRecords(completion: { (error: NSError!) -> Void in
+			if let err = error where self.pageController.viewControllers.count > 0 {
+				self.dormVCfromIndex(0)?.loadFailed(err)
+			}
+		})
+	}
+	
+	func dormVCfromIndex(index: Int) -> DormTableViewController? {
+		return dormVCfromNavVC(pageController.viewControllers[index] as? UINavigationController)
+	}
+	
+	func dormVCfromNavVC(navVC: UINavigationController?) -> DormTableViewController? {
+		return navVC?.viewControllers.first as? DormTableViewController
+	}
+	
+	func vcForIndex(index: Int) -> UINavigationController {
+		if let vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as? DormTableViewController {
+			vc.information.date = comparisonDate(index)
+			vc.informationData = CloudManager.sharedInstance.fetchDiningDay(vc.information.date)
+			vc.dormCVC = self
+			
+			return UINavigationController(rootViewController: vc)
+		}
+		return UINavigationController()
+	}
+	
+	// MARK:- UIPopoverPresentationControllerDelegate
 	func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
 		return .None
 	}
 	
 	func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
-//		(navigationItem.titleView as! DayDisplay).enabled = true
+		
 	}
 	
 	// MARK: - UIPageViewControllerDataSource
@@ -148,34 +162,15 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		return nil
 	}
 	
-	func dormVCfromIndex(index: Int) -> DormTableViewController? {
-		return dormVCfromNavVC(pageController.viewControllers[index] as? UINavigationController)
-	}
-	
-	func dormVCfromNavVC(navVC: UINavigationController?) -> DormTableViewController? {
-		return navVC?.viewControllers.first as? DormTableViewController
-	}
-	
-	// MARK: UIPageViewControllerDelegate
+	// MARK:- UIPageViewControllerDelegate
 	func pageViewController(pageViewController: UIPageViewController, didFinishAnimating finished: Bool, previousViewControllers: [AnyObject], transitionCompleted completed: Bool) {
-		updateNavItem(completed ? dormVCfromIndex(0) : dormVCfromNavVC(previousViewControllers.first as? UINavigationController))
+		// only update if transition cancelled ("willTransition" handles otherwise)
+		if completed { updateNavItem(dormVCfromIndex(0)) }
 	}
 	
 	func pageViewController(pageViewController: UIPageViewController, willTransitionToViewControllers pendingViewControllers: [AnyObject]) {
-		if pendingViewControllers.count != 0 {
-			updateNavItem(dormVCfromNavVC(pendingViewControllers[0] as? UINavigationController))
+		if let first = pendingViewControllers.first as? UINavigationController {
+			updateNavItem(dormVCfromNavVC(first))
 		}
-	}
-	
-	func vcForIndex(index: Int) -> UINavigationController {
-		var vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as! DormTableViewController
-		
-		var value = CloudManager.sharedInstance.fetchDiningDay(comparisonDate(index))
-		vc.information.date = comparisonDate(index)
-		vc.informationData = value
-		vc.dormCVC = self
-		
-		var navVC = UINavigationController(rootViewController: vc)
-		return navVC
 	}
 }

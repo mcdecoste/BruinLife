@@ -468,7 +468,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		}
 		
 		// Model changes
-		CloudManager.sharedInstance.changeServingCount(food, number: numberOfServings)
+		CloudManager.sharedInstance.changeEaten(food, servings: numberOfServings)
 	}
 	
 	// MARK: - Action Sheets

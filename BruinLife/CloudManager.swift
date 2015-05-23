@@ -7,24 +7,23 @@
 //
 
 import UIKit
-import Foundation
 import CloudKit
-
 import CoreData
 
 private let _CloudManagerSharedInstance = CloudManager()
 private let maxInAdvance: Int = 7
 
+private let HallRecordType = "DiningDay", QuickRecordType = "QuickMenu"
+let HallEntityType = "DiningDay", QuickEntityType = "QuickMenu", FoodEntityType = "Food"
+private let CKDateField = "Day", CKDataField = "Data", CDDateField = "day"
+
+private let CKQuickRecordID = "quick"
+
+private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
+private let quickKey: String = "quickDownloadDate"
+
 class CloudManager: NSObject {
-	let HallRecordType = "DiningDay", QuickRecordType = "QuickMenu"
-	let CKDateField = "Day", CKDataField = "Data"
-	let CDDateField = "day"
-	
-	private var container: CKContainer
-	private var publicDB: CKDatabase
-	
-	private let mostRecentDownloadKey: String = "mostRecentDiningDownload"
-	private let quickKey: String = "quickDownloadDate"
+	private var container: CKContainer, publicDB: CKDatabase
 	
 	lazy var managedObjectContext : NSManagedObjectContext? = {
 		let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
@@ -32,20 +31,16 @@ class CloudManager: NSObject {
 		else { return nil }
 		}()
 	
-	class var sharedInstance: CloudManager {
-		get {
-			return _CloudManagerSharedInstance
-		}
-	}
+	class var sharedInstance: CloudManager { get { return _CloudManagerSharedInstance } }
 	
 	private var firstGap: Int {
 		get {
-			var fetchRequest = NSFetchRequest(entityName: "DiningDay")
-			fetchRequest.predicate = NSPredicate(format: "day >= %@", comparisonDate())
-			fetchRequest.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
+			var request = NSFetchRequest(entityName: HallEntityType)
+			request.predicate = NSPredicate(format: "day >= %@", comparisonDate())
+			request.sortDescriptors = [NSSortDescriptor(key: CDDateField, ascending: true)] // DateField
 			
-			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] where fetchResults.count != 0 {
-				return daysInFuture(fetchResults.last!.day) + 1
+			if let moc = managedObjectContext, days = moc.executeFetchRequest(request, error: nil) as? Array<DiningDay>, lastDay = days.last {
+				return daysInFuture(lastDay.day) + 1
 			}
 			return 0
 		}
@@ -53,13 +48,13 @@ class CloudManager: NSObject {
 	
 	private var quickDownloadDate: NSDate? {
 		get {
-			return downloadDate(quickKey)
+			return getDownloadDate(quickKey)
 		}
 	}
 	
 	var quickData: NSData {
 		get {
-			var fetchRequest = NSFetchRequest(entityName: "QuickMenu")
+			var fetchRequest = NSFetchRequest(entityName: QuickEntityType)
 			if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [QuickMenu] {
 				for result in fetchResults {
 					return result.data
@@ -88,9 +83,17 @@ class CloudManager: NSObject {
 	}
 	
 	private var favorites: Array<Food> {
-		var fetchRequest = NSFetchRequest(entityName: "Food")
+		var fetchRequest = NSFetchRequest(entityName: FoodEntityType)
 		fetchRequest.predicate = NSPredicate(format: "favorite == %@", NSNumber(bool: true))
 		return managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? Array<Food> ?? []
+	}
+	
+	func changeFavorite(food: FoodInfo, favorite: Bool) {
+		if let moc = managedObjectContext {
+			var theFood = Food.foodFromInfo(moc, food: food)
+			theFood.favorite = favorite
+			save()
+		}
 	}
 	
 	// MARK:- Notifications
@@ -119,7 +122,7 @@ class CloudManager: NSObject {
 	
 	var eatenFoods: Array<Food> {
 		get {
-			var fetchRequest = NSFetchRequest(entityName: "Food")
+			var fetchRequest = NSFetchRequest(entityName: FoodEntityType)
 			fetchRequest.predicate = NSPredicate(format: "servings > 0")
 			
 			var result: Array<Food> = []
@@ -136,47 +139,66 @@ class CloudManager: NSObject {
 	}
 	
 	func eatenFood(recipe: String) -> Food? {
-		var request = NSFetchRequest(entityName: "Food")
+		var request = NSFetchRequest(entityName: FoodEntityType)
 		for result in managedObjectContext!.executeFetchRequest(request, error: nil) as? Array<Food> ?? [] {
 			if result.info.recipe == recipe {
+				result.checkDate()
 				return result
 			}
 		}
 		return nil
-		
-		/*
-		var request = NSFetchRequest(entityName: "Food")
-		request.predicate = NSPredicate(block: { (food, _) -> Bool in
-			return (food as! Food).info.recipe == recipe
-		})
-		
-		return (managedObjectContext!.executeFetchRequest(request, error: nil) as? Array<Food>)?.first
-		*/
 	}
 	
-	func removeEaten(recipe: String) {
-		changeEaten(recipe, newCount: 0)
+	func removeEaten(info: FoodInfo) {
+		changeEaten(info, servings: 0)
 	}
 	
-	func changeEaten(recipe: String, newCount count: Int) {
-		if let eaten = eatenFood(recipe) {
-			eaten.servings = Int16(count)
-			save()
+	/// Either modifies or adds
+	func changeEaten(food: FoodInfo, servings: Int) {
+		if let eaten = eatenFood(food.recipe) {
+			eaten.servings = Int16(servings)
+			
+		} else {
+			var foodEntity = Food.foodFromInfo(managedObjectContext!, food: food)
+			foodEntity.servings = Int16(servings)
 		}
+		save()
 	}
 	
-	// MARK:- Generic
+	func foodDetails(recipe: String) -> (number: Int, favorite: Bool) {
+		if let food = eatenFood(recipe) {
+			return (number: Int(food.servings), favorite: food.favorite)
+		}
+		return (0, false)
+	}
 	
-	func fetchNewRecords(type: String = "DiningDay", completion: (error: NSError!) -> Void) {
-		let gap = firstGap
+	// MARK:- Update dates
+	
+	private func updateDownloadDate(dateKey: String, modDate: NSDate) {
+		NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: dateKey)
 		
-		fetchUpdatedRecords(endDaysInAdvance: gap, completion: completion)
-		fetchRecords(type, startDaysInAdvance: gap, completion: completion)
+		let mostRecent = getDownloadDate(mostRecentDownloadKey)
+		if modDate.timeIntervalSinceDate(mostRecent) > 0 {
+			NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: mostRecentDownloadKey)
+		}
+		
+		NSUserDefaults.standardUserDefaults().synchronize() // needed?
+	}
+	
+	private func getDownloadDate(dateKey: String) -> NSDate {
+		return NSUserDefaults.standardUserDefaults().objectForKey(dateKey) as? NSDate ?? NSDate(timeIntervalSince1970: 0)
 	}
 	
 	// MARK:- CloudKit
 	
-	private func fetchUpdatedRecords(type: String = "DiningDay", endDaysInAdvance: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
+	func downloadNewRecords(type: String = HallRecordType, completion: (error: NSError!) -> Void) {
+		let gap = firstGap
+		
+		downloadUpdatedRecords(endDaysInAdvance: gap, completion: completion)
+		downloadRecords(type, startDaysInAdvance: gap, completion: completion)
+	}
+	
+	private func downloadUpdatedRecords(type: String = HallRecordType, endDaysInAdvance: Int = maxInAdvance, completion: (error: NSError!) -> Void) {
 		if endDaysInAdvance == 0 {
 			return
 		}
@@ -187,7 +209,7 @@ class CloudManager: NSObject {
 		publicDB.addOperation(operation)
 	}
 	
-	private func fetchRecords(type: String, startDaysInAdvance: Int = 0, completion: (error: NSError!) -> Void) {
+	private func downloadRecords(type: String, startDaysInAdvance: Int = 0, completion: (error: NSError!) -> Void) {
 		if startDaysInAdvance >= maxInAdvance {
 			return
 		}
@@ -205,19 +227,14 @@ class CloudManager: NSObject {
 		publicDB.addOperation(operation)
 	}
 	
-	private func updateDownloadDate(dateKey: String, modDate: NSDate) {
-		NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: dateKey)
-		
-		let mostRecent = downloadDate(mostRecentDownloadKey)
-		if modDate.timeIntervalSinceDate(mostRecent) > 0 {
-			NSUserDefaults.standardUserDefaults().setObject(modDate, forKey: mostRecentDownloadKey)
-		}
-		
-		NSUserDefaults.standardUserDefaults().synchronize() // needed?
-	}
-	
-	private func downloadDate(dateKey: String) -> NSDate {
-		return NSUserDefaults.standardUserDefaults().objectForKey(dateKey) as? NSDate ?? NSDate(timeIntervalSince1970: 0)
+	func downloadQuickRecord(completion: (error: NSError!) -> Void) {
+		publicDB.fetchRecordWithID(CKRecordID(recordName: CKQuickRecordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
+			if error != nil {
+				completion(error: error)
+			} else {
+				self.updateQuick(record)
+			}
+		})
 	}
 	
 	// MARK: - Core Data
@@ -225,54 +242,65 @@ class CloudManager: NSObject {
 		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
 		
 		if let moc = managedObjectContext {
-			if let recordData = record.objectForKey(CKDataField) as? NSData where checkDayDataForErrors(recordData) {
-				DiningDay.dataFromInfo(moc, record: record)
-				moc.save(nil)
+			if let recordData = record.objectForKey(CKDataField) as? NSData where validDayData(recordData) {
+				diningDayEntity(record)
 			} else {
 				println("STOPPED UNSAFE RECORD")
 			}
 		}
 	}
 	
-	private func updateDiningDay(record: CKRecord) {
-//		println("checking update for \(record.recordID.recordName)")
-		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
-		
-		if let moc = managedObjectContext {
-			var req = NSFetchRequest(entityName: "DiningDay")
-			req.predicate = NSPredicate(format: "\(CDDateField) == %@", argumentArray: [record.objectForKey(CKDateField)!])
-			var madeChanges = false
-			
-			if let results = moc.executeFetchRequest(req, error: nil) as? [DiningDay] {
-				for day in results {
-					if let recData = record.objectForKey(CKDataField) as? NSData where day.data != recData {
-						if !checkDayDataForErrors(recData) {
-							println("UNSAFE DAY RECORD")
-						} else {
-							println("actually updating \(record.recordID.recordName)")
-							NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":recData])
-							day.data = recData
-							madeChanges = true
-						}
-					}
+	private func diningDayEntity(record: CKRecord) {
+		if let moc = managedObjectContext, date = record.objectForKey(CKDateField) as? NSDate, data = record.objectForKey("Data") as? NSData {
+			let compDate = comparisonDate(date: date)
+			if let day = CloudManager.sharedInstance.diningDay(compDate) {
+				if day.data != data {
+					day.data = data
+					NSNotificationCenter.defaultCenter().postNotificationName("DayInfoUpdated", object: nil, userInfo:["updatedItem":day])
 				}
 			}
 			
-			if madeChanges {
-				save()
-			}
+			var newEntity = NSEntityDescription.insertNewObjectForEntityForName(HallEntityType, inManagedObjectContext: moc) as! DiningDay
+			newEntity.data = data
+			newEntity.day = compDate
+			NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newEntity])
+			
+			save()
+		}
+		println("\(record.recordID.recordName) is not a valid dining day record")
+	}
+	
+	private func updateDiningDay(record: CKRecord) {
+		updateDownloadDate(record.recordID.recordName, modDate: record.modificationDate)
+		
+		if let moc = managedObjectContext, date = record.objectForKey(CKDateField) as? NSDate, data = record.objectForKey(CKDataField) as? NSData, day = diningDay(date) where day.data != data && validDayData(data) {
+			println("actually updating \(record.recordID.recordName)")
+			day.data = data
+			NSNotificationCenter.defaultCenter().postNotificationName("DiningDayUpdated", object: nil, userInfo:["updatedData":data])
+			save()
 		}
 	}
 	
-	/// Is this data safe?
-	private func checkDayDataForErrors(data: NSData) -> Bool {
-		if let dict = NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
-			var hasDate = dict["date"] as? String != nil
-			var hasMeals = dict["meals"] as? Dictionary<String, Dictionary<String, AnyObject>> != nil
-			var hasFoods = dict["foods"] as? Dictionary<String, Dictionary<String, AnyObject>> != nil
-			return hasDate && hasMeals && hasFoods
+	func diningDay(date: NSDate) -> DiningDay? {
+		var request = NSFetchRequest(entityName: HallEntityType)
+		request.predicate = NSPredicate(format: "\(CDDateField) == %@", date)
+		if let moc = managedObjectContext, days = moc.executeFetchRequest(request, error: nil) as? Array<DiningDay> {
+			return days.first
 		}
-		
+		return nil
+	}
+	
+	var quickMenu: QuickMenu? {
+		get {
+			return (managedObjectContext?.executeFetchRequest(NSFetchRequest(entityName: QuickEntityType), error: nil) as? Array<QuickMenu>)?.first
+		}
+	}
+	
+	/// Returns whether day data is safe
+	private func validDayData(data: NSData) -> Bool {
+		if let dict = NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as? Dictionary<String, AnyObject>, _ = dict["date"] as? String, _ = dict["meals"] as? Dictionary<String, Dictionary<String, AnyObject>>, _ = dict["foods"] as? Dictionary<String, Dictionary<String, AnyObject>> {
+			return true
+		}
 		return false
 	}
 	
@@ -286,7 +314,7 @@ class CloudManager: NSObject {
 	
 	/// Can either grab the food or delete something
 	func fetchDiningDay(date: NSDate) -> NSData {
-		var fetchRequest = NSFetchRequest(entityName: "DiningDay")
+		var fetchRequest = NSFetchRequest(entityName: HallRecordType)
 		fetchRequest.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date: date))
 		
 		if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequest, error: nil) as? [DiningDay] {
@@ -300,39 +328,9 @@ class CloudManager: NSObject {
 		return NSData()
 	}
 	
-	// helpers for FoodViewController
-	
-	func foodDetails(recipe: String) -> (number: Int, favorite: Bool) {
-		if let fetchResults = managedObjectContext!.executeFetchRequest(NSFetchRequest(entityName: "Food"), error: nil) as? [Food] {
-			for result in fetchResults {
-				if result.info.recipe == recipe {
-					return (number: Int(result.servings), favorite: result.favorite)
-				}
-			}
-		}
-		return (0, false)
-	}
-	
-	func changeFavorite(food: FoodInfo, favorite: Bool) {
-		if let moc = managedObjectContext {
-			var theFood = Food.foodFromInfo(moc, food: food)
-			theFood.favorite = favorite
-			save()
-		}
-	}
-	
-	func changeServingCount(food: FoodInfo, number: Int) {
-		if let moc = managedObjectContext {
-			var theFood = Food.foodFromInfo(moc, food: food)
-			theFood.servings = Int16(number)
-			save()
-		}
-	}
-	
 	func save() {
-		var error: NSError?
-		if managedObjectContext!.save(&error) {
-			if error != nil { println(error?.localizedDescription) }
+		if let moc = managedObjectContext {
+			moc.save(nil)
 		}
 	}
 	
@@ -341,138 +339,4 @@ class CloudManager: NSObject {
 		form.dateStyle = .ShortStyle
 		return CKRecordID(recordName: form.stringFromDate(date))
 	}
-	
-	func fetchRecord(recordID: String, completion: (record: CKRecord!, error: NSError!) -> Void) {
-		println(recordID)
-		publicDB.fetchRecordWithID(CKRecordID(recordName: recordID), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-			if error != nil {
-				println("Error in fetching \(recordID)")
-			} else {
-				dispatch_async(dispatch_get_main_queue(), { () -> Void in
-					completion(record: record, error: error)
-				})
-			}
-		})
-	}
-	
-	func fetchQuickRecord(completion: (error: NSError!) -> Void) {
-		publicDB.fetchRecordWithID(CKRecordID(recordName: "quick"), completionHandler: { (record: CKRecord!, error: NSError!) -> Void in
-			if error != nil {
-				completion(error: error)
-			} else {
-				self.updateQuick(record)
-			}
-		})
-	}
 }
-
-/*
-- (void)fetchRecordWithID:(NSString *)recordID completionHandler:(void (^)(CKRecord *record))completionHandler;
-- (void)queryForRecordsNearLocation:(CLLocation *)location completionHandler:(void (^)(NSArray *records))completionHandler;
-
-- (void)saveRecord:(CKRecord *)record;
-- (void)deleteRecord:(CKRecord *)record;
-- (void)fetchRecordsWithType:(NSString *)recordType completionHandler:(void (^)(NSArray *records))completionHandler;
-- (void)queryForRecordsWithReferenceNamed:(NSString *)referenceRecordName completionHandler:(void (^)(NSArray *records))completionHandler;
-
-@property (nonatomic, readonly, getter=isSubscribed) BOOL subscribed;
-- (void)subscribe;
-- (void)unsubscribe;
-
-NSString * const ItemRecordType = @"Items";
-NSString * const NameField = @"name";
-NSString * const LocationField = @"location";
-
-NSString * const ReferenceSubItemsRecordType = @"ReferenceSubitems";
-
-- (void)queryForRecordsWithReferenceNamed:(NSString *)referenceRecordName completionHandler:(void (^)(NSArray *records))completionHandler {
-    
-    CKRecordID *recordID = [[CKRecordID alloc] initWithRecordName:referenceRecordName];
-    CKReference *parent = [[CKReference alloc] initWithRecordID:recordID action:CKReferenceActionNone];
-    
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"parent == %@", parent];
-    CKQuery *query = [[CKQuery alloc] initWithRecordType:ReferenceSubItemsRecordType predicate:predicate];
-    query.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
-    
-    CKQueryOperation *queryOperation = [[CKQueryOperation alloc] initWithQuery:query];
-    // Just request the name field for all records
-    queryOperation.desiredKeys = @[NameField];
-    
-    NSMutableArray *results = [[NSMutableArray alloc] init];
-    
-    queryOperation.recordFetchedBlock = ^(CKRecord *record) {
-        [results addObject:record];
-    };
-    
-    queryOperation.queryCompletionBlock = ^(CKQueryCursor *cursor, NSError *error) {
-        if (error) {
-            // In your app, you should do the Right Thing
-            NSLog(@"An error occured in %@: %@", NSStringFromSelector(_cmd), error);
-            abort();
-        } else {
-            dispatch_async(dispatch_get_main_queue(), ^(void){
-                completionHandler(results);
-            });
-        }
-    };
-    
-    [self.publicDatabase addOperation:queryOperation];
-}
-
-- (void)subscribe {
-    
-    if (self.subscribed == NO) {
-        
-        NSPredicate *truePredicate = [NSPredicate predicateWithValue:YES];
-        CKSubscription *itemSubscription = [[CKSubscription alloc] initWithRecordType:ItemRecordType
-                                                                            predicate:truePredicate
-                                                                              options:CKSubscriptionOptionsFiresOnRecordCreation];
-        
-        
-        CKNotificationInfo *notification = [[CKNotificationInfo alloc] init];
-        notification.alertBody = @"New Item Added!";
-        itemSubscription.notificationInfo = notification;
-        
-        [self.publicDatabase saveSubscription:itemSubscription completionHandler:^(CKSubscription *subscription, NSError *error) {
-            if (error) {
-                // In your app, handle this error appropriately.
-                NSLog(@"An error occured in %@: %@", NSStringFromSelector(_cmd), error);
-                abort();
-            } else {
-                NSLog(@"Subscribed to Item");
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                [defaults setBool:YES forKey:@"subscribed"];
-                [defaults setObject:subscription.subscriptionID forKey:@"subscriptionID"];
-            }
-        }];
-    }
-}
-
-- (void)unsubscribe {
-    if (self.subscribed == YES) {
-        
-        NSString *subscriptionID = [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptionID"];
-        
-        CKModifySubscriptionsOperation *modifyOperation = [[CKModifySubscriptionsOperation alloc] init];
-        modifyOperation.subscriptionIDsToDelete = @[subscriptionID];
-        
-        modifyOperation.modifySubscriptionsCompletionBlock = ^(NSArray *savedSubscriptions, NSArray *deletedSubscriptionIDs, NSError *error) {
-            if (error) {
-                // In your app, handle this error beautifully.
-                NSLog(@"An error occured in %@: %@", NSStringFromSelector(_cmd), error);
-                abort();
-            } else {
-                NSLog(@"Unsubscribed to Item");
-                [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"subscriptionID"];
-            }
-        };
-        
-        [self.publicDatabase addOperation:modifyOperation];
-    }
-}
-
-- (BOOL)isSubscribed {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:@"subscriptionID"] != nil;
-}
-
-*/

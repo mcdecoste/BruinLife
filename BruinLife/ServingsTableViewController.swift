@@ -75,7 +75,7 @@ class ServingsTableViewController: UITableViewController {
 	}
 	
 	func removeServing(path: NSIndexPath) {
-		CloudManager.sharedInstance.removeEaten(foodItems[path.row].info.recipe)
+		CloudManager.sharedInstance.removeEaten(foodItems[path.row].info)
 		
 		tableView.beginUpdates()
 		tableView.deleteRowsAtIndexPaths([path], withRowAnimation: .Left)
@@ -88,9 +88,10 @@ class ServingsTableViewController: UITableViewController {
 	}
 	
 	func changeServing(row: ServingsDisplayTableViewCell, count: Int) {
-		let recipe = foodItems[tableView.indexPathForCell(row)!.row].info.recipe
+		let info = foodItems[tableView.indexPathForCell(row)!.row].info
 		
-		CloudManager.sharedInstance.changeEaten(recipe, newCount: count)
+		// we know it exists
+		CloudManager.sharedInstance.changeEaten(info, servings: count)
 		
 		// update the nutrition side
 		nutritionValues = nutritionData

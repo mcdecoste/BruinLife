@@ -212,7 +212,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func retryLoad() {
 		loadState = .Loading
 		tableView.reloadData()
-		CloudManager.sharedInstance.fetchNewRecords(completion: { (error: NSError!) -> Void in
+		CloudManager.sharedInstance.downloadNewRecords(completion: { (error: NSError!) -> Void in
 			if error != nil { // handle error case
 				self.loadFailed(error)
 			}
