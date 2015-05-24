@@ -17,23 +17,6 @@ class DiningDay: NSManagedObject {
 
 class QuickMenu: NSManagedObject {
 	@NSManaged var data: NSData
-	
-	class func dataFromInfo(moc: NSManagedObjectContext, record: CKRecord) -> QuickMenu {
-		let newData = record.objectForKey("Data") as! NSData
-		if let quick = CloudManager.sharedInstance.quickMenu {
-			if quick.data != newData {
-				quick.data = newData
-				NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo:["quickInfo":quick])
-			}
-			return quick
-		}
-		
-		var newQuick = NSEntityDescription.insertNewObjectForEntityForName("QuickMenu", inManagedObjectContext: moc) as! QuickMenu
-		newQuick.data = newData
-		
-		NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo:["quickInfo":newQuick])
-		return newQuick
-	}
 }
 
 class Food: NSManagedObject {
@@ -52,21 +35,6 @@ class Food: NSManagedObject {
 		get {
 			return FoodInfo(dict: NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
 		}
-	}
-	
-	class func foodFromInfo(moc: NSManagedObjectContext, food: FoodInfo) -> Food {
-		// if it exists, return it straight away. Otherwise make it
-		if let food = CloudManager.sharedInstance.eatenFood(food.recipe) {
-			return food
-		}
-		
-		var newItem = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: moc) as! Food
-		newItem.data = NSJSONSerialization.dataWithJSONObject(food.dictFromObject(), options: .allZeros, error: nil)!
-		newItem.favorite = false
-		newItem.notify = false
-		newItem.date = comparisonDate()
-		newItem.servings = 0
-		return newItem
 	}
 	
 	/// Invalidate servings count if the day has changed.

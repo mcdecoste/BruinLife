@@ -9,11 +9,10 @@
 import UIKit
 
 class ServingsTableViewController: UITableViewController {
-	let nutritionID = "nutrition", foodID = "serving"
-	let nutritionSection = 0, foodSection = 1
+	private let nutritionID = "nutrition", foodID = "serving"
+	private let nutritionSection = 0, foodSection = 1
 	
 	var foodItems: Array<Food> = []
-	var nutritionValues: Dictionary<Nutrient, NutritionListing> = [:]
 	var hasFood: Bool {
 		get {
 			return foodItems.count != 0
@@ -23,7 +22,7 @@ class ServingsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 		
-		self.navigationItem.title = "Nutrition"
+		navigationItem.title = "Nutrition"
 		
 		tableView.registerClass(NutritionTableViewCell.self, forCellReuseIdentifier: nutritionID)
 		tableView.registerClass(ServingsDisplayTableViewCell.self, forCellReuseIdentifier: foodID)
@@ -36,7 +35,6 @@ class ServingsTableViewController: UITableViewController {
 		super.viewWillAppear(animated)
 		
 		fetchFoods()
-		nutritionValues = nutritionData
 		tableView.reloadData()
 		tableView.separatorStyle = .None // TODO: set this in storyboard
 	}
@@ -49,17 +47,18 @@ class ServingsTableViewController: UITableViewController {
 	// TODO: something's gone wrong here
 	private var nutritionData: Dictionary<Nutrient, NutritionListing> {
 		get {
-			var data = [Nutrient:NutritionListing]()
-			for nutr in Nutrient.allValues {
-				data[nutr] = NutritionListing(type: nutr, measure: "0")
+			var data: Dictionary<Nutrient, NutritionListing> = [:]
+			for nutrient in Nutrient.allValues {
+				data[nutrient] = NutritionListing(type: nutrient, measure: "0")
 			}
 			
 			// add in the various foods
 			for food in foodItems {
 				for (nutr, list) in food.info.nutrition {
-					if let measure = list.measure.toInt() {
-						data[nutr] = NutritionListing(type: nutr, measure: "\(data[nutr]!.measure.toInt()! + measure * Int(food.servings))")
-					}
+					var prevVal = NSString(string: data[nutr]!.measure).floatValue
+					var measure = NSString(string:list.measure).floatValue
+					var newVal = prevVal + (measure * Float(food.servings))
+					data[nutr] = NutritionListing(type: nutr, measure: "\(newVal)")
 				}
 			}
 			
@@ -94,7 +93,7 @@ class ServingsTableViewController: UITableViewController {
 		CloudManager.sharedInstance.changeEaten(info, servings: count)
 		
 		// update the nutrition side
-		nutritionValues = nutritionData
+//		nutritionValues = nutritionData
 		for cellPath in tableView.indexPathsForVisibleRows() as! Array<NSIndexPath> {
 			// update nutritional cells
 			if cellPath.section == nutritionSection {
@@ -146,9 +145,10 @@ class ServingsTableViewController: UITableViewController {
 	
 	func updateNutritionCell(cell: NutritionTableViewCell, path: NSIndexPath) {
 		let cellInfo = Nutrient.rowPairs[path.row]
+		let currData: Dictionary<Nutrient, NutritionListing> = nutritionData
 		
-		let leftValues = (type: cellInfo.left.rawValue, information: nutritionValues[cellInfo.left]!)
-		var rightValues = (type: cellInfo.right.rawValue, information: nutritionValues[cellInfo.right]!)
+		let leftValues = (type: cellInfo.left.rawValue, information: currData[cellInfo.left]!)
+		var rightValues = (type: cellInfo.right.rawValue, information: currData[cellInfo.right]!)
 		
 		cell.setInformation(cellInfo.type, left: leftValues, right: rightValues)
 		cell.setServingCount(0)

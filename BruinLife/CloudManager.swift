@@ -89,11 +89,8 @@ class CloudManager: NSObject {
 	}
 	
 	func changeFavorite(food: FoodInfo, favorite: Bool) {
-		if let moc = managedObjectContext {
-			var theFood = Food.foodFromInfo(moc, food: food)
-			theFood.favorite = favorite
-			save()
-		}
+		defaultFoodEntity(food).favorite = favorite
+		save()
 	}
 	
 	// MARK:- Notifications
@@ -155,13 +152,7 @@ class CloudManager: NSObject {
 	
 	/// Either modifies or adds
 	func changeEaten(food: FoodInfo, servings: Int) {
-		if let eaten = eatenFood(food.recipe) {
-			eaten.servings = Int16(servings)
-			
-		} else {
-			var foodEntity = Food.foodFromInfo(managedObjectContext!, food: food)
-			foodEntity.servings = Int16(servings)
-		}
+		defaultFoodEntity(food).servings = Int16(servings)
 		save()
 	}
 	
@@ -281,6 +272,39 @@ class CloudManager: NSObject {
 		println("\(record.recordID.recordName) is not a valid dining day record")
 	}
 	
+	private func defaultFoodEntity(food: FoodInfo) -> Food {
+		if let eaten = eatenFood(food.recipe) {
+			return eaten
+		} else {
+			var newFood = NSEntityDescription.insertNewObjectForEntityForName("Food", inManagedObjectContext: managedObjectContext!) as! Food
+			newFood.data = NSJSONSerialization.dataWithJSONObject(food.dictFromObject(), options: .allZeros, error: nil)!
+			newFood.favorite = false
+			newFood.notify = false
+			newFood.date = comparisonDate()
+			newFood.servings = 0
+			return newFood
+		}
+	}
+	
+	private func quickEntity(record: CKRecord) {
+		if let data = record.objectForKey(CKDataField) as? NSData {
+			if let quick = quickMenu {
+				if quick.data != data {
+					quick.data = data
+					NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo: ["quickInfo":quick])
+				}
+				return
+			}
+			
+			if let moc = managedObjectContext {
+				var quick = NSEntityDescription.insertNewObjectForEntityForName("QuickMenu", inManagedObjectContext: moc) as! QuickMenu
+				quick.data = data
+				
+				NSNotificationCenter.defaultCenter().postNotificationName("QuickInfoUpdated", object: nil, userInfo:["quickInfo":quick])
+			}
+		}
+	}
+	
 	func diningDay(date: NSDate) -> DiningDay? {
 		var request = NSFetchRequest(entityName: HallEntityType)
 		request.predicate = NSPredicate(format: "\(CDDateField) == %@", comparisonDate(date: date))
@@ -306,10 +330,7 @@ class CloudManager: NSObject {
 	
 	private func updateQuick(record: CKRecord) {
 		updateDownloadDate(quickKey, modDate: record.modificationDate)
-		
-		if let moc = managedObjectContext {
-			QuickMenu.dataFromInfo(moc, record: record)
-		}
+		quickEntity(record)
 	}
 	
 	func save() {
