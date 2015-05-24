@@ -12,19 +12,26 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	var expanded: Bool = false
 	var controller: ServingsTableViewController?
 	
-	var nameLabel = UILabel(), stepper = UIStepper(), servingLabel = UILabel()
+	var servingText: String {
+		get {
+			var servings = Int(food?.servings ?? 0)
+			var addendum = servings == 1 ? "" : "s"
+			return "\(servings) Serving\(addendum)"
+		}
+	}
+	
 	var food: Food? {
 		didSet {
-			nameLabel.text = food!.info.name
-			stepper.value = Double(food!.servings)
-			servingLabel.text = servingText(Int(food!.servings))
-			
-			resetConstraints()
+			textLabel?.text = food!.info.name
+			detailTextLabel?.text = servingText
+			if let stepper = accessoryView as? UIStepper {
+				stepper.value = Double(food?.servings ?? 0)
+			}
 		}
 	}
 	
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
-		super.init(style: .Value1, reuseIdentifier: reuseIdentifier)
+		super.init(style: .Subtitle, reuseIdentifier: reuseIdentifier)
 		layout()
 	}
 	
@@ -34,51 +41,19 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	}
 	
 	func layout() {
-		nameLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-		nameLabel.font = .systemFontOfSize(17)
-		nameLabel.numberOfLines = 0
-		nameLabel.lineBreakMode = .ByWordWrapping
-		contentView.addSubview(nameLabel)
+		textLabel?.numberOfLines = 0
+		textLabel?.lineBreakMode = .ByWordWrapping
 		
-		stepper.setTranslatesAutoresizingMaskIntoConstraints(false)
+		var stepper = UIStepper()
 		stepper.addTarget(self, action: "stepperChanged:", forControlEvents: .ValueChanged)
 		stepper.maximumValue = 16
-		contentView.addSubview(stepper)
-		
-		servingLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
-		servingLabel.font = .systemFontOfSize(15)
-		servingLabel.textColor = UIColor(white: 0.3, alpha: 1)
-		servingLabel.textAlignment = .Center
-		contentView.addSubview(servingLabel)
-		
-		// Auto Layout
-		resetConstraints()
-	}
-	
-	func resetConstraints() {
-		contentView.removeConstraints(contentView.constraints())
-		
-		contentView.addConstraint(NSLayoutConstraint(item: nameLabel, attribute: .CenterY, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: 0))
-		contentView.addConstraint(NSLayoutConstraint(item: stepper, attribute: .Top, relatedBy: .Equal, toItem: contentView, attribute: .CenterY, multiplier: 1, constant: -5))
-		contentView.addConstraint(NSLayoutConstraint(item: servingLabel, attribute: .CenterX, relatedBy: .Equal, toItem: stepper, attribute: .CenterX, multiplier: 1, constant: 0))
-		
-		addConstraint("H:|-[name]-(>=8)-[stepper]-|")
-		addConstraint("V:|-(>=6)-[serving]-4-[stepper]-(>=6)-|")
-		addConstraint("V:|-(>=12)-[name]-(>=12)-|")
-	}
-	
-	func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {
-		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: ["name" : nameLabel, "stepper" : stepper, "serving" : servingLabel]))
-	}
-	
-	func servingText(count: Int) -> String {
-		var addendum = count == 1 ? "" : "s"
-		return "\(count) Serving\(addendum)"
+		accessoryView = stepper
 	}
 	
 	func stepperChanged(sender: UIStepper) {
 		let count = Int(sender.value)
-		servingLabel.text = servingText(count)
+		food?.servings = Int16(count)
+		detailTextLabel?.text = servingText
 		
 		controller?.changeServing(self, count: count)
 	}

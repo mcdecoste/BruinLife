@@ -12,12 +12,8 @@ class ServingsTableViewController: UITableViewController {
 	private let nutritionID = "nutrition", foodID = "serving"
 	private let nutritionSection = 0, foodSection = 1
 	
-	var foodItems: Array<Food> = []
-	var hasFood: Bool {
-		get {
-			return foodItems.count != 0
-		}
-	}
+	private var foodItems: Array<Food> = []
+	private var hasFood: Bool { get { return foodItems.count != 0 } }
 	
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +40,6 @@ class ServingsTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
 	
-	// TODO: something's gone wrong here
 	private var nutritionData: Dictionary<Nutrient, NutritionListing> {
 		get {
 			var data: Dictionary<Nutrient, NutritionListing> = [:]
@@ -93,7 +88,6 @@ class ServingsTableViewController: UITableViewController {
 		CloudManager.sharedInstance.changeEaten(info, servings: count)
 		
 		// update the nutrition side
-//		nutritionValues = nutritionData
 		for cellPath in tableView.indexPathsForVisibleRows() as! Array<NSIndexPath> {
 			// update nutritional cells
 			if cellPath.section == nutritionSection {
