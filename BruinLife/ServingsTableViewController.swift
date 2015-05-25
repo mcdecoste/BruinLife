@@ -30,9 +30,15 @@ class ServingsTableViewController: UITableViewController {
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		fetchFoods()
+		foodItems = CloudManager.sharedInstance.eatenFoods
 		tableView.reloadData()
 		tableView.separatorStyle = .None // TODO: set this in storyboard
+		NSNotificationCenter.defaultCenter().addObserver(self, selector: "servingChange:", name: "ServingChange", object: nil)
+	}
+	
+	override func viewWillDisappear(animated: Bool) {
+		super.viewWillDisappear(animated)
+		NSNotificationCenter.defaultCenter().removeObserver(self)
 	}
 	
     override func didReceiveMemoryWarning() {
@@ -63,11 +69,6 @@ class ServingsTableViewController: UITableViewController {
 	
 	// MARK: - Core Data
 	
-	/// Can either grab the food or delete something
-	func fetchFoods() {
-		foodItems = CloudManager.sharedInstance.eatenFoods
-	}
-	
 	func removeServing(path: NSIndexPath) {
 		CloudManager.sharedInstance.removeEaten(foodItems[path.row].info)
 		
@@ -77,22 +78,24 @@ class ServingsTableViewController: UITableViewController {
 		tableView.endUpdates()
 		
 		if !hasFood {
-			tableView.reloadSections(NSIndexSet(index: foodSection), withRowAnimation: .Automatic)
+			tableView.reloadData()
 		}
 	}
 	
-	func changeServing(row: ServingsDisplayTableViewCell, count: Int) {
-		let info = foodItems[tableView.indexPathForCell(row)!.row].info
-		
-		// we know it exists
-		CloudManager.sharedInstance.changeEaten(info, servings: count)
-		
-		// update the nutrition side
-		for cellPath in tableView.indexPathsForVisibleRows() as! Array<NSIndexPath> {
-			// update nutritional cells
-			if cellPath.section == nutritionSection {
-				updateNutritionCell(tableView.cellForRowAtIndexPath(cellPath) as! NutritionTableViewCell, path: cellPath)
+	func servingChange(notification: NSNotification) {
+		switch notification.name {
+		case "ServingChange":
+			// the number was already changed by the cell. Just save the changes
+			CloudManager.sharedInstance.save()
+			
+			// update nutritional section
+			for cellPath in tableView.indexPathsForVisibleRows() as! Array<NSIndexPath> {
+				if cellPath.section == nutritionSection {
+					updateNutritionCell(tableView.cellForRowAtIndexPath(cellPath) as! NutritionTableViewCell, path: cellPath)
+				}
 			}
+		default:
+			return
 		}
 	}
 	

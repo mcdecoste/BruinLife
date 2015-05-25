@@ -9,14 +9,13 @@
 import UIKit
 
 class ServingsDisplayTableViewCell: UITableViewCell {
-	var expanded: Bool = false
 	var controller: ServingsTableViewController?
 	
 	var servingText: String {
 		get {
 			var servings = Int(food?.servings ?? 0)
-			var addendum = servings == 1 ? "" : "s"
-			return "\(servings) Serving\(addendum)"
+			var addendum = servings == 1 ? "Serving" : "Servings"
+			return "\(servings) \(addendum)"
 		}
 	}
 	
@@ -27,6 +26,16 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 			if let stepper = accessoryView as? UIStepper {
 				stepper.value = Double(food?.servings ?? 0)
 			}
+		}
+	}
+	
+	var numServings: Int {
+		get {
+			return Int(food?.servings ?? 0)
+		}
+		set {
+			food?.servings = Int16(newValue)
+			detailTextLabel?.text = servingText
 		}
 	}
 	
@@ -51,10 +60,32 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	}
 	
 	func stepperChanged(sender: UIStepper) {
-		let count = Int(sender.value)
-		food?.servings = Int16(count)
-		detailTextLabel?.text = servingText
+		numServings = Int(sender.value)
 		
-		controller?.changeServing(self, count: count)
+		if let food = food {
+			NSNotificationCenter.defaultCenter().postNotificationName("ServingChange", object: food)
+		}
+	}
+	
+	override func didTransitionToState(state: UITableViewCellStateMask) {
+		switch state {
+		case UITableViewCellStateMask.DefaultMask:
+			if let stepper = accessoryView as? UIStepper {
+				stepper.enabled = true
+			}
+		default:
+			return
+		}
+	}
+	
+	override func willTransitionToState(state: UITableViewCellStateMask) {
+		switch state {
+		case UITableViewCellStateMask.ShowingDeleteConfirmationMask:
+			if let stepper = accessoryView as? UIStepper {
+				stepper.enabled = false
+			}
+		default:
+			return
+		}
 	}
 }
