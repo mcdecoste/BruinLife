@@ -73,7 +73,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	let alertCancel = "Cancel", alertNever = "Never", alertMorningFull = "Start of Day (9:00 AM)", alertMorning = "Start of Day"
 	var alertHall: String {
 		get {
-			return "When \(place.hall.displayName(foodVC.isHall)) Opens (\(place.openTime.displayString))"
+			return "When \(place.hall.displayName(popDelegate.isHall)) Opens (\(place.openTime.displayString))"
 		}
 	}
 	
@@ -126,7 +126,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		}
 	}
 	
-	private var foodVC: FoodTableViewController {
+	private var popDelegate: FoodTableViewController {
 		get {
 			return popoverPresentationController?.delegate as! FoodTableViewController
 		}
@@ -136,19 +136,6 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		get {
 			var addendum = numberOfServings == 1 ? "" : "s"
 			return "\(numberOfServings) Serving\(addendum)"
-		}
-	}
-	
-	private var identifierForFood: String {
-		get {
-			let components = currCal.components(.CalendarUnitMonth | .CalendarUnitDay, fromDate: date)
-			return "\(components.month)/\(components.day) - \(place.hall.displayName(foodVC.isHall)) - \(meal.rawValue) - \(food.name)"
-		}
-	}
-	
-	private var weekdayForFood: String {
-		get {
-			return currCal.weekdaySymbols[currCal.component(.CalendarUnitWeekday, fromDate: date) - 1] as! String
 		}
 	}
 	
@@ -174,22 +161,10 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		}
 	}
 	
-	private var shouldHideReminders: Bool {
-		get {
-			return reminderCase == .afterAll
-		}
-	}
+	private var shouldHideReminders: Bool { get { return reminderCase == .afterAll } }
 	
 	private var notification: UILocalNotification? {
-		get {
-			for notif in UIApplication.sharedApplication().scheduledLocalNotifications as! Array<UILocalNotification> {
-				if let value = (notif.userInfo as! [String : String])[notificationID] where value == identifierForFood {
-					return notif
-				}
-			}
-			
-			return nil
-		}
+		get { return CloudManager.sharedInstance.localNotification(food, date: date, place: place.hall, isHall: popDelegate.isHall, meal: meal) }
 	}
 	
 	// MARK:- Lifecycle
@@ -482,12 +457,12 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		// determine what kind of action sheet to show
 		switch reminderCase {
 		case .beforeAll: // before both
-			UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: alertMorningFull, alertHall).showInView(foodVC.view)
+			UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: alertMorningFull, alertHall).showInView(popDelegate.view)
 		case .afterAll:
 			return
 		default:
 			let other = reminderCase == .beforeMorning ? alertMorningFull : alertHall
-			UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: other).showInView(foodVC.view)
+			UIActionSheet(title: "When would you like to be reminded?", delegate: self, cancelButtonTitle: noChangeText, destructiveButtonTitle: removeText, otherButtonTitles: other).showInView(popDelegate.view)
 		}
 	}
 	
@@ -497,9 +472,9 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		case alertNever:
 			removeNotification()
 		case alertMorningFull:
-			addNotification(morningTime.timeDateForDate(date))
+			addNotification(date, hour: morningTime.hour, minute: morningTime.minute)
 		case alertHall:
-			addNotification(place.openTime.timeDateForDate(date))
+			addNotification(date, hour: place.openTime.hour, minute: place.openTime.minute)
 		case alertCancel:
 			return
 		default:
@@ -511,49 +486,14 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	// MARK: - Notifications
 	
-	var notificationString: String {
-		get {
-			return "\(place.hall.displayName(foodVC.isHall)) has \(food.name) for \(meal.rawValue) (\(place.openTime.displayString) - \(place.closeTime.displayString))"
-		}
-	}
-	
-	// Remove any existing notification
 	private func removeNotification() {
-		// using while should remove all possible matches
-		while let notification = notification {
-			UIApplication.sharedApplication().cancelLocalNotification(notification)
-		}
+		CloudManager.sharedInstance.removeNotification(food, date: date, place: place, isHall: popDelegate.isHall, meal: meal)
 	}
 	
 	/// Add a new notification or modify an old one.
-	private func addNotification(date: NSDate) {
-		// if already exists, delete it
+	private func addNotification(date: NSDate, hour: Int? = nil, minute: Int? = nil) {
 		removeNotification()
-		
-		// build it up
-		var notif = UILocalNotification()
-		notif.timeZone = .defaultTimeZone()
-		notif.fireDate = date
-		notif.alertBody = notificationString
-		notif.timeZone = .defaultTimeZone()
-		
-		var information = [String:String]()
-		information[notificationID] = identifierForFood
-		information[notificationFoodID] = food.name
-		information[notificationPlaceID] = place.hall.displayName(foodVC.isHall)
-		information[notificationDateID] = weekdayForFood
-		information[notificationMealID] = meal.rawValue
-		information[notificationHoursID] = "\(place.openTime.displayString) until \(place.closeTime.displayString)"
-		
-		let fireCal = currCal.components(.CalendarUnitHour | .CalendarUnitMinute, fromDate: notif.fireDate!)
-		let fireTime = Time(hour: fireCal.hour, minute: fireCal.minute)
-		information[notificationTimeID] = fireTime.displayString
-		notif.userInfo = information
-		
-		// Sanity check: only add notifications for the future
-		if notif.fireDate!.timeIntervalSinceNow > 0 {
-			UIApplication.sharedApplication().scheduleLocalNotification(notif)
-		}
+		CloudManager.sharedInstance.addNotification(date, mealType: meal, placeBrief: place, info: food, fireHour: hour, fireMin: minute)
 	}
 	
 	// MARK: Helpers

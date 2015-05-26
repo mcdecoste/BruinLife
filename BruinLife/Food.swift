@@ -31,11 +31,7 @@ class Food: NSManagedObject {
 	@NSManaged var date: NSDate
 	@NSManaged var servings: Int16
 	
-	var info: FoodInfo {
-		get {
-			return FoodInfo(dict: NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as! Dictionary<String, AnyObject>)
-		}
-	}
+	var info: FoodInfo { get { return FoodInfo(dict: deserialized(data)) } }
 	
 	/// Invalidate servings count if the day has changed.
 	func checkDate() {

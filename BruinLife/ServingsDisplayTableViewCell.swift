@@ -36,6 +36,9 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 		set {
 			food?.servings = Int16(newValue)
 			detailTextLabel?.text = servingText
+			if let food = food {
+				NSNotificationCenter.defaultCenter().postNotificationName("ServingChange", object: food)
+			}
 		}
 	}
 	
@@ -61,10 +64,6 @@ class ServingsDisplayTableViewCell: UITableViewCell {
 	
 	func stepperChanged(sender: UIStepper) {
 		numServings = Int(sender.value)
-		
-		if let food = food {
-			NSNotificationCenter.defaultCenter().postNotificationName("ServingChange", object: food)
-		}
 	}
 	
 	override func didTransitionToState(state: UITableViewCellStateMask) {

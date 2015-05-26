@@ -72,11 +72,12 @@ class FavoritesTableViewController: UITableViewController {
 	}
 	
 	override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+		let hasFavorites = favorites.first!.count > 0
 		switch section {
 		case notifySection:
-			return nil
+			return hasFavorites ? "Bruin Life will remind you when the dining hall opens." : nil
 		case dontSection:
-			return "These notifications are a work in progress and will work in a future version." // "Notifications will be sent out when the food's dining hall opens" // "Favorites will be shown in Today View Extension regardless of this setting"
+			return "Only add reminders for foods you really care about."
 		default:
 			return nil
 		}

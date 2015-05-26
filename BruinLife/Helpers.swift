@@ -10,6 +10,8 @@ import UIKit
 
 /// Used to determine notification identity
 let notificationID: String = "NotificationID"
+/// Used for Food Identification (Recipe Number)
+let notificationRecipeID: String = "NotificationRecipeID"
 /// Used for text label in NotificationTableViewController
 let notificationFoodID: String = "NotificationFoodID"
 /// Used for detail text label in NotificationTableViewController with Meal
@@ -80,4 +82,16 @@ func daysInFuture(date: NSDate) -> Int {
 	let today = currCal.component(.CalendarUnitDay, fromDate: NSDate())
 	let selectedDay = currCal.component(.CalendarUnitDay, fromDate: date)
 	return abs(today - selectedDay)
+}
+
+func deserialized(data: NSData) -> Dictionary<String, AnyObject> {
+	return NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> ?? [:]
+}
+
+func deserializedOpt(data: NSData) -> Dictionary<String, AnyObject>? {
+	return NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as? Dictionary<String, AnyObject>
+}
+
+func serialize(object: Serializable) -> NSData {
+	return NSJSONSerialization.dataWithJSONObject(object.dictFromObject(), options: .allZeros, error: nil) ?? NSData()
 }

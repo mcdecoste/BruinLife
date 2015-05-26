@@ -160,7 +160,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	func setInformationIfNeeded() {
 		if !hasData && informationData.length != 0 {
 			var jsonError: NSError?
-			if let dayDataDict = NSJSONSerialization.JSONObjectWithData(informationData, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> {
+			if let dayDataDict = deserializedOpt(informationData) {
 				let infoExtra = DayBrief(dict: dayDataDict)
 				
 				// purge out empty entries for quick things
