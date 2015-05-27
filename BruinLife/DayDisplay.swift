@@ -9,29 +9,18 @@
 import UIKit
 
 class DayDisplay: UIButton {
-	private var normalColor: UIColor {
-		get {
-			return tintColor!
-		}
-	}
+	private var normalColor: UIColor { get { return tintColor! } }
 	private var highlightedColor: UIColor {
 		get {
 			let comp = CGColorGetComponents(normalColor.CGColor!)
 			return UIColor(red: comp[0], green: comp[1], blue: comp[2], alpha: 0.2)
 		}
 	}
-	private var dimmedColor: UIColor {
-		get {
-			return UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
-		}
-	}
+	private var dimmedColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
 	private var title: String {
-		get {
-			return DayDisplay.titleStringDate(date)
-		}
+		get { return DayDisplay.titleStringDate(date) }
 	}
 	
-	// comparisonDate()
 	var date: NSDate = NSDate(timeIntervalSince1970: 0) {
 		didSet {
 			if oldValue == NSDate(timeIntervalSince1970: 0) {

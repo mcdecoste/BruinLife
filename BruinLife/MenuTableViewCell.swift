@@ -46,9 +46,6 @@ class MenuTableViewCell: FoodTableViewCell {
 		self.date = date
 		self.isHall = isHall
 		
-		collectionView?.delegate = foodVC
-		collectionView?.dataSource = foodVC
-		
 		let imageIndex = (subviews as NSArray).indexOfObject(backgroundImageView!)
 		
 		backgroundImageView?.removeFromSuperview()

@@ -45,11 +45,6 @@ class SettingsTableViewController: UITableViewController, MFMailComposeViewContr
 		navigationItem.title = displayStr
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
     // MARK: - Table view data source
 	
 	override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {

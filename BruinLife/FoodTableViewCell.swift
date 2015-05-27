@@ -11,7 +11,6 @@ import UIKit
 class FoodTableViewCell: UITableViewCell {
 	var brief: RestaurantBrief?
 	var date: NSDate?
-	var foodVC: FoodTableViewController?
 	var backgroundImageView: UIImageView?
 	var isHall: Bool = true
 	

@@ -54,22 +54,21 @@ func color(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0) -> UIColor {
 }
 
 /// Returns the most likely Meal given the time
-var currentMeal: MealType {
+var currentMeal: MealType { get { return currentMealOpt ?? .LateNight } }
+var currentMealOpt: MealType? {
 	get {
 		var hour = currCal.component(.CalendarUnitHour, fromDate: NSDate())
-		
+	
 		if hour <= 3 { return .LateNight }
 		if hour <= 11 { return .Breakfast }
 		if hour <= 16 { return .Lunch }
 		if hour <= 20 { return .Dinner }
-		return .LateNight
+		return nil
 	}
 }
 
 func daysInFuture(date: NSDate) -> Int {
-	let today = currCal.component(.CalendarUnitDay, fromDate: NSDate())
-	let selectedDay = currCal.component(.CalendarUnitDay, fromDate: date)
-	return abs(today - selectedDay)
+	return currCal.components(.CalendarUnitDay, fromDate: comparisonDate(date: NSDate()), toDate: comparisonDate(date: date), options: .allZeros).day
 }
 
 func deserialized(data: NSData) -> Dictionary<String, AnyObject> {

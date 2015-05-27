@@ -9,8 +9,6 @@
 import UIKit
 
 class DormTableViewController: FoodTableViewController {
-	var dormCVC: DormContainerViewController?
-	
 	var preferredTitleView: DayDisplay {
 		get {
 			var pref = DayDisplay()
@@ -18,16 +16,7 @@ class DormTableViewController: FoodTableViewController {
 			return pref
 		}
 	}
-	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-	}
-	
-	override func viewDidAppear(animated: Bool) {
-		super.viewDidAppear(animated)
-		dormCVC?.updateNavItem(self)
-	}
-	
+		
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		NSNotificationCenter.defaultCenter().addObserver(self, selector: "handleDataChange:", name: "NewDayInfoAdded", object: nil)

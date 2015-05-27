@@ -128,6 +128,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		660BA88F1B157E6A006243C5 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				667EE6D31B0262890059CE13 /* ImageModel.swift */,
+				663A1C631A71B51200CC8893 /* CloudManager.swift */,
+				66B5BEC21A401D10004D0492 /* FoodModel.swift */,
+				66B5BEC01A401CEB004D0492 /* SwipeModel.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
 		6619E7CB1A35300800052B6D /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -161,11 +172,8 @@
 			isa = PBXGroup;
 			children = (
 				66BBA8481A7051AD00A412D9 /* BruinLife.entitlements */,
+				660BA88F1B157E6A006243C5 /* Model */,
 				66B5BEC41A402A5F004D0492 /* Helpers.swift */,
-				667EE6D31B0262890059CE13 /* ImageModel.swift */,
-				663A1C631A71B51200CC8893 /* CloudManager.swift */,
-				66B5BEC21A401D10004D0492 /* FoodModel.swift */,
-				66B5BEC01A401CEB004D0492 /* SwipeModel.swift */,
 				66B9785C1A524B5500144876 /* HorizontalFlow.swift */,
 				6619E7CB1A35300800052B6D /* Controllers */,
 				66E553E01A31584900BF314E /* Cells */,

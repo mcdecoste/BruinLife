@@ -108,3 +108,7 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 		return CGRect(x: x, y: layout.frame.origin.y, width: width, height: layout.frame.height)
 	}
 }
+
+class VerticalFlow: UICollectionViewFlowLayout {
+	
+}

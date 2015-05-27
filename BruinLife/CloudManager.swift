@@ -292,7 +292,6 @@ class CloudManager: NSObject {
 				
 				var information = [String:String]()
 				var identi = identifier(info, date: fireDate, place: placeBrief.hall, isHall: true, meal: mealType)
-				println(identi)
 				information[notificationID] = identi
 				information[notificationFoodID] = info.name
 				information[notificationRecipeID] = info.recipe
@@ -467,8 +466,9 @@ class CloudManager: NSObject {
 			NSNotificationCenter.defaultCenter().postNotificationName("NewDayInfoAdded", object: nil, userInfo:["newItem":newEntity])
 			
 			save()
+		} else {
+			println("\(record.recordID.recordName) is not a valid dining day record")
 		}
-		println("\(record.recordID.recordName) is not a valid dining day record")
 	}
 	
 	private func defaultFoodEntity(food: FoodInfo) -> Food {

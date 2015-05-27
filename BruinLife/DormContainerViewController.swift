@@ -38,6 +38,8 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
+		setVCs(0, animated: false)
+		
 		loadMoreDays()
 	}
 	
@@ -45,10 +47,8 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 		super.viewDidAppear(animated)
 		
 		// if (no displayed view controller) or (empty displayed controller), update
-		if let first = pageController.viewControllers.first as? UINavigationController where first.viewControllers.count != 0 {
-		} else {
-			pageController.setViewControllers([vcForIndex(0)], direction: .Forward, animated: true, completion: nil)
-		}
+		if let first = pageController.viewControllers.first as? UINavigationController where first.viewControllers.count != 0 { }
+		else { setVCs(0) }
 	}
 	
 	// MARK:- Navigation Item
@@ -88,7 +88,13 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 			direction = .Forward
 		}
 		
-		pageController.setViewControllers([vcForIndex(newIndex)], direction: direction, animated: false, completion: nil)
+		setVCs(newIndex, direction: direction, animated: true)
+	}
+	
+	private func setVCs(index: Int, direction: UIPageViewControllerNavigationDirection = .Forward, animated: Bool = true) {
+		let navVC = vcForIndex(index)
+		pageController.setViewControllers([navVC], direction: direction, animated: animated, completion: nil)
+		updateNavItem(dormVCfromNavVC(navVC))
 	}
 	
 	/// Update the navigation item based on the newly presented view controller
@@ -125,10 +131,7 @@ class DormContainerViewController: UIViewController, UIPageViewControllerDataSou
 	
 	func vcForIndex(index: Int) -> UINavigationController {
 		if let vc = storyboard?.instantiateViewControllerWithIdentifier(pageStoryboardID) as? DormTableViewController {
-			vc.information.date = comparisonDate(index)
-			vc.informationData = CloudManager.sharedInstance.diningDay(vc.information.date)?.data ?? NSData()
-			vc.dormCVC = self
-			
+			vc.informationData = CloudManager.sharedInstance.diningDay(comparisonDate(index))?.data ?? NSData()
 			return UINavigationController(rootViewController: vc)
 		}
 		return UINavigationController()
