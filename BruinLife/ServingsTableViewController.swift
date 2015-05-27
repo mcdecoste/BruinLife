@@ -124,7 +124,7 @@ class ServingsTableViewController: UITableViewController {
 			let cell = tableView.dequeueReusableCellWithIdentifier(foodID, forIndexPath: indexPath) as! ServingsDisplayTableViewCell
 			cell.frame.size.width = tableView.frame.width
 			cell.selectionStyle = .None
-			cell.controller = self
+//			cell.controller = self
 			cell.food = food
 			
 			return cell

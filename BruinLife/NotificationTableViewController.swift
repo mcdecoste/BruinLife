@@ -21,6 +21,9 @@ class NotificationTableViewController: UITableViewController {
         super.viewDidLoad()
 		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
 		navigationItem.title = "Notifications"
+		
+		tableView.rowHeight = UITableViewAutomaticDimension
+		tableView.estimatedRowHeight = 44
     }
 	
 	override func viewWillAppear(animated: Bool) {
@@ -63,8 +66,7 @@ class NotificationTableViewController: UITableViewController {
 
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		var cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell
-		let userInfo = notificationForPath(indexPath).userInfo as! [String : String]
-		cell.setLabels(userInfo[notificationFoodID]!, time: userInfo[notificationTimeID]!)
+		cell.foodInfo = notificationForPath(indexPath).userInfo as! [String : String]
         return cell
     }
 	

@@ -20,7 +20,7 @@ class FavoritesTableViewController: UITableViewController {
 		navigationItem.title = "Favorites"
 		navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: "editTable")
 		
-		tableView.registerClass(NotificationTableViewCell.self, forCellReuseIdentifier: cellID)
+		tableView.registerClass(FavoriteTableViewCell.self, forCellReuseIdentifier: cellID)
     }
 	
 	override func viewWillAppear(animated: Bool) {
@@ -75,7 +75,7 @@ class FavoritesTableViewController: UITableViewController {
 		let hasFavorites = favorites.first!.count > 0
 		switch section {
 		case notifySection:
-			return hasFavorites ? "Bruin Life will remind you when the dining hall opens." : nil
+			return "Bruin Life will remind you when the dining hall opens."
 		case dontSection:
 			return "Only add reminders for foods you really care about."
 		default:
@@ -84,10 +84,9 @@ class FavoritesTableViewController: UITableViewController {
 	}
 
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! NotificationTableViewCell
-		var places: Array<String> = []
-		// TODO: Consult existing menus to see when this food will come up again
-		cell.setLabels(favorites[indexPath.section][indexPath.row].info.name, places: places)
+		let cell = tableView.dequeueReusableCellWithIdentifier(cellID, forIndexPath: indexPath) as! FavoriteTableViewCell
+		cell.food = favorites[indexPath.section][indexPath.row]
+		
 		return cell
 	}
 	
