@@ -165,9 +165,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 							infoExtra.meals[meal]!.halls.removeValueForKey(hall)
 						}
 					}
-					if mealBrief.halls.count == 0 {
-						infoExtra.meals.removeValueForKey(meal)
-					}
+//					if mealBrief.halls.count == 0 {
+//						infoExtra.meals.removeValueForKey(meal)
+//					}
 				}
 				
 				if !isHall {
