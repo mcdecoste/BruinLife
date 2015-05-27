@@ -42,9 +42,6 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		}
 	}
 	var information: DayBrief = DayBrief() {
-//		willSet {
-//			loadState = .Expanding
-//		}
 		didSet {
 			loadState = hasData ? .Done : .Failed
 		}
@@ -62,21 +59,20 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	internal var loadState: FoodControllerLoadState = .Loading {
 		didSet {
 			if loadState == .Failed {
-				if let refresher = self.refreshControl {
+				if let refresher = refreshControl {
 					refresher.endRefreshing()
 				} else {
-					self.refreshControl = UIRefreshControl()
-					self.refreshControl!.addTarget(self, action: refresh, forControlEvents: .ValueChanged)
+					refreshControl = UIRefreshControl()
+					refreshControl!.addTarget(self, action: refresh, forControlEvents: .ValueChanged)
 				}
 			} else {
 				if !loadState.showActivity() {
-					self.refreshControl?.endRefreshing()
-					self.refreshControl = nil
+					refreshControl?.endRefreshing()
+					refreshControl = nil
 				}
 			}
 			dispatch_async(dispatch_get_main_queue(), { () -> Void in
 				self.tableView.reloadData()
-//				self.tableView.setNeedsDisplay()
 			})
 		}
 	}
@@ -158,8 +154,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	}
 	
 	func setInformationIfNeeded() {
-		if !hasData && informationData.length != 0 {
-			var jsonError: NSError?
+		if !hasData && informationData.length > 0 {
 			if let dayDataDict = deserializedOpt(informationData) {
 				let infoExtra = DayBrief(dict: dayDataDict)
 				
@@ -170,6 +165,9 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 							infoExtra.meals[meal]!.halls.removeValueForKey(hall)
 						}
 					}
+					if mealBrief.halls.count == 0 {
+						infoExtra.meals.removeValueForKey(meal)
+					}
 				}
 				
 				if !isHall {
@@ -177,16 +175,13 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 				}
 				
 				information = infoExtra
-			} else {
-				println(jsonError)
 			}
 		}
 	}
 	
 	// MARK: - Core Data
 	
-	func handleDataChange(notification: NSNotification) {
-	}
+	func handleDataChange(notification: NSNotification) {  }
 	
 	// MARK: - Helpers
 	
@@ -274,7 +269,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
 		if !hasData {
-			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID)! as! EmptyTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(EmptyCellID) as! EmptyTableViewCell
 			cell.loadState = loadState
 			return cell
 		}
@@ -286,7 +281,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 		var restaurant = (allHalls[allHalls.keys.array[modelRow]])!
 		
 		if indexPathHasFoodDisplay(indexPath) {
-			var cell = tableView.dequeueReusableCellWithIdentifier(kFoodDisplayID)! as! MenuTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(kFoodDisplayID) as! MenuTableViewCell
 			
 			cell.selectionStyle = .None
 			cell.frame.size = CGSize(width: tableView.frame.width, height: kFoodDisplayHeight)
@@ -296,7 +291,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			
 			return cell
 		} else {
-			var cell = tableView.dequeueReusableCellWithIdentifier(kRestCellID)! as! RestaurantTableViewCell
+			var cell = tableView.dequeueReusableCellWithIdentifier(kRestCellID) as! RestaurantTableViewCell
 			
 			cell.frame.size = CGSize(width: tableView.frame.width, height: kRestCellHeight)
 			cell.foodVC = self

@@ -51,7 +51,6 @@ class DormTableViewController: FoodTableViewController {
 		if let newDay = notification.userInfo![keyString] as? DiningDay where newDay.day == information.date {
 			informationData = newDay.data
 		}
-//		CloudManager.sharedInstance.save()
 	}
 	
 	override func scrollToMeal() {

@@ -35,23 +35,11 @@ var versionDisplayString: String {
 	}
 }
 /// Displayed name of application
-var displayStr: String {
-get {
-	return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleDisplayName") as! String
-}
-}
+var displayStr: String = { return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleDisplayName") as! String }()
 /// Version number of application
-var versionStr: String {
-get {
-	return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as! String
-}
-}
+var versionStr: String = { return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString") as! String }()
 /// Build number of application
-var buildStr: String {
-get {
-	return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as! String
-}
-}
+var buildStr: String = { return NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion") as! String }()
 
 func comparisonDate(date: NSDate = NSDate()) -> NSDate {
 	return currCal.startOfDayForDate(date)
@@ -85,7 +73,7 @@ func daysInFuture(date: NSDate) -> Int {
 }
 
 func deserialized(data: NSData) -> Dictionary<String, AnyObject> {
-	return NSJSONSerialization.JSONObjectWithData(data, options: .allZeros, error: nil) as? Dictionary<String, AnyObject> ?? [:]
+	return deserializedOpt(data) ?? [:]
 }
 
 func deserializedOpt(data: NSData) -> Dictionary<String, AnyObject>? {
