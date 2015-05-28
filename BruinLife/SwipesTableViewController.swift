@@ -87,7 +87,7 @@ class SwipesTableViewController: UITableViewController {
 			cell.textLabel?.font = .systemFontOfSize(20)
 			
 			if cell.bounds.width <= 320 { // 4" screen or smaller
-				cell.textLabel?.text = "You should have \(swipes) swipe" + (swipes == 1 ? "" : "s") + " left."
+				cell.textLabel?.text = plural(swipes, "swipe", "swipes", prefix: "You should have ", suffix: " left.")
 			} else {
 				cell.textLabel?.attributedText = attributedDisplay(swipes)
 			}

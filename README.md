@@ -1,5 +1,5 @@
 # Bruin Life
-![Big Logo](https://raw.githubusercontent.com/mcdecoste/BruinLife/master/BruinLife/Images.xcassets/AppIcon.appiconset/logo%403x.png)
+![Big Logo](https://raw.githubusercontent.com/mcdecoste/BruinLife/master/BruinLife/Images.xcassets/AppIcon.appiconset/logo@180.png)
 
 Source code for the Bruin Life app for iOS
 
@@ -25,7 +25,9 @@ Holy hierarchy Batman. Lots of trickerations here and there to try and make this
 ### Swipes (SwipeModel.swift)
 Provides all logic necessary to sort out the number of swipes a user SHOULD have left given the week and day. Also has logic to determine the week and day based on the date.
 ### Core Data (Food.swift)
-NSManagedObjects subclasses for local storage. Nothing special, nothing particularly well-done.
+NSManagedObjects subclasses for local storage.
+### Overall (CloudManager.swift)
+Overall handler for Core Data and CloudKit. Trying to offload a lot of work into here to centralize the model.
 
 ---
 ## View Controllers

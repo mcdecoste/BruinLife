@@ -23,6 +23,7 @@ enum ReminderCase: Int {
 
 class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate {
 	private let nutrientCellID = "nutrition", ingredientCellID = "ingredient", personalCellID = "personal", reminderCellID = "reminder", servingCellID = "serving"
+	private let nutrientHeaderID = "nutrientHeader", headerID = "header"
 	private let cellHeight: CGFloat = 44.0, smallCellHeight: CGFloat = 36.0
 	private let nutritionGap: CGFloat = 2, headerGap: CGFloat = 8
 	
@@ -61,7 +62,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	var nutriTable: UITableView?
 	
-	var nutritionHeader: NutritionHeaderView? // for updating on the fly (hopefully)
+//	var nutritionHeader: NutritionHeaderView? // for updating on the fly (hopefully)
 	
 	var ingredientsLabel = UILabel(), descriptionLabel = UILabel(), nutritionLabel = UILabel(),  personalLabel = UILabel()
 	
@@ -134,8 +135,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	private var servingText: String {
 		get {
-			var addendum = numberOfServings == 1 ? "" : "s"
-			return "\(numberOfServings) Serving\(addendum)"
+			return plural(numberOfServings, "Serving", "Servings")
 		}
 	}
 	
@@ -186,7 +186,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: ingredientCellID)
 		nutriTable?.registerClass(UITableViewCell.self, forCellReuseIdentifier: personalCellID)
 		nutriTable?.registerClass(FoodNotificationTableViewCell.self, forCellReuseIdentifier: reminderCellID)
-		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientCellID)
+		nutriTable?.registerClass(NutritionHeaderView.self, forHeaderFooterViewReuseIdentifier: nutrientHeaderID)
+		nutriTable?.registerClass(GeneralHeaderView.self, forHeaderFooterViewReuseIdentifier: headerID)
 		
 		preferredContentSize = prefContentSize
     }
@@ -318,10 +319,8 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	
 	func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 		switch section {
-		case nutritionSection:
-			return nutritionLabel.frame.maxY
-		case personalSection:
-			return personalLabel.frame.maxY
+		case nutritionSection, personalSection:
+			return tableView.headerViewForSection(section)?.frame.height ?? 32 //nutritionLabel.frame.maxY
 		default:
 			return 0
 		}
@@ -344,17 +343,14 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 	func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		switch section {
 		case nutritionSection:
-			if nutritionHeader == nil {
-				nutritionHeader = nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(nutrientCellID) as! NutritionHeaderView?
+			if let header = nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(nutrientHeaderID) as? NutritionHeaderView {
+//				header.frame.size = header.systemLayoutSizeFittingSize(UILayoutFittingExpandedSize)
+				header.servingsCount = numberOfServings
+				return header
 			}
-			nutritionHeader?.frame.size = CGSize(width: (nutriTable?.frame.width)!, height: self.tableView(nutriTable!, heightForHeaderInSection: section))
-			nutritionHeader?.servingsCount = numberOfServings
-			return nutritionHeader
+			return nil
 		default:
-			var header = UIView(frame: CGRect(x: 0, y: 0, width: (nutriTable?.frame.width)!, height: self.tableView(tableView, heightForHeaderInSection: section)))
-			header.backgroundColor = .whiteColor()
-			header.addSubview(personalLabel)
-			return header
+			return nutriTable?.dequeueReusableHeaderFooterViewWithIdentifier(headerID) as? GeneralHeaderView
 		}
 	}
 	
@@ -430,7 +426,7 @@ class FoodViewController: UIViewController, UITableViewDataSource, UITableViewDe
 		numberOfServings = Int(sender.value)
 		
 		// View changes
-		nutritionHeader?.servingsCount = numberOfServings
+		(nutriTable!.headerViewForSection(nutritionSection) as! NutritionHeaderView).servingsCount = numberOfServings
 		for path in nutriTable!.indexPathsForVisibleRows() as! [NSIndexPath] {
 			switch (path.section, path.row) {
 			case (nutritionSection, _):

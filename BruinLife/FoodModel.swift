@@ -102,14 +102,16 @@ enum FoodType: String {
 	case Vegan = "Vegan"
 	
 	/// returns the preferred color when displaying food type
-	func displayColor(alpha: CGFloat) -> UIColor {
-		switch self {
-		case .Vegetarian:
-			return UIColor(red: 0.2, green: 0.9, blue: 0.3, alpha: alpha)
-		case .Vegan:
-			return UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: alpha)
-		default:
-			return UIColor(white: 1.0, alpha: alpha)
+	var displayColor: UIColor {
+		get {
+			switch self {
+			case .Vegetarian:
+				return UIColor(red: 0.2, green: 0.9, blue: 0.3, alpha: 1.0)
+			case .Vegan:
+				return UIColor(red: 0.0, green: 1.0, blue: 0.0, alpha: 1.0)
+			default:
+				return UIColor(white: 1.0, alpha: 1.0)
+			}
 		}
 	}
 }

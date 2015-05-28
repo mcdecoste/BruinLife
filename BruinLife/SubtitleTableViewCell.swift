@@ -47,9 +47,7 @@ class FavoriteTableViewCell: SubtitleTableViewCell {
 class ServingsDisplayTableViewCell: SubtitleTableViewCell {
 	var servingText: String {
 		get {
-			var servings = Int(food?.servings ?? 0)
-			var addendum = servings == 1 ? "Serving" : "Servings"
-			return "\(servings) \(addendum)"
+			return plural(Int(food?.servings ?? 0), "Serving", "Servings")
 		}
 	}
 	

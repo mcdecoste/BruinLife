@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Matthew DeCoste. All rights reserved.
 //
 
-import UIKit
-import CloudKit
 import CoreData
 
 class DiningDay: NSManagedObject {
@@ -35,9 +33,8 @@ class Food: NSManagedObject {
 	
 	/// Invalidate servings count if the day has changed.
 	func checkDate() {
-		let compareDate = comparisonDate()
-		if !NSCalendar.currentCalendar().isDate(compareDate, inSameDayAsDate: date) {
-			date = compareDate
+		if !currCal.isDateInToday(date) {
+			date = comparisonDate()
 			servings = 0
 		}
 	}

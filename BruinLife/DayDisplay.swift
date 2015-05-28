@@ -16,7 +16,6 @@ class DayDisplay: UIButton {
 			return UIColor(red: comp[0], green: comp[1], blue: comp[2], alpha: 0.2)
 		}
 	}
-	private var dimmedColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.2)
 	private var title: String {
 		get { return DayDisplay.titleStringDate(date) }
 	}
@@ -30,18 +29,19 @@ class DayDisplay: UIButton {
 			frame.size = NSString(string: titleLabel!.text!).sizeWithAttributes([NSFontAttributeName:titleLabel!.font])
 		}
 	}
-	var dayIndex: Int = 0 {
-		didSet {
-			date = comparisonDate(dayIndex)
-		}
+	var dayIndex: Int = 0 { didSet { date = comparisonDate(dayIndex) } }
+	
+	override func tintColorDidChange() {
+		super.tintColorDidChange()
+		
+		setTitleColor(normalColor, forState: .Normal)
+		setTitleColor(highlightedColor, forState: .Highlighted)
 	}
 	
 	private func setupLabel() {
-		setTitle("Hello", forState: .Normal)
 		titleLabel!.font = .boldSystemFontOfSize(17)
 		setTitleColor(normalColor, forState: .Normal)
 		setTitleColor(highlightedColor, forState: .Highlighted)
-		setTitleColor(dimmedColor, forState: .Disabled)
 	}
 	
 	class func titleString(daysInAdvance: Int) -> String {
@@ -50,18 +50,18 @@ class DayDisplay: UIButton {
 	
 	class func titleStringDate(date: NSDate) -> String {
 		var formatter = NSDateFormatter()
-		formatter.dateFormat = "MMM"
-		let shortMonth = formatter.stringFromDate(date)
-		formatter.dateFormat = "MMMM"
-		let longMonth = formatter.stringFromDate(date)
-		let monthStr = shortMonth == longMonth ? longMonth : "\(shortMonth)."
 		
-		formatter.dateFormat = "EEEE, "
-		let weekday = formatter.stringFromDate(date)
+		formatter.dateFormat = "EEEE, MMM"
+		let short = formatter.stringFromDate(date)
+		formatter.dateFormat = "EEEE, MMMM"
+		let long = formatter.stringFromDate(date)
+		
+		let startStr = short == long ? long : "\(short)."
+		
 		formatter.dateFormat = "d"
 		let day = formatter.stringFromDate(date)
 		
-		var titleStr = "\(weekday)\(monthStr) \(day)"
+		var titleStr = "\(startStr) \(day)"
 		
 		switch currCal.component(.CalendarUnitDay, fromDate: date) {
 		case 1, 21, 31:

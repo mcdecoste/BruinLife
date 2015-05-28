@@ -8,50 +8,66 @@
 
 import UIKit
 
-class NutritionHeaderView: UITableViewHeaderFooterView {
-	private var mainLabel: UILabel, sideLabel: UILabel
-	private let headerGap: CGFloat = 8
+class NutritionHeaderView: GeneralHeaderView {
+	private var sideLabel = UILabel()
+	
 	var servingsCount: Int = 0 {
 		didSet {
-			switch servingsCount {
-			case 0:
-				sideLabel.text = ""
-			case 1:
-				sideLabel.text = "for 1 serving"
-			default:
-				sideLabel.text = "for \(servingsCount) servings"
-			}
+			sideLabel.text = plural(servingsCount, "serving", "servings", prefix: "for ", showForZero: false)
 			sideLabel.sizeToFit()
-			sideLabel.frame.origin.x = frame.width - sideLabel.frame.width - 8
-			sideLabel.frame.origin.y = mainLabel.frame.maxY - sideLabel.frame.height - 2 // dunno why it's not lined up right
 			
 			setNeedsDisplay()
 		}
 	}
 	
-	private let darkGreyTextColor = UIColor(white: 0.3, alpha: 1.0)
-	private let baseWidth: CGFloat = 290 * 0.9, baseHeight: CGFloat = 460 * 0.5
+	override func setup() {
+		sideLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+		sideLabel.font = .italicSystemFontOfSize(12)
+		sideLabel.textColor = UIColor(white: 0.3, alpha: 1.0)
+		sideLabel.textAlignment = .Right
+		
+		contentView.addSubview(sideLabel)
+		
+		// super calls setConstraints, so don't bother with that.
+		super.setup()
+		
+		title = "Nutrition Facts"
+	}
+	
+	override func setConstraints() {
+		contentView.removeConstraints(contentView.constraints())
+		
+		contentView.addConstraint(NSLayoutConstraint(item: mainLabel, attribute: .Bottom, relatedBy: .Equal, toItem: sideLabel, attribute: .Bottom, multiplier: 1, constant: -2))
+		
+		addConstraint("H:|-[main]-(>=0)-[side]-14-|")
+		addConstraint("V:|-[main]-|")
+	}
+	
+	override func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {
+		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: ["main" : mainLabel, "side" : sideLabel]))
+	}
+}
+
+class GeneralHeaderView: UITableViewHeaderFooterView {
+	private var mainLabel = UILabel()
+	
+	var title: String = "Bruin Tracks" {
+		didSet {
+			mainLabel.text = title
+		}
+	}
 	
 	override init(frame: CGRect) {
-		mainLabel = UILabel(frame: frame)
-		sideLabel = UILabel(frame: frame)
-		
 		super.init(frame: frame)
 		setup()
 	}
 	
 	required init(coder aDecoder: NSCoder) {
-		mainLabel = UILabel(coder: aDecoder)
-		sideLabel = UILabel(coder: aDecoder)
-		
 		super.init(coder: aDecoder)
 		setup()
 	}
 	
 	override init(reuseIdentifier: String?) {
-		mainLabel = UILabel()
-		sideLabel = UILabel()
-		
 		super.init(reuseIdentifier: reuseIdentifier)
 		setup()
 	}
@@ -59,21 +75,25 @@ class NutritionHeaderView: UITableViewHeaderFooterView {
 	func setup() {
 		contentView.backgroundColor = .whiteColor()
 		
-		mainLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
-		mainLabel.text = "Nutrition Facts"
+		mainLabel.setTranslatesAutoresizingMaskIntoConstraints(false)
+		title = "Bruin Tracks"
 		mainLabel.font = .boldSystemFontOfSize(20)
-		mainLabel.textAlignment = .Left
 		mainLabel.sizeToFit()
-		mainLabel.frame.origin = CGPoint(x: 8, y: headerGap)
 		
-		sideLabel.frame.size = CGSize(width: baseWidth, height: baseHeight)
-		sideLabel.font = .italicSystemFontOfSize(12)
-		sideLabel.textColor = darkGreyTextColor
-		sideLabel.textAlignment = .Right
+		contentView.addSubview(mainLabel)
 		
-		servingsCount = 0
+		setConstraints()
+	}
+	
+	func setConstraints() {
+		contentView.removeConstraints(contentView.constraints())
 		
-		addSubview(sideLabel)
-		addSubview(mainLabel)
+		addConstraint("H:|-[main]-(>=0)-|")
+		addConstraint("V:|-[main]-|")
+	}
+	
+	/// Helper method for Auto Layout
+	func addConstraint(format: String, option: NSLayoutFormatOptions = .allZeros) {
+		contentView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(format, options: option, metrics: nil, views: ["main" : mainLabel]))
 	}
 }

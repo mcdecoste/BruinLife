@@ -53,6 +53,17 @@ func color(red: Int, green: Int, blue: Int, alpha: CGFloat = 1.0) -> UIColor {
 	return UIColor(red: CGFloat(red)/255.0, green: CGFloat(green)/255.0, blue: CGFloat(blue)/255.0, alpha: alpha)
 }
 
+func plural(count: Int, singular: String, plural: String, prefix: String = "", suffix: String = "", showForZero: Bool = true) -> String {
+	switch count {
+	case 0:
+		return showForZero ? "\(prefix)\(count) \(plural)\(suffix)" : ""
+	case 1:
+		return "\(prefix)\(count) \(singular)\(suffix)"
+	default:
+		return "\(prefix)\(count) \(plural)\(suffix)"
+	}
+}
+
 /// Returns the most likely Meal given the time
 var currentMeal: MealType { get { return currentMealOpt ?? .LateNight } }
 var currentMealOpt: MealType? {
