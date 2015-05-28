@@ -10,6 +10,17 @@ import UIKit
 
 class SectionCollectionReusableView: UICollectionReusableView {
 	var title: UILabel = UILabel(frame: CGRectZero)
+	var titleText: String = "" {
+		didSet {
+			title.text = titleText
+			title.sizeToFit()
+			
+			let topIndex: CGFloat = 4.0
+			var titleSize = title.frame.size
+			frame.size = CGSize(width: titleSize.width, height: titleSize.height + topIndex)
+			title.frame.origin = CGPoint(x: 0.0, y: topIndex)
+		}
+	}
 	
 	override init(frame: CGRect) {
 		super.init(frame: frame)
@@ -21,15 +32,5 @@ class SectionCollectionReusableView: UICollectionReusableView {
 	
 	required init(coder aDecoder: NSCoder) {
 	    super.init(coder: aDecoder)
-	}
-	
-	func changeTitle(name: String) {
-		title.text = name
-		title.sizeToFit()
-		
-		let topIndex: CGFloat = 4.0
-		var titleSize = title.frame.size
-		frame.size = CGSize(width: titleSize.width, height: titleSize.height + topIndex)
-		title.frame.origin = CGPoint(x: 0.0, y: topIndex)
 	}
 }

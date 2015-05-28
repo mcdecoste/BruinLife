@@ -410,13 +410,15 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	
 	func collectionView(collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionReusableView {
 		var header = collectionView.dequeueReusableSupplementaryViewOfKind(kind, withReuseIdentifier: "headerCell", forIndexPath: indexPath) as! SectionCollectionReusableView
-		header.changeTitle((displayCell?.brief?.sections[indexPath.section].name)!)
+		header.titleText = (displayCell?.brief?.sections[indexPath.section].name)!
 		
-		var flow = collectionView.collectionViewLayout as! HorizontalFlow
-		while flow.headerWidths.count - indexPath.section < 1 {
-			flow.headerWidths.append(240)
+		// don't do anything extra if we're Vertical Flow
+		if let flow = collectionView.collectionViewLayout as? HorizontalFlow {
+			while flow.headerWidths.count - indexPath.section < 1 {
+				flow.headerWidths.append(240)
+			}
+			flow.headerWidths[indexPath.section] = header.title.frame.width
 		}
-		flow.headerWidths[indexPath.section] = header.title.frame.width
 		
 		return header
 	}

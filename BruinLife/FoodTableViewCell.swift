@@ -174,13 +174,12 @@ class MenuTableViewCell: FoodTableViewCell {
 		// add the labels!
 		super.finishSetup()
 		
-		collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: HorizontalFlow())
+		collectionView = UICollectionView(frame: CGRectZero, collectionViewLayout: VerticalFlow())
 		collectionView?.registerClass(FoodCollectionViewCell.self, forCellWithReuseIdentifier: "foodDisplay")
 		collectionView?.registerClass(SectionCollectionReusableView.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "headerCell")
 		collectionView?.backgroundView = blurView
 		collectionView?.backgroundColor = .clearColor()
-		collectionView?.alwaysBounceHorizontal = true
-		collectionView?.alwaysBounceVertical = false
+		collectionView?.alwaysBounceVertical = true
 		
 		addSubview(collectionView!)
 	}
@@ -193,6 +192,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		if collectionView?.frame == CGRectZero {
 			collectionView?.frame = CGRect(origin: CGPointZero, size: frame.size)
 		}
+		(collectionView?.collectionViewLayout as! VerticalFlow).updateForCollectionSize()
 		collectionView?.reloadData()
 		
 		blurView.frame = bounds
