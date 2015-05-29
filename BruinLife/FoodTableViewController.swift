@@ -27,7 +27,12 @@ enum FoodControllerLoadState: Int {
 
 class FoodTableViewController: UITableViewController, UIPopoverPresentationControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UIAlertViewDelegate {
 	let kRestCellID = "FoodCell", kRestCellHeight: CGFloat = 88
-	let kFoodDisplayID = "DisplayCell", kFoodDisplayHeight: CGFloat = 220
+	let kFoodDisplayID = "DisplayCell" // , kFoodDisplayHeight: CGFloat = 400 // 220
+	var kFoodDisplayHeight: CGFloat {
+		get {
+			return tableView.bounds.height - 2 * kRestCellHeight - 130 // 22 + 20 + 40 + 40
+		}
+	}
 	let EmptyCellID = "EmptyCell"
 	
 	let foodVCid = "foodDescriptionViewController"

@@ -90,7 +90,7 @@ class CircleDisplay: UIButton {
 		updateDisplayText()
 	}
 	
-	private func handleTap() {
+	func handleTap() {
 		if let _ = nutrition.percent {
 			showingAmount = !showingAmount
 			updateDisplayText()

@@ -104,7 +104,7 @@ class HorizontalFlow: UICollectionViewFlowLayout {
 		let width = headerWidths.count - 1 >= indexPath.section ? headerWidths[indexPath.section] : 240
 		let x = min(max(collectionView!.contentOffset.x + 4, firstAttr.frame.minX), lastAttr.frame.maxX - width)
 		
-		return CGRect(x: x, y: layout.frame.origin.y, width: width, height: layout.frame.height)
+		return CGRect(x: x, y: layout.frame.minY, width: width, height: layout.frame.height)
 	}
 }
 
@@ -119,7 +119,7 @@ class VerticalFlow: UICollectionViewFlowLayout {
 		return wideEnough ? 2 : 1
 	}
 	private var heightPerRow: CGFloat {
-		return wideEnough ? 90 : 60
+		return wideEnough ? 60 : 60 // 90 : 60
 	}
 	
 	override init() {
@@ -158,29 +158,26 @@ class VerticalFlow: UICollectionViewFlowLayout {
 		itemSize = CGSize(width: 150, height: heightPerRow)
 		minimumInteritemSpacing = 4
 		minimumLineSpacing = 10 // not super set clean yet
-		sectionInset = UIEdgeInsets(top: 0, left: 0, bottom: 16, right: 0)
+		sectionInset = UIEdgeInsets(top: 0, left: 4, bottom: 16, right: 2)
 	}
 	
 	func updateForCollectionSize() {
-		itemSize = CGSize(width: (collectionView!.bounds.width / CGFloat(columnsPerRow)) - minimumInteritemSpacing/2, height: heightPerRow)
+		let usableWidth = collectionView!.bounds.width - sectionInset.left - sectionInset.right
+		let perItemWidth = (usableWidth - CGFloat(columnsPerRow - 1) * minimumLineSpacing) / CGFloat(columnsPerRow)
+		itemSize = CGSize(width: perItemWidth, height: heightPerRow)
 	}
 	
 	override func layoutAttributesForElementsInRect(rect: CGRect) -> [AnyObject]? {
 		if var attributes = super.layoutAttributesForElementsInRect(rect)! as? Array<UICollectionViewLayoutAttributes> {
-			var sectionsWithoutHeaders: Set<Int> = []
-			
-			// count the section headers
-			for layout in attributes {
-				sectionsWithoutHeaders.insert(layout.indexPath.section)
-			}
+			var sectionsWithoutHeaders = Set<Int>(map(attributes, { (layout) -> Int in return layout.indexPath.section }))
 			
 			for layout in filter(attributes, { (layout) -> Bool in return layout.representedElementCategory == .SupplementaryView }) {
 				sectionsWithoutHeaders.remove(layout.indexPath.section)
 			}
 			
-			// add in section headers that aren't here when they should be
+			// add in all section headers that aren't given by super. Will add headers that aren't on-screen as well
 			for section in sectionsWithoutHeaders {
-				attributes.append(self.layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader, atIndexPath: NSIndexPath(forItem: 0, inSection: section)))
+				attributes.append(layoutAttributesForSupplementaryViewOfKind(UICollectionElementKindSectionHeader, atIndexPath: NSIndexPath(forItem: 0, inSection: section)))
 			}
 			
 			for layout in attributes {
@@ -195,7 +192,7 @@ class VerticalFlow: UICollectionViewFlowLayout {
 	}
 	
 	override func layoutAttributesForSupplementaryViewOfKind(elementKind: String, atIndexPath indexPath: NSIndexPath) -> UICollectionViewLayoutAttributes! {
-		var layout: UICollectionViewLayoutAttributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: elementKind, withIndexPath: indexPath)
+		var layout = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: elementKind, withIndexPath: indexPath)
 		layout.frame = frameForHeaderLayout(layout)
 		return layout
 	}
@@ -206,6 +203,6 @@ class VerticalFlow: UICollectionViewFlowLayout {
 		let lastInSection = layoutAttributesForItemAtIndexPath(NSIndexPath(forItem: itemIndex, inSection: layout.indexPath.section))
 		
 		let y = min(max(collectionView!.contentOffset.y, firstInSection.frame.minY - layout.frame.height), lastInSection.frame.maxY)
-		return CGRect(origin: CGPoint(x: layout.frame.origin.x, y: y), size: layout.frame.size)
+		return CGRect(origin: CGPoint(x: layout.frame.minX, y: y), size: layout.frame.size)
 	}
 }

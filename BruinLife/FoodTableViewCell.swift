@@ -186,11 +186,11 @@ class MenuTableViewCell: FoodTableViewCell {
 	
 	override func updateDisplay() {
 		// do things to update the display for the new brief
-		backgroundImageView?.frame = bounds
+		backgroundImageView?.frame = bounds // CGRectMake(0, -1, bounds.width, bounds.height + 2)
 		backgroundImageView?.clipsToBounds = true
 		
 		if collectionView?.frame == CGRectZero {
-			collectionView?.frame = CGRect(origin: CGPointZero, size: frame.size)
+			collectionView?.frame = bounds
 		}
 		(collectionView?.collectionViewLayout as! VerticalFlow).updateForCollectionSize()
 		collectionView?.reloadData()
@@ -209,7 +209,7 @@ class MenuTableViewCell: FoodTableViewCell {
 		backgroundImageView?.removeFromSuperview()
 		backgroundImageView = UIImageView(image: ImageProvider.sharedInstance.image(brief!.hall, open: open))
 		parallaxImageWithScrollPercent(0.0)
-		backgroundImageView?.contentMode = .ScaleAspectFill
+		backgroundImageView?.contentMode = .ScaleAspectFill // UIViewContentMode.ScaleToFill // .ScaleAspectFill
 		
 		insertSubview(backgroundImageView!, atIndex: imageIndex)
 		
