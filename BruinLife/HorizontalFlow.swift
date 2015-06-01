@@ -116,10 +116,10 @@ class VerticalFlow: UICollectionViewFlowLayout {
 		return true
 	}
 	private var columnsPerRow: Int {
-		return wideEnough ? 2 : 1
+		return 2 // wideEnough ? 2 : 2
 	}
 	private var heightPerRow: CGFloat {
-		return wideEnough ? 60 : 60 // 90 : 60
+		return 60 // wideEnough ? 60 : 60 //38 // 90 : 60
 	}
 	
 	override init() {

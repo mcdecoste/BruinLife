@@ -30,7 +30,7 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 	let kFoodDisplayID = "DisplayCell" // , kFoodDisplayHeight: CGFloat = 400 // 220
 	var kFoodDisplayHeight: CGFloat {
 		get {
-			return tableView.bounds.height - 2 * kRestCellHeight - 130 // 22 + 20 + 40 + 40
+			return tableView.bounds.height - (2.5 * kRestCellHeight) - 130 // 22 + 20 + 40 + 40
 		}
 	}
 	let EmptyCellID = "EmptyCell"
@@ -307,10 +307,14 @@ class FoodTableViewController: UITableViewController, UIPopoverPresentationContr
 			var hallForRow = allHalls.keys.array[displayRow]
 			var restaurant = (allHalls[hallForRow])!
 			
-			displayCell?.changeInfo(restaurant, andDate: information.date, isHall: isHall)
-			displayCell!.collectionView?.invalidateIntrinsicContentSize()
-			if displayCell!.collectionView?.numberOfSections() > 0 {
-				displayCell!.collectionView?.scrollToItemAtIndexPath(NSIndexPath(forItem: 0, inSection: 0), atScrollPosition: .Left, animated: false)
+			if let display = displayCell {
+				display.changeInfo(restaurant, andDate: information.date, isHall: isHall)
+				if let collection = display.collectionView {
+					collection.invalidateIntrinsicContentSize()
+					if collection.numberOfSections() > 0 {
+						collection.contentOffset = CGPointZero
+					}
+				}
 			}
 		}
 	}
